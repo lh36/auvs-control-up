@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HUST_1_Demo.Controller;
+using HUST_1_Demo.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -29,6 +31,26 @@ namespace HUST_1_Demo
         static double earth_e = 0.003352810664; //定义椭球的第一偏心律
         static double lat_start = 30.51584003;//定义原点位置
         static double lon_start = 114.42665029;
+
+        public struct TargetCircle  //目标圆参数
+        {
+            public double Radius;
+            public Point Center_P;
+        }
+
+        ShipStatusData shipData1 = new ShipStatusData();
+        ShipStatusData shipData2 = new ShipStatusData();
+        ShipStatusData shipData3 = new ShipStatusData();
+
+        
+        
+        static byte[] ship1=new byte[2] { 0xa1, 0x1a };
+        static byte[] ship2=new byte[2] { 0xa2, 0x2a };
+        static byte[] ship3=new byte[2] { 0xa3, 0x3a };
+
+        RobotControl ship1Control = new RobotControl(ship1);
+        RobotControl ship2Control = new RobotControl(ship2);
+        RobotControl ship3Control = new RobotControl(ship3);
 
       //  static double lat_start = 0;//定义原点位置
       //  static double lon_start = 0;
