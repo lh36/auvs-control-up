@@ -61,6 +61,7 @@
     <Compile Include="Controller\RobotControl.cs" />
     <Compile Include="Model\ExcelUtils.cs" />
     <Compile Include="Model\HttpWebModel.cs" />
+    <Compile Include="Model\RecvSeriData.cs" />
     <Compile Include="Model\ShipStatusData.cs" />
     <Compile Include="View\Form1.cs">
       <SubType>Form</SubType>

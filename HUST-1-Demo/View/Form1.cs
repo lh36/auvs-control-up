@@ -27,23 +27,21 @@ namespace HUST_1_Demo
         /// 定义全局变量
         /// </summary>
         /// 
-        static double a = 6378137.0;//定义地球长半轴长度  
-        static double earth_e = 0.003352810664; //定义椭球的第一偏心律
-        static double lat_start = 30.51584003;//定义原点位置
-        static double lon_start = 114.42665029;
 
         public struct TargetCircle  //目标圆参数
         {
             public double Radius;
-            public Point Center_P;
+            public double x;
+            public double y;
         }
+        TargetCircle targetCircle; //目标圆
+        public Point targetPoint;  //目标点
+        public double targetLine;  //目标线
 
-        ShipStatusData shipData1 = new ShipStatusData();
-        ShipStatusData shipData2 = new ShipStatusData();
-        ShipStatusData shipData3 = new ShipStatusData();
+        public static ShipStatusData boat1 = new ShipStatusData();
+        ShipStatusData boat2 = new ShipStatusData();
+        ShipStatusData boat3 = new ShipStatusData();
 
-        
-        
         static byte[] ship1=new byte[2] { 0xa1, 0x1a };
         static byte[] ship2=new byte[2] { 0xa2, 0x2a };
         static byte[] ship3=new byte[2] { 0xa3, 0x3a };
@@ -55,7 +53,7 @@ namespace HUST_1_Demo
       //  static double lat_start = 0;//定义原点位置
       //  static double lon_start = 0;
 
-        struct ship_state  //船舶状态信息
+       /* struct ship_state  //船舶状态信息
         {
 
             public double Lat;//纬度
@@ -78,7 +76,7 @@ namespace HUST_1_Demo
 
         ship_state boat1 = new ship_state();//保存三艘船的状态信息
         ship_state boat2 = new ship_state();
-        ship_state boat3 = new ship_state();
+        ship_state boat3 = new ship_state();*/
 
         static byte[] command = new byte[6] { 0xa1, 0x1a, 0x06, 0x00, 0x00, 0xaa };
         /// <summary>
@@ -124,24 +122,17 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    command[0] = 0xa1;
-                    command[1] = 0x1a;
+                    ship1Control.Speed_Up(serialPort1);
                 }
                 else if (asv2.Checked)
                 {
-                    command[0] = 0xa2;
-                    command[1] = 0x2a;
+                    ship2Control.Speed_Up(serialPort1);
                 }
                 else
                 {
-                    command[0] = 0xa3;
-                    command[1] = 0x3a;
+                    ship3Control.Speed_Up(serialPort1);
                 }
-                command[3] = 0x49;
-                serialPort1.Write(command, 0, 6);
             }
-
-
         }
         /*后退*/
         private void Back_Click(object sender, EventArgs e)
@@ -203,85 +194,15 @@ namespace HUST_1_Demo
         }
 
 
-        byte[] Euler_Z = new byte[4];//Yaw角度
-        byte[] rxdata = new byte[200];//数据接收二级缓存，用来存储寻找包含包头包尾的数据
-        static byte[] response_data = new byte[26];//下位机回复报文
-        byte[] rxbuffer = new byte[200];//这里定义的是临时局部变量，所以每次进来都会重新更新，所以不用清空
-        int rx_counter = 0;
-        byte head1 = 0xA5;
-        byte head2 = 0x5A;
-        byte tail = 0xAA;
-        static int head_pos = 0;//报头位置
-        static int tail_pos = 0;//报尾位置
+        
 
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            int rxdatalen = serialPort1.BytesToRead;
-            serialPort1.Read(rxbuffer, 0, rxdatalen);
-            if (rxdatalen != 0)//只要有数据过来就进行接收并存储
-            {
-                for (int i = 0; i < rxdatalen; i++)
-                {
-                    rxdata[rx_counter] = rxbuffer[i];//接收数据二级缓存，用来进行包头包尾寻找
-                    rx_counter++;
-                }
-                Array.Clear(rxbuffer, 0, rxbuffer.Length);
-                #region 接收数据大于26字节进入处理
-                if (rx_counter >= 26)
-                {
-                    // rx_counter = 0;//二级缓存清空，防止数据溢出  这里如果采用清零的方式，则可能出现数据从中间开始，则一直找不到一组完整的数据，或者错误的数据。
-                    head_pos = Array.IndexOf(rxdata, head1);
-                    if (head_pos != -1)
-                    {
-                        tail_pos = Array.IndexOf(rxdata, tail, head_pos);//从包头处开始寻找包尾
-                        if (tail_pos != -1)//找到了一组完整的数据
-                        {
-                            for (int i = 0; i < tail_pos - head_pos + 1; i++)
-                            {
-                                response_data[i] = rxdata[head_pos + i];
-                            }
-
-                            int last_tail_pos = Array.LastIndexOf(rxdata, tail);//找到数组中最后一个包尾位置，之前数据全部除去
-                            rx_counter = rx_counter - (last_tail_pos + 1);//除去最后一个包尾后剩余的数据的个数
-
-                            for (int i = 0; i < rx_counter; i++)//保留缓存区包尾后的数据
-                            {
-                                rxdata[i] = rxdata[last_tail_pos + i + 1];
-                            }
-                            Array.Clear(rxdata, rx_counter, 100);//清除遗留的尾数
-                        }
-                        else
-                        {
-                            rx_counter = rx_counter - head_pos;
-                            for (int i = 0; i < rx_counter; i++)
-                            {
-                                rxdata[i] = rxdata[head_pos + i];
-                            }
-                        }
-
-                    }
-                }
-                #endregion 26字节处理完毕
-            }
-            #region 接收到一组正确的数据，则进行处理和显示
-            if ((response_data[1] == head2) && (response_data[25] == tail))//第二位是0X5A时处理数据，否则丢弃数据 
-            {
-                byte ID_Temp = response_data[3];
-                switch (ID_Temp)
-                {
-                    case 0x01: boat1 = Handle_response_data(boat1); break;
-                    case 0x02: boat2 = Handle_response_data(boat2); break;
-                    case 0x03: boat3 = Handle_response_data(boat3); break;
-                    default: break;
-                }
-                Array.Clear(response_data, 0, response_data.Length);
-                Display();//有数据更新时才更新显示，否则不更新（即不是每次接收到数据才更新，只有接收到正确的数据才更新）
-            }
-            #endregion
+            RecvSeriData.ReceData(serialPort1);
         }
 
         
-        private ship_state Handle_response_data(ship_state boat)
+     /*   private ship_state Handle_response_data(ship_state boat)
         {
             boat.Lat = ((response_data[4] << 24) + (response_data[5] << 16) + (response_data[6] << 8) + response_data[7]) / Math.Pow(10, 8) + 30;
             boat.Lon = ((response_data[8] << 24) + (response_data[9] << 16) + (response_data[10] << 8) + response_data[11]) / Math.Pow(10, 8) + 114;
@@ -333,7 +254,7 @@ namespace HUST_1_Demo
                 fs.Close();
             }
             return boat;
-        }
+        } */
         //参数显示函数
         private void Display()
         {
@@ -711,21 +632,11 @@ namespace HUST_1_Demo
             {
                 timer1.Enabled = true;//关闭闭环控制后，重新开启开环获取船位姿状态信息
                 flag_ctrl = false;
-                command[0] = 0xa1;
-                command[1] = 0x1a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 6);
+                ship1Control.Stop_Robot(serialPort1);
                 Thread.Sleep(40);
-                command[0] = 0xa2;
-                command[1] = 0x2a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 6);
+                ship2Control.Stop_Robot(serialPort1);
                 Thread.Sleep(40);
-                command[0] = 0xa3;
-                command[1] = 0x3a;
-                command[3] = 0x53;
-                command[4] = 0;
-                serialPort1.Write(command, 0, 6);
+                ship3Control.Stop_Robot(serialPort1);
                 button1.Text = "开始跟随";
             }
 
@@ -741,254 +652,47 @@ namespace HUST_1_Demo
         {
             while (flag_ctrl)
             {
-                command[0] = 0xa1;
-                command[1] = 0x1a;
-                Control_fun(boat1);
+                
+                Control_fun(ship1Control,boat1);
 
-                command[0] = 0xa2;
-                command[1] = 0x2a; ;//2号小船控制
-                Control_fun(boat2);
+                //2号小船控制
+                Control_fun(ship2Control, boat2);
 
-                command[0] = 0xa3;
-                command[1] = 0x3a; ;//3号小船控制
-                Control_fun(boat3);
+                //3号小船控制
+                Control_fun(ship3Control, boat3);
                 Thread.Sleep(200);
             }
         }
-        private void Control_fun(ship_state boat)
+
+        private void Control_fun(RobotControl shipControl, ShipStatusData shipData)
         {
-            double Kp = double.Parse(Kp_value.Text);//获取控制参数
-            double Ki = double.Parse(Ki_value.Text);
-            double Kd = double.Parse(Kd_value.Text);
             #region 跟踪目标点
             if (path_mode.Text == "目标点")
             {
-
-                double current_c = boat.GPS_Phi;//实际航向
-
-                double distance = Math.Sqrt((boat.X_mm - target_x) * (boat.X_mm - target_x) + (boat.Y_mm - target_y) * (boat.Y_mm - target_y));//毫米单位的距离
-
-                if (distance <= 800.0d)
-                {
-                    command[3] = 0x53;
-                    serialPort1.Write(command, 0, 6);
-
-                    flag_ctrl = false;//控制结束，关闭控制标志，退出循环
-                    button1.Text = "开始跟随";
-                }
-
-                else//距离目标点很远 需要控制
-                {
-                    double target_c = Math.Atan2(target_y - boat.Y_mm, target_x - boat.X_mm) / Math.PI * 180;
-
-                    double detc = target_c - current_c;	//detc
-
-                    if (target_c * current_c < -90 * 90)//处理正负180度附近的偏差值，如期望角和当前角分别是170和-170，则偏差为360-|170|-|-170|=20，而不用170+170=340，   -90*90是阈值
-                    {
-                        detc = 360 - Math.Abs(target_c) - Math.Abs(current_c);
-                        if (target_c > 0)
-                            detc = -detc;  //若期望角为正，而实际角为负，则此时偏差值要取反
-                    }
-                    if (Math.Abs(detc) > 180)
-                    {
-                        if (detc > 0)
-                            detc -= 360;
-                        else
-                            detc += 360;
-                    }
-
-
-                    int R = (int)(Kp * detc);
-                    if (R > 32)
-                    {
-                        R = 32;
-                    }
-                    else if (R < -32)
-                    {
-                        R = -32;
-                    }
-                    R = R + 32;
-                    command[3] = (byte)R;
-                    
-                    //速度控制
-                    command[4] = 150;
-                    if (serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-                    {
-                        serialPort1.Write(command, 0, 6);
-                    }
-
-                    command[3] = 0x47;
-                    if (serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-                    {
-                        serialPort1.Write(command, 0, 6);
-                    }
-                }
+                shipControl.Closed_Control_Point(serialPort1, shipData, targetPoint);
             }
             #endregion
 
             #region 跟随直线
             if (path_mode.Text == "直线")
             {
-                double k = 3.5d;//制导角参数
-                double Err_phi = 0.0d;
-
-                string y_str = line_Y.Text;
-                double y_d = double.Parse(y_str) * 1000;
-
-                double Ye = ((boat.Y_mm - y_d) / 1000);//实际坐标减参考坐标
-                double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
-                if (Phi_mode.Text == "航向角")
-                {
-                    Err_phi = Ref_phi - boat.phi;
-                }
-                else
-                {
-                    Err_phi = Ref_phi - boat.GPS_Phi;
-                }
-                if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
-                {
-                    Err_phi = Err_phi - 360;
-                }
-                int R = (int)(Kp * Err_phi);
-
-                if (R > 32)
-                {
-                    R = 32;
-                }
-                else if (R < -32)
-                {
-                    R = -32;
-                }
-                R = R + 32;
-
-                byte[] shi = BitConverter.GetBytes(R);
-                command[3] = shi[0];
-                if (serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-                {
-                    serialPort1.Write(command, 0, 6);
-                }
-                command[3] = 0x47;
-                command[4] = 150;
-                if (serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-                {
-                    serialPort1.Write(command, 0, 6);
-                }
-                
+                targetLine=double.Parse(line_Y.Text);
+                shipControl.Closed_Control_Line(serialPort1, shipData, targetLine);
             }
             #endregion
 
             #region 跟随圆轨迹
             else if (path_mode.Text == "圆轨迹")
             {
-                double Err_phi = 0.0d;
-                double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
-                double k = 3.5d;
-
-                string str_R = circle_R.Text;//获取界面目标圆信息
-                string str_X = circle_X.Text;
-                string str_Y = circle_Y.Text;
-                double Radius = double.Parse(str_R) * 1000;//目标圆半径
-                double Center_X = double.Parse(str_X) * 1000;//圆心坐标
-                double Center_Y = double.Parse(str_Y) * 1000;
-
-                double Robot_xy = 0.0d;
-                int Dir_flag = 0;//正逆时针标志
-
-                double Ye = (Math.Sqrt((boat.X_mm - Center_X) * (boat.X_mm - Center_X) + (boat.Y_mm - Center_Y) * (boat.Y_mm - Center_Y)) - Radius) / 1000;
-
-                Robot_xy = Math.Atan2(boat.Y_mm - Center_Y, boat.X_mm - Center_X) / Math.PI * 180;//之前每次跑偏的原因是这里将Xrectification写成了Yrectification
-
-                double limit_ang = 0.0d;//边界，通过圆心与航行器坐标点的直径的另一半角度
-
-                #region 跟随方向的判断和 跟随标志的确定
-                if (Robot_xy > 0)
-                {
-                    limit_ang = Robot_xy - 180;//航行器坐标点角度大于零，则判断界限角小于0，故-180，在航行器方向在界限（坐标角通过圆心的直线）右侧顺时针跟随，反之逆时针
-                    if ((boat.phi < limit_ang) || (boat.phi > Robot_xy))
-                        Dir_flag = 1;
-                }
-                else if (Robot_xy < 0)
-                {
-                    limit_ang = Robot_xy + 180;//航行器坐标点小于零，则判断界限大于零，故+180，在界限左侧则逆时针跟随，反之顺时针
-                    if ((boat.phi > Robot_xy) && (boat.phi < limit_ang))
-                        Dir_flag = 1;
-                }
-                else
-                {
-                    if (boat.phi > 0)
-                        Dir_flag = 1;
-                }
-                #endregion
-
-                #region 获取当前制导角
-                double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
-                if (Dir_flag == 1)  //若标志为1，则要处理关于Y轴对称，确定是顺时针旋转还是逆时针旋转
-                {
-                    if (Ref_phi > 0)
-                        Ref_phi = 180 - Ref_phi;
-                    else if (Ref_phi < 0)
-                        Ref_phi = -180 - Ref_phi;
-                    else
-                        Ref_phi = 180;
-                }
-                #endregion
-
-                #region 计算参考向，以及航行器方向相对参考向的角度，以得到控制error
-                double Dir_R = Robot_xy - 90;//得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
-                if (Phi_mode.Text == "航向角")
-                {
-                    ROBOTphi_r = boat.phi - Dir_R;
-                }
-                else
-                {
-                    ROBOTphi_r = boat.GPS_Phi - Dir_R;
-                }
-                
-                if (ROBOTphi_r > 180)
-                    ROBOTphi_r = ROBOTphi_r - 360;//使得航行器相对于参考方向角度范围总在正负180之间
-                if (ROBOTphi_r < -180)
-                    ROBOTphi_r = ROBOTphi_r + 360;
-
-                if (Ref_phi * ROBOTphi_r < -90 * 90)//处理正负180度附近的偏差值，如期望角和当前角分别是170和-170，则偏差为360-|170|-|-170|=20，而不用170+170=340，   -90*90是阈值
-                {
-                    Err_phi = 360 - Math.Abs(Ref_phi) - Math.Abs(ROBOTphi_r);
-                    if (Ref_phi > 0)
-                        Err_phi = -Err_phi;  //若期望角为正，而实际角为负，则此时偏差值要取反
-                }
-                else
-                {
-                    Err_phi = Ref_phi - ROBOTphi_r;  //阈值内取正常偏差，当Y偏差为零时，参考角度REFphi始终为零，但是ROBOTphi_r不为零，故可以一直绕圆走。
-                }
-
-                #endregion
-
-                int R = (int)(Kp * Err_phi);
-
-                if (R > 32)
-                {
-                    R = 32;
-                }
-                else if (R < -32)
-                {
-                    R = -32;
-                }
-                R = R + 32;
-
-                byte[] shi = BitConverter.GetBytes(R);
-                command[3] = shi[0];
-                command[4] = 150;
-                if (serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-                {
-                    serialPort1.Write(command, 0, 6);
-                }
-                command[3] = 0x47;
-                if (serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-                {
-                    serialPort1.Write(command, 0, 6);
-                }
+                targetCircle.Radius=double.Parse(circle_R.Text);
+                targetCircle.x=double.Parse(circle_X.Text);
+                targetCircle.y=double.Parse(circle_Y.Text);
+                shipControl.Closed_Control_Circle(serialPort1, shipData, targetCircle);
             }
             #endregion
-        }
+        } 
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -1012,8 +716,8 @@ namespace HUST_1_Demo
                 double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
                 double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
 
-                target_x = (Heightmap - target_pt.Y) * scale;
-                target_y = (Widthmap - target_pt.X) * scale;
+                targetPoint.X = (int)((Heightmap - target_pt.Y) * scale);
+                targetPoint.Y = (int)((Widthmap - target_pt.X) * scale);
 
                 this.tar_Point_X.Text = (target_x / 1000).ToString();
                 this.tar_Point_Y.Text = (target_y / 1000).ToString();
