@@ -38,45 +38,17 @@ namespace HUST_1_Demo
         public Point targetPoint;  //目标点
         public double targetLine;  //目标线
 
-        public static ShipStatusData boat1 = new ShipStatusData();
+        ShipStatusData boat1 = new ShipStatusData();
         ShipStatusData boat2 = new ShipStatusData();
         ShipStatusData boat3 = new ShipStatusData();
 
-        static byte[] ship1=new byte[2] { 0xa1, 0x1a };
-        static byte[] ship2=new byte[2] { 0xa2, 0x2a };
-        static byte[] ship3=new byte[2] { 0xa3, 0x3a };
+        static byte[] ship1 = new byte[2] { 0xa1, 0x1a };
+        static byte[] ship2 = new byte[2] { 0xa2, 0x2a };
+        static byte[] ship3 = new byte[2] { 0xa3, 0x3a };
 
         RobotControl ship1Control = new RobotControl(ship1);
         RobotControl ship2Control = new RobotControl(ship2);
         RobotControl ship3Control = new RobotControl(ship3);
-
-      //  static double lat_start = 0;//定义原点位置
-      //  static double lon_start = 0;
-
-       /* struct ship_state  //船舶状态信息
-        {
-
-            public double Lat;//纬度
-            public double Lon;//经度
-            public double pos_X;//当前X坐标，此为测量坐标系下的坐标，北向为X，东向为Y
-            public double pos_Y;//Y坐标
-            public double last_pos_X;//上一坐标值
-            public double last_pos_Y;//Y坐标
-            public double X_mm;//图上X坐标
-            public double Y_mm;//图上Y坐标
-            public double GPS_Phi;//GPS-Phi航迹角
-            public float phi;//航向角惯导
-            public float Init_Phi;//惯导原始数据，由于进行惯导0°初始化时需要获取当前惯导原始数据，所以这里需要保存惯导原始数据
-            public float Phi_buchang;//惯导补偿值
-            public double rud;//舵角
-            public float speed;//船速
-            public string Time;//时间
-            public int gear;//速度档位
-        }
-
-        ship_state boat1 = new ship_state();//保存三艘船的状态信息
-        ship_state boat2 = new ship_state();
-        ship_state boat3 = new ship_state();*/
 
         static byte[] command = new byte[6] { 0xa1, 0x1a, 0x06, 0x00, 0x00, 0xaa };
         /// <summary>
@@ -194,67 +166,29 @@ namespace HUST_1_Demo
         }
 
 
-        
+
 
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            RecvSeriData.ReceData(serialPort1);
+            byte[] response_data = RecvSeriData.ReceData(serialPort1);
+
+            #region 接收到一组正确的数据，则进行处理和显示
+            if (response_data != null)
+            {
+                byte ID_Temp = response_data[3];
+                switch (ID_Temp)
+                {
+                    case 0x01: boat1.UpdataStatusData(response_data); boat1.StoreShipData(name); break;
+                    case 0x02: boat2.UpdataStatusData(response_data); boat2.StoreShipData(name); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); boat3.StoreShipData(name); break;
+                    default: break;
+                }
+                Array.Clear(response_data, 0, response_data.Length);
+                Display();//有数据更新时才更新显示，否则不更新（即不是每次接收到数据才更新，只有接收到正确的数据才更新）
+            }
+            #endregion
         }
 
-        
-     /*   private ship_state Handle_response_data(ship_state boat)
-        {
-            boat.Lat = ((response_data[4] << 24) + (response_data[5] << 16) + (response_data[6] << 8) + response_data[7]) / Math.Pow(10, 8) + 30;
-            boat.Lon = ((response_data[8] << 24) + (response_data[9] << 16) + (response_data[10] << 8) + response_data[11]) / Math.Pow(10, 8) + 114;
-
-            boat.pos_X = (boat.Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(boat.Lat / 180 * 3.1415926), 2)), 3)));
-            boat.pos_Y = -((boat.Lon - lon_start) * a * Math.Cos(boat.Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(boat.Lat / 180 * 3.1415926), 2))));//Y坐标正向朝西
-            boat.GPS_Phi =  Math.Atan2(boat.pos_Y - boat.last_pos_Y, boat.pos_X - boat.last_pos_X) / Math.PI * 180;//航迹角
-            boat.last_pos_X = boat.pos_X;//更新上一次坐标信息
-            boat.last_pos_Y = boat.pos_Y;
-            
-            boat.X_mm = boat.pos_X * 1000;
-            boat.Y_mm = boat.pos_Y * 1000;
-
-            boat.Time = response_data[12].ToString() + ":" + response_data[13].ToString() + ":" + response_data[14].ToString();
-            boat.speed = ((response_data[15] << 8) + (response_data[16])) / 1000.0f;
-
-            byte[] Euler_Z = new byte[4];
-            Euler_Z[0] = response_data[17];
-            Euler_Z[1] = response_data[18];
-            Euler_Z[2] = response_data[19];
-            Euler_Z[3] = response_data[20];
-            boat.Init_Phi = BitConverter.ToSingle(Euler_Z, 0);
-
-            boat.phi = boat.Init_Phi + boat.Phi_buchang;
-            if (boat.phi > 180) boat.phi = boat.phi - 360;
-            if (boat.phi < -180) boat.phi = boat.phi + 360;
-            boat.rud = response_data[21];
-            boat.gear = response_data[22];
-
-            //GPS数据和惯导数据保存
-            using (FileStream fs = new FileStream(@"D:\" + name + ".txt", FileMode.Append))
-            {
-                //string strX = str_lat + ",";
-                //string strY = str_lon + ",";
-                //string strA = boat.phi.ToString() + ",";//保存航向角
-                string str_data = response_data[3].ToString() + "," + boat.Lat.ToString("0.00000000") + "," + boat.Lon.ToString("0.00000000") + "," + boat.pos_X.ToString() + "," + boat.pos_Y.ToString() + "," + boat.phi.ToString() + ","
-                          + boat.GPS_Phi.ToString() + "," + boat.speed.ToString("0.000") + "," + boat.gear.ToString() + "," + boat.Time.ToString();//将数据转换为字符串
-
-                byte[] data = System.Text.Encoding.Default.GetBytes(str_data);
-                byte[] data3 = new byte[2];
-                data3[0] = 0x0d; data3[1] = 0x0a;
-                //开始写入
-                fs.Write(data, 0, data.Length);
-
-                fs.Write(data3, 0, data3.Length);
-
-                //清空缓冲区、关闭流
-                fs.Flush();
-                fs.Close();
-            }
-            return boat;
-        } */
         //参数显示函数
         private void Display()
         {
@@ -527,19 +461,19 @@ namespace HUST_1_Demo
                 serialPort1.Write(command, 0, 5);//复位先停船
             }
 
-         /*   MethodInvoker invoker1 = () => Boat1_speed.Text = "0";//面板显示速度置0
-            Boat1_speed.BeginInvoke(invoker1);
-            MethodInvoker invoker2 = () => Boat1_X.Text = "0";//坐标置0
-            Boat1_X.BeginInvoke(invoker2);
-            MethodInvoker invoker3 = () => Boat1_Y.Text = "0";
-            Boat1_Y.BeginInvoke(invoker3);
+            /*   MethodInvoker invoker1 = () => Boat1_speed.Text = "0";//面板显示速度置0
+               Boat1_speed.BeginInvoke(invoker1);
+               MethodInvoker invoker2 = () => Boat1_X.Text = "0";//坐标置0
+               Boat1_X.BeginInvoke(invoker2);
+               MethodInvoker invoker3 = () => Boat1_Y.Text = "0";
+               Boat1_Y.BeginInvoke(invoker3);
 
-            boat1.lat_start = boat1.Lat;//将当前船的位置点设为坐标坐标原点
-            boat1.lon_start = boat1.Lon;
-            boat2.lat_start = boat2.Lat;
-            boat2.lon_start = boat2.Lon;
-            boat3.lat_start = boat3.Lat;
-            boat3.lon_start = boat3.Lon;*/
+               boat1.lat_start = boat1.Lat;//将当前船的位置点设为坐标坐标原点
+               boat1.lon_start = boat1.Lon;
+               boat2.lat_start = boat2.Lat;
+               boat2.lon_start = boat2.Lon;
+               boat3.lat_start = boat3.Lat;
+               boat3.lon_start = boat3.Lon;*/
         }
         static bool flag_ctrl = false;//绘画线程标志
         static bool flag_draw = false;//控制线程标志
@@ -644,16 +578,12 @@ namespace HUST_1_Demo
         /// <summary>
         /// 控制线程
         /// </summary>
-
-        double target_x;//定义目标点位姿信息
-        double target_y;
-
         private void Control_PF()
         {
             while (flag_ctrl)
             {
-                
-                Control_fun(ship1Control,boat1);
+
+                Control_fun(ship1Control, boat1);
 
                 //2号小船控制
                 Control_fun(ship2Control, boat2);
@@ -676,7 +606,7 @@ namespace HUST_1_Demo
             #region 跟随直线
             if (path_mode.Text == "直线")
             {
-                targetLine=double.Parse(line_Y.Text);
+                targetLine = double.Parse(line_Y.Text);
                 shipControl.Closed_Control_Line(serialPort1, shipData, targetLine);
             }
             #endregion
@@ -684,13 +614,13 @@ namespace HUST_1_Demo
             #region 跟随圆轨迹
             else if (path_mode.Text == "圆轨迹")
             {
-                targetCircle.Radius=double.Parse(circle_R.Text);
-                targetCircle.x=double.Parse(circle_X.Text);
-                targetCircle.y=double.Parse(circle_Y.Text);
+                targetCircle.Radius = double.Parse(circle_R.Text);
+                targetCircle.x = double.Parse(circle_X.Text);
+                targetCircle.y = double.Parse(circle_Y.Text);
                 shipControl.Closed_Control_Circle(serialPort1, shipData, targetCircle);
             }
             #endregion
-        } 
+        }
 
 
         private void Form1_Load(object sender, EventArgs e)
@@ -719,8 +649,8 @@ namespace HUST_1_Demo
                 targetPoint.X = (int)((Heightmap - target_pt.Y) * scale);
                 targetPoint.Y = (int)((Widthmap - target_pt.X) * scale);
 
-                this.tar_Point_X.Text = (target_x / 1000).ToString();
-                this.tar_Point_Y.Text = (target_y / 1000).ToString();
+                tar_Point_X.Text = (targetPoint.X / 1000).ToString();
+                tar_Point_Y.Text = (targetPoint.Y / 1000).ToString();
                 flag_ctrl = true;
             }
         }

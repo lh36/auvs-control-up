@@ -8,23 +8,24 @@ using System.Threading.Tasks;
 
 namespace HUST_1_Demo.Model
 {
-    public static class RecvSeriData
+    public class RecvSeriData
     {
         byte[] Euler_Z = new byte[4];//Yaw角度
-        byte[] rxdata = new byte[200];//数据接收二级缓存，用来存储寻找包含包头包尾的数据
+        static byte[] rxdata = new byte[200];//数据接收二级缓存，用来存储寻找包含包头包尾的数据
         static byte[] response_data = new byte[26];//下位机回复报文
-        byte[] rxbuffer = new byte[200];//这里定义的是临时局部变量，所以每次进来都会重新更新，所以不用清空
-        int rx_counter = 0;
-        byte head1 = 0xA5;
-        byte head2 = 0x5A;
-        byte tail = 0xAA;
+        static byte[] rxbuffer = new byte[200];//这里定义的是临时局部变量，所以每次进来都会重新更新，所以不用清空
+        static int rx_counter = 0;
+        static byte head1 = 0xA5;
+        static byte head2 = 0x5A;
+        static byte tail = 0xAA;
         static int head_pos = 0;//报头位置
         static int tail_pos = 0;//报尾位置
 
-        public void ReceData(SerialPort serialPort1)
+        public static byte[] ReceData(SerialPort serialPort1)
         {
             int rxdatalen = serialPort1.BytesToRead;
             serialPort1.Read(rxbuffer, 0, rxdatalen);
+            
             if (rxdatalen != 0)//只要有数据过来就进行接收并存储
             {
                 for (int i = 0; i < rxdatalen; i++)
@@ -33,6 +34,7 @@ namespace HUST_1_Demo.Model
                     rx_counter++;
                 }
                 Array.Clear(rxbuffer, 0, rxbuffer.Length);
+                
                 #region 接收数据大于26字节进入处理
                 if (rx_counter >= 26)
                 {
@@ -65,26 +67,28 @@ namespace HUST_1_Demo.Model
                                 rxdata[i] = rxdata[head_pos + i];
                             }
                         }
-
                     }
                 }
                 #endregion 26字节处理完毕
-            }
-            #region 接收到一组正确的数据，则进行处理和显示
-            if ((response_data[1] == head2) && (response_data[25] == tail))//第二位是0X5A时处理数据，否则丢弃数据 
-            {
-                byte ID_Temp = response_data[3];
-                switch (ID_Temp)
+
+                #region 接收到一组正确的数据，则进行处理和显示
+                if ((response_data[1] == head2) && (response_data[25] == tail))//第二位是0X5A时处理数据，否则丢弃数据 
                 {
-                    case 0x01: boat1 = RobotControl.UpdataStatusData(boat1, response_data); break;
-                    case 0x02: boat2 = RobotControl.UpdataStatusData(boat2, response_data); break;
-                    case 0x03: boat3 = RobotControl.UpdataStatusData(boat3, response_data); break;
-                    default: break;
+                    return response_data;
                 }
-                Array.Clear(response_data, 0, response_data.Length);
-                Display();//有数据更新时才更新显示，否则不更新（即不是每次接收到数据才更新，只有接收到正确的数据才更新）
+                #endregion
+
+                else
+                {
+                    return null;
+                }
             }
-            #endregion
+
+            else
+            {
+                return null;
+            }
+            
         }
     }
 }

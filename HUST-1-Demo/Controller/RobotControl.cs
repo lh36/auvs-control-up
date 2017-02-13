@@ -11,10 +11,7 @@ namespace HUST_1_Demo.Controller
 {
     public class RobotControl
     {
-        public static double a = 6378137.0;//定义地球长半轴长度  
-        public static double earth_e = 0.003352810664; //定义椭球的第一偏心律
-        public static double lat_start = 30.51584003;//定义原点位置
-        public static double lon_start = 114.42665029;
+        
 
         public RobotControl() { } //默认构造函数
         public RobotControl(byte[] ship) //带参构造函数
@@ -268,42 +265,6 @@ namespace HUST_1_Demo.Controller
 
         #endregion
 
-        #region 更新船舶状态信息
-        public static ShipStatusData UpdataStatusData(ShipStatusData boat, byte[] response_data)
-        {
-            ShipStatusData ship = new ShipStatusData();
-           // ship.pos_X = response_data[0];
-            boat.Lat = ((response_data[4] << 24) + (response_data[5] << 16) + (response_data[6] << 8) + response_data[7]) / Math.Pow(10, 8) + 30;
-            boat.Lon = ((response_data[8] << 24) + (response_data[9] << 16) + (response_data[10] << 8) + response_data[11]) / Math.Pow(10, 8) + 114;
-
-            boat.pos_X = (boat.Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(boat.Lat / 180 * 3.1415926), 2)), 3)));
-            boat.pos_Y = -((boat.Lon - lon_start) * a * Math.Cos(boat.Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(boat.Lat / 180 * 3.1415926), 2))));//Y坐标正向朝西
-            boat.GPS_Phi = Math.Atan2(boat.pos_Y - boat.last_pos_Y, boat.pos_X - boat.last_pos_X) / Math.PI * 180;//航迹角
-            boat.last_pos_X = boat.pos_X;//更新上一次坐标信息
-            boat.last_pos_Y = boat.pos_Y;
-
-            boat.X_mm = boat.pos_X * 1000;
-            boat.Y_mm = boat.pos_Y * 1000;
-
-            boat.Time = response_data[12].ToString() + ":" + response_data[13].ToString() + ":" + response_data[14].ToString();
-            boat.speed = ((response_data[15] << 8) + (response_data[16])) / 1000.0f;
-
-            byte[] Euler_Z = new byte[4];
-            Euler_Z[0] = response_data[17];
-            Euler_Z[1] = response_data[18];
-            Euler_Z[2] = response_data[19];
-            Euler_Z[3] = response_data[20];
-            boat.Init_Phi = BitConverter.ToSingle(Euler_Z, 0);
-
-            boat.phi = boat.Init_Phi + boat.Phi_buchang;
-            if (boat.phi > 180) boat.phi = boat.phi - 360;
-            if (boat.phi < -180) boat.phi = boat.phi + 360;
-            boat.rud = response_data[21];
-            boat.gear = response_data[22];
-            return ship;
-        }
-        #endregion
-
-
+        
     }
 }
