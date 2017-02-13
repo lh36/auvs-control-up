@@ -118,24 +118,16 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    command[0] = 0xa1;
-                    command[1] = 0x1a;
+                    ship1Control.Speed_Down(serialPort1);
                 }
                 else if (asv2.Checked)
                 {
-                    command[0] = 0xa2;
-                    command[1] = 0x2a;
+                    ship2Control.Speed_Down(serialPort1);
                 }
                 else
                 {
-                    command[0] = 0xa3;
-                    command[1] = 0x3a;
+                    ship3Control.Speed_Down(serialPort1);
                 }
-                command[3] = 0x44;
-                serialPort1.Write(command, 0, 6);
-                //  serialPort1.Write("D");
-                //      MethodInvoker invoker1 = () => boat1_speed.Text = (speed_boat / 1000.0).ToString();
-                //      phi_B1.BeginInvoke(invoker1);
             }
 
         }
@@ -147,20 +139,9 @@ namespace HUST_1_Demo
                 MessageBox.Show("请先打开串口！\r\n");
             }
             {
-                command[0] = 0xa1;
-                command[1] = 0x1a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 6);
-                Thread.Sleep(40);
-                command[0] = 0xa2;
-                command[1] = 0x2a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 6);
-                Thread.Sleep(40);
-                command[0] = 0xa3;
-                command[1] = 0x3a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 6);
+                ship1Control.Stop_Robot(serialPort1);
+                ship2Control.Stop_Robot(serialPort1);
+                ship3Control.Stop_Robot(serialPort1);
             }
 
         }
@@ -224,22 +205,16 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    command[0] = 0xa1;
-                    command[1] = 0x1a;
+                    ship1Control.Turn_Left(serialPort1);
                 }
                 else if (asv2.Checked)
                 {
-                    command[0] = 0xa2;
-                    command[1] = 0x2a;
+                    ship2Control.Turn_Left(serialPort1);
                 }
                 else
                 {
-                    command[0] = 0xa3;
-                    command[1] = 0x3a;
+                    ship3Control.Turn_Left(serialPort1);
                 }
-                command[3] = 0x51;
-                serialPort1.Write(command, 0, 6);
-                //serialPort1.Write("Q");
             }
 
         }
@@ -284,22 +259,16 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    command[0] = 0xa1;
-                    command[1] = 0x1a;
+                    ship1Control.Turn_Right(serialPort1);
                 }
                 else if (asv2.Checked)
                 {
-                    command[0] = 0xa2;
-                    command[1] = 0x2a;
+                    ship2Control.Turn_Right(serialPort1);
                 }
                 else
                 {
-                    command[0] = 0xa3;
-                    command[1] = 0x3a;
+                    ship3Control.Turn_Right(serialPort1);
                 }
-                command[3] = 0x52;
-                serialPort1.Write(command, 0, 6);
-                //  serialPort1.Write("R");
             }
 
         }
