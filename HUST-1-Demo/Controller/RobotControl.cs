@@ -66,7 +66,7 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></发送命令端口>
         /// <param name="boat"></当前船状态>
         /// <param name="targetPoint"></目标点>
-        public void Closed_Control_Point(SerialPort port, ShipStatusData boat, Point targetPoint)
+        public void Closed_Control_Point(SerialPort port, ShipData boat, Point targetPoint)
         {
             double current_c = boat.Control_Phi;//实际航向
 
@@ -120,13 +120,13 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></跟踪目标直线>
-        public void Closed_Control_Line(SerialPort port, ShipStatusData boat, double line)
+        public void Closed_Control_Line(SerialPort port, ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
             double Err_phi = 0.0d;
-            double y_d = line;
+            double y_d = line;//目标直线，单位为米
 
-            double Ye = ((boat.Y_mm - y_d) / 1000);//实际坐标减参考坐标
+            double Ye = boat.pos_Y - y_d;//实际坐标减参考坐标
             double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
             
             Err_phi = Ref_phi - boat.Control_Phi;
@@ -163,23 +163,23 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></param>
-        public void Closed_Control_Circle(SerialPort port, ShipStatusData boat, HUST_1_Demo.Form1.TargetCircle circle)
+        public void Closed_Control_Circle(SerialPort port, ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             double Err_phi = 0.0d;
             double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
             double k = 3.5d;
 
             
-            double Radius = circle.Radius;//目标圆半径
+            double Radius = circle.Radius;//目标圆半径，将单位转为毫米
             double Center_X = circle.x;//圆心坐标
             double Center_Y = circle.y;
 
             double Robot_xy = 0.0d;
             int Dir_flag = 0;//正逆时针标志
 
-            double Ye = (Math.Sqrt((boat.X_mm - Center_X) * (boat.X_mm - Center_X) + (boat.Y_mm - Center_Y) * (boat.Y_mm - Center_Y)) - Radius) / 1000;
+            double Ye = (Math.Sqrt((boat.pos_X - Center_X) * (boat.pos_X - Center_X) + (boat.pos_Y - Center_Y) * (boat.pos_Y - Center_Y)) - Radius);
 
-            Robot_xy = Math.Atan2(boat.Y_mm - Center_Y, boat.X_mm - Center_X) / Math.PI * 180;//之前每次跑偏的原因是这里将Xrectification写成了Yrectification
+            Robot_xy = Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180;//航行器相对于原点的极坐标点
 
             double limit_ang = 0.0d;//边界，通过圆心与航行器坐标点的直径的另一半角度
 
@@ -258,11 +258,27 @@ namespace HUST_1_Demo.Controller
                 R = -32;
             }
             R = R + 32;
+
+            command[3] = (byte)R;
+            Send_Command(port);
         }
         #endregion
 
         #region 闭环控制区-速度控制
-
+        public void Closed_Control_Speed(SerialPort port, ShipData boat, double leaderShip)
+        {
+            int U = (int)(boat.K1 * 100 + boat.K2 * (leaderShip - boat.pos_X - boat.dl_err));//设置领航者船2的速度档位10,为了与舵角区分，将命令加上100传输，范围
+            if (U > 200)   //将速度档位范围保持在4~16范围内
+            {
+                U = 200;
+            }
+            else if (U < 100)
+            {
+                U = 100;
+            }
+            command[4] = (byte)U;
+            Send_Command(port);
+        }
         #endregion
 
         
