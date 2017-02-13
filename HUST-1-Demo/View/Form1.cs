@@ -34,13 +34,14 @@ namespace HUST_1_Demo
             public double x;
             public double y;
         }
+
         TargetCircle targetCircle; //目标圆
         public Point targetPoint;  //目标点
         public double targetLine;  //目标线
 
-        ShipStatusData boat1 = new ShipStatusData();
-        ShipStatusData boat2 = new ShipStatusData();
-        ShipStatusData boat3 = new ShipStatusData();
+        ShipData boat1 = new ShipData();
+        ShipData boat2 = new ShipData();
+        ShipData boat3 = new ShipData();
 
         static byte[] ship1 = new byte[2] { 0xa1, 0x1a };
         static byte[] ship2 = new byte[2] { 0xa2, 0x2a };
@@ -83,8 +84,8 @@ namespace HUST_1_Demo
                 BaudRate1.Enabled = true;
             }
         }
-        /*前进*/
-        private void Advance_Click(object sender, EventArgs e)
+
+        private void Advance_Click(object sender, EventArgs e)/*前进*/
         {
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
             {
@@ -106,8 +107,8 @@ namespace HUST_1_Demo
                 }
             }
         }
-        /*后退*/
-        private void Back_Click(object sender, EventArgs e)
+        
+        private void Back_Click(object sender, EventArgs e)/*后退*/
         {
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
             {
@@ -138,8 +139,7 @@ namespace HUST_1_Demo
             }
 
         }
-
-
+        
         private void Stop_Click(object sender, EventArgs e)
         {
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
@@ -164,10 +164,7 @@ namespace HUST_1_Demo
             }
 
         }
-
-
-
-
+       
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             byte[] response_data = RecvSeriData.ReceData(serialPort1);
@@ -188,9 +185,8 @@ namespace HUST_1_Demo
             }
             #endregion
         }
-
-        //参数显示函数
-        private void Display()
+        
+        private void Display()//参数显示函数
         {
             Boat1_X.Text = boat1.pos_X.ToString("0.00");
             Boat1_Y.Text = boat1.pos_Y.ToString("0.00");
@@ -216,6 +212,7 @@ namespace HUST_1_Demo
             Boat3_grade.Text = boat3.gear.ToString();
             Boat3_time.Text = boat3.Time;
         }
+
         private void leftup_Click(object sender, EventArgs e)
         {
 
@@ -336,10 +333,12 @@ namespace HUST_1_Demo
             }
 
         }
+
         static int halfHeight_mm = 55000;//地图一半长55米
         static List<Point> listPoint_Boat1 = new List<Point>();
         static List<Point> listPoint_Boat2 = new List<Point>();
         static List<Point> listPoint_Boat3 = new List<Point>();
+
         private void DrawMap()
         {
             while (flag_draw)
@@ -375,14 +374,14 @@ namespace HUST_1_Demo
                 {
                     if (path_mode.Text == "直线")
                     {
-                        int x = Widthmap - (int)(Convert.ToInt32(this.line_Y.Text) * 1000 * paint_scale);
+                        int x = Widthmap - (int)(Convert.ToInt32(this.line_Y2.Text) * 1000 * paint_scale);
                         g.DrawLine(new Pen(Color.Blue, 2), x, 0, x, PathMap.Height);
                     }
                     else if (path_mode.Text == "圆轨迹")
                     {
                         int x = Convert.ToInt32(this.circle_X.Text);
                         int y = Convert.ToInt32(this.circle_Y.Text);
-                        int r = Convert.ToInt32(this.circle_R.Text);
+                        int r = Convert.ToInt32(this.circle_R1.Text);
 
                         int x1 = Widthmap - (int)((y + r) * 1000 * paint_scale);
                         int y1 = Heightmap - (int)((x + r) * 1000 * paint_scale);
@@ -575,6 +574,47 @@ namespace HUST_1_Demo
             }
 
         }
+
+        private void UpdateCtrlPhi()
+        {
+            if (Phi_mode.Text == "航向角")
+            {
+                boat1.Control_Phi = boat1.phi;
+                boat2.Control_Phi = boat2.phi;
+                boat3.Control_Phi = boat3.phi;
+            }
+            else
+            {
+                boat1.Control_Phi = boat1.GPS_Phi;
+                boat2.Control_Phi = boat2.GPS_Phi;
+                boat3.Control_Phi = boat3.GPS_Phi;
+            }
+        }
+
+        private void UpdateCtrlPara()
+        {
+            boat1.Kp = double.Parse(Boat1_Kp.Text);//获取舵机控制参数
+            boat1.Ki = double.Parse(Boat1_Ki.Text);
+            boat1.Kd = double.Parse(Boat1_Kd.Text);
+            boat1.K1 = double.Parse(Boat1_K1.Text);//获取螺旋桨控制参数
+            boat1.K2 = double.Parse(Boat1_K2.Text);
+            boat1.dl_err = double.Parse(Boat1_DL.Text);
+
+            boat2.Kp = double.Parse(Boat2_Kp.Text);//获取舵机控制参数
+            boat2.Ki = double.Parse(Boat2_Ki.Text);
+            boat2.Kd = double.Parse(Boat2_Kd.Text);
+            boat2.K1 = double.Parse(Boat2_K1.Text);//获取螺旋桨控制参数
+            boat2.K2 = double.Parse(Boat2_K2.Text);
+            boat2.dl_err = double.Parse(Boat2_DL.Text);
+
+            boat3.Kp = double.Parse(Boat3_Kp.Text);//获取舵机控制参数
+            boat3.Ki = double.Parse(Boat3_Ki.Text);
+            boat3.Kd = double.Parse(Boat3_Kd.Text);
+            boat3.K1 = double.Parse(Boat3_K1.Text);//获取螺旋桨控制参数
+            boat3.K2 = double.Parse(Boat3_K2.Text);
+            boat3.dl_err = double.Parse(Boat3_DL.Text);
+        }
+
         /// <summary>
         /// 控制线程
         /// </summary>
@@ -582,19 +622,30 @@ namespace HUST_1_Demo
         {
             while (flag_ctrl)
             {
+                UpdateCtrlPhi();
+                UpdateCtrlPara();
+                
+                targetLine = double.Parse(line_Y1.Text);//1号船目标线和圆
+                targetCircle.Radius = double.Parse(circle_R1.Text);
+                targetCircle.x = double.Parse(circle_X.Text);
+                targetCircle.y = double.Parse(circle_Y.Text);
 
-                Control_fun(ship1Control, boat1);
+                Control_fun(ship1Control, boat1);//1号小船控制
+                ship1Control.Closed_Control_Speed(serialPort1, boat1, boat2.pos_X);
 
-                //2号小船控制
-                Control_fun(ship2Control, boat2);
+                targetLine = double.Parse(line_Y2.Text);//2号船目标线和圆
+                targetCircle.Radius = double.Parse(circle_R2.Text);
+                Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
 
-                //3号小船控制
-                Control_fun(ship3Control, boat3);
+                targetLine = double.Parse(line_Y3.Text);//2号船目标线和圆
+                targetCircle.Radius = double.Parse(circle_R3.Text);
+                Control_fun(ship3Control, boat3);//3号小船控制
+                ship3Control.Closed_Control_Speed(serialPort1, boat3, boat2.pos_X);
                 Thread.Sleep(200);
             }
         }
 
-        private void Control_fun(RobotControl shipControl, ShipStatusData shipData)
+        private void Control_fun(RobotControl shipControl, ShipData shipData)
         {
             #region 跟踪目标点
             if (path_mode.Text == "目标点")
@@ -606,7 +657,6 @@ namespace HUST_1_Demo
             #region 跟随直线
             if (path_mode.Text == "直线")
             {
-                targetLine = double.Parse(line_Y.Text);
                 shipControl.Closed_Control_Line(serialPort1, shipData, targetLine);
             }
             #endregion
@@ -614,9 +664,6 @@ namespace HUST_1_Demo
             #region 跟随圆轨迹
             else if (path_mode.Text == "圆轨迹")
             {
-                targetCircle.Radius = double.Parse(circle_R.Text);
-                targetCircle.x = double.Parse(circle_X.Text);
-                targetCircle.y = double.Parse(circle_Y.Text);
                 shipControl.Closed_Control_Circle(serialPort1, shipData, targetCircle);
             }
             #endregion
@@ -627,7 +674,7 @@ namespace HUST_1_Demo
         {
             Control.CheckForIllegalCrossThreadCalls = false;
         }
-        Point target_pt = new Point();
+        Point target_pt = new Point();//捕获鼠标按下去的点，以得到目标点
         private void PathMap_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -646,8 +693,8 @@ namespace HUST_1_Demo
                 double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
                 double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
 
-                targetPoint.X = (int)((Heightmap - target_pt.Y) * scale);
-                targetPoint.Y = (int)((Widthmap - target_pt.X) * scale);
+                targetPoint.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
+                targetPoint.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
 
                 tar_Point_X.Text = (targetPoint.X / 1000).ToString();
                 tar_Point_Y.Text = (targetPoint.Y / 1000).ToString();

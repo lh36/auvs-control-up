@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HUST_1_Demo.Model
 {
-    public class ShipStatusData
+    public class ShipData
     {
         public byte ShipID { get; set; }//船号
         public double Lat { get; set; }//纬度
