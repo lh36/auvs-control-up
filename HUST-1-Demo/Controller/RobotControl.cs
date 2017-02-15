@@ -187,21 +187,20 @@ namespace HUST_1_Demo.Controller
             if (Robot_xy > 0)
             {
                 limit_ang = Robot_xy - 180;//航行器坐标点角度大于零，则判断界限角小于0，故-180，在航行器方向在界限（坐标角通过圆心的直线）右侧顺时针跟随，反之逆时针
-                if ((boat.phi < limit_ang) || (boat.phi > Robot_xy))
+                if (boat.Control_Phi < limit_ang || boat.Control_Phi > Robot_xy)//之前不能跑圆原因是用航迹角的时候，这里判断标志仍为航向角
                     Dir_flag = 1;
             }
             else if (Robot_xy < 0)
             {
                 limit_ang = Robot_xy + 180;//航行器坐标点小于零，则判断界限大于零，故+180，在界限左侧则逆时针跟随，反之顺时针
-                if ((boat.phi > Robot_xy) && (boat.phi < limit_ang))
+                if ((boat.Control_Phi > Robot_xy) && (boat.Control_Phi < limit_ang))
                     Dir_flag = 1;
             }
             else
             {
-                if (boat.phi > 0)
+                if (boat.Control_Phi > 0)
                     Dir_flag = 1;
             }
-            Dir_flag = 1;
             #endregion
 
             #region 获取当前制导角
@@ -228,16 +227,19 @@ namespace HUST_1_Demo.Controller
             if (ROBOTphi_r < -180)
                 ROBOTphi_r = ROBOTphi_r + 360;
 
-            if (Ref_phi * ROBOTphi_r < -90 * 90)//处理正负180度附近的偏差值，如期望角和当前角分别是170和-170，则偏差为360-|170|-|-170|=20，而不用170+170=340，   -90*90是阈值
+            /*if (Ref_phi * ROBOTphi_r < -90 * 90)//处理正负180度附近的偏差值，如期望角和当前角分别是170和-170，则偏差为360-|170|-|-170|=20，而不用170+170=340，   -90*90是阈值
             {
                 Err_phi = 360 - Math.Abs(Ref_phi) - Math.Abs(ROBOTphi_r);
                 if (Ref_phi > 0)
                     Err_phi = -Err_phi;  //若期望角为正，而实际角为负，则此时偏差值要取反
             }
+
             else
             {
                 Err_phi = Ref_phi - ROBOTphi_r;  //阈值内取正常偏差，当Y偏差为零时，参考角度REFphi始终为零，但是ROBOTphi_r不为零，故可以一直绕圆走。
-            }
+            }*/
+            
+            Err_phi = Ref_phi - ROBOTphi_r;//加上顺逆时针跟随处理之后，偏差不可能超过180度，因此无需进行上述处理
 
             #endregion
             if (Math.Abs(Ye) < 0.8)
