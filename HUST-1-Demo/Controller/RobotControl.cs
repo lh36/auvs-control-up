@@ -22,12 +22,18 @@ namespace HUST_1_Demo.Controller
 
         public byte[] command = new byte[6] { 0x00, 0x00, 0x06, 0x00, 0x00, 0xaa };
 
-        #region 开环控制区
         public void Send_Command(SerialPort port)
         {
             port.Write(command, 0, 6);
         }
 
+        public void Get_ShipData(SerialPort port)
+        {
+            command[3] = 0x47;
+            Send_Command(port);
+        }
+
+        #region 开环控制区
         public void Speed_Up(SerialPort port)
         {
             command[3] = 0x49;
@@ -111,6 +117,7 @@ namespace HUST_1_Demo.Controller
 
                 command[3] = (byte)R;
                 Send_Command(port);
+                Get_ShipData(port);//获取最新船状态信息
             }
         }
 
@@ -155,6 +162,7 @@ namespace HUST_1_Demo.Controller
 
             command[3] = (byte)R;
             Send_Command(port);
+            Get_ShipData(port);//获取最新船状态信息
         }
 
         /// <summary>
@@ -263,6 +271,7 @@ namespace HUST_1_Demo.Controller
 
             command[3] = (byte)R;
             Send_Command(port);
+            Get_ShipData(port);//获取最新船状态信息
         }
         #endregion
 

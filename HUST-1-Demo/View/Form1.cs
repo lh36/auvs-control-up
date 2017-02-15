@@ -35,6 +35,8 @@ namespace HUST_1_Demo
             public double y;
         }
 
+        string name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
+
         TargetCircle targetCircle; //目标圆
         public Point targetPoint;  //目标点
         public double targetLine;  //目标线
@@ -156,9 +158,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); boat1.StoreShipData(name); break;
-                    case 0x02: boat2.UpdataStatusData(response_data); boat2.StoreShipData(name); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); boat3.StoreShipData(name); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); if (flag_ctrl == true) boat1.StoreShipData(name); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); if (flag_ctrl == true) boat2.StoreShipData(name); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); if (flag_ctrl == true) boat3.StoreShipData(name); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -384,7 +386,7 @@ namespace HUST_1_Demo
 
         }
 
-        string name = DateTime.Now.ToString("yyyyMMddHHMMss");
+        
 
         private void timer1_Tick(object sender, EventArgs e)
         {
