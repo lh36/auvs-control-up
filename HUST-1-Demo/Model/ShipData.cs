@@ -76,7 +76,8 @@ namespace HUST_1_Demo.Model
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;
             rud = response_data[21];
-            gear = response_data[22];
+            if (response_data[22] == 0) gear = response_data[22];
+            else gear = response_data[22]-12;
         }
         #endregion
 
