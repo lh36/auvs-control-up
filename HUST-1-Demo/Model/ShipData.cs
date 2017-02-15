@@ -40,8 +40,11 @@ namespace HUST_1_Demo.Model
 
         public static double a = 6378137.0;//定义地球长半轴长度  
         public static double earth_e = 0.003352810664; //定义椭球的第一偏心律
-        public static double lat_start = 30.51584003;//定义原点位置
-        public static double lon_start = 114.42665029;
+     //   public static double lat_start = 30.51584003;//定义原点位置
+     //   public static double lon_start = 114.42665029;
+
+        public static double lat_start = 30;//定义原点位置
+        public static double lon_start = 114;
         
         #region 更新船舶状态信息
         public void UpdataStatusData(byte[] response_data)
@@ -73,7 +76,8 @@ namespace HUST_1_Demo.Model
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;
             rud = response_data[21];
-            gear = response_data[22];
+            if (response_data[22] == 0) gear = response_data[22];
+            else gear = response_data[22]-12;
         }
         #endregion
 
@@ -81,8 +85,8 @@ namespace HUST_1_Demo.Model
         {
             using (FileStream fs = new FileStream(@"D:\" + fileName + ".txt", FileMode.Append))
             {
-                string str_data = ShipID.ToString() + "," + Lat.ToString("0.00000000") + "," + Lon.ToString("0.00000000") + "," + pos_X.ToString() + "," + pos_Y.ToString() + "," + phi.ToString() + ","
-                          + GPS_Phi.ToString() + "," + speed.ToString("0.000") + "," + gear.ToString() + "," + Time.ToString();//将数据转换为字符串
+                string str_data = ShipID.ToString() + "," + Lat.ToString("0.00000000") + "," + Lon.ToString("0.00000000") + "," + pos_X.ToString("0.000") + "," + pos_Y.ToString("0.000") + "," + phi.ToString("0.0") + ","
+                              + GPS_Phi.ToString("0.0") + "," + speed.ToString("0.00") + "," + gear.ToString() + "," + Time.ToString();//将数据转换为字符串
 
                 byte[] data = System.Text.Encoding.Default.GetBytes(str_data);
                 byte[] data3 = new byte[2];
