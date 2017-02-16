@@ -72,7 +72,7 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></发送命令端口>
         /// <param name="boat"></当前船状态>
         /// <param name="targetPoint"></目标点>
-        public void Closed_Control_Point(SerialPort port, ShipData boat, Point targetPoint)
+        public byte Closed_Control_Point(SerialPort port, ShipData boat, Point targetPoint)
         {
             double current_c = boat.Control_Phi;//实际航向
 
@@ -80,7 +80,10 @@ namespace HUST_1_Demo.Controller
 
             if (distance <= 800.0d)
             {
-                Stop_Robot(port);
+              //  Stop_Robot(port);
+                HUST_1_Demo.Form1.flag_ctrl = false;
+
+                return 0x53;
             }
 
             else//距离目标点很远 需要控制
@@ -114,10 +117,9 @@ namespace HUST_1_Demo.Controller
                     R = -32;
                 }
                 R = R + 32;
-
-                command[3] = (byte)R;
-                Send_Command(port);
-                Get_ShipData(port);//获取最新船状态信息
+                return (byte)R;
+              //  Send_Command(port);
+              //  Get_ShipData(port);//获取最新船状态信息
             }
         }
 
@@ -127,7 +129,7 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></跟踪目标直线>
-        public void Closed_Control_Line(SerialPort port, ShipData boat, double line)
+        public byte Closed_Control_Line(SerialPort port, ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
             double Err_phi = 0.0d;
@@ -160,9 +162,9 @@ namespace HUST_1_Demo.Controller
             }
             R = R + 32;
 
-            command[3] = (byte)R;
-            Send_Command(port);
-            Get_ShipData(port);//获取最新船状态信息
+            return (byte)R;
+           // Send_Command(port);
+           // Get_ShipData(port);//获取最新船状态信息
         }
 
         /// <summary>
@@ -171,7 +173,7 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></param>
-        public void Closed_Control_Circle(SerialPort port, ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
+        public byte Closed_Control_Circle(SerialPort port, ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             double Err_phi = 0.0d;
             double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
@@ -182,75 +184,42 @@ namespace HUST_1_Demo.Controller
             double Center_X = circle.x;//圆心坐标
             double Center_Y = circle.y;
 
-            double Robot_xy = 0.0d;
-            int Dir_flag = 0;//正逆时针标志
-
             double Ye = (Math.Sqrt((boat.pos_X - Center_X) * (boat.pos_X - Center_X) + (boat.pos_Y - Center_Y) * (boat.pos_Y - Center_Y)) - Radius);
 
-            Robot_xy = Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180;//航行器相对于原点的极坐标点
+            double Robot_xy = Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180;//航行器相对于原点的极坐标点
+            double Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
 
-            double limit_ang = 0.0d;//边界，通过圆心与航行器坐标点的直径的另一半角度
+            if (Dir_R > 180) Dir_R = Dir_R - 360;
+            else if (Dir_R < -180) Dir_R = Dir_R + 360;
 
-            #region 跟随方向的判断和 跟随标志的确定
-            if (Robot_xy > 0)
-            {
-                limit_ang = Robot_xy - 180;//航行器坐标点角度大于零，则判断界限角小于0，故-180，在航行器方向在界限（坐标角通过圆心的直线）右侧顺时针跟随，反之逆时针
-                if (boat.Control_Phi < limit_ang || boat.Control_Phi > Robot_xy)//之前不能跑圆原因是用航迹角的时候，这里判断标志仍为航向角
-                    Dir_flag = 1;
-            }
-            else if (Robot_xy < 0)
-            {
-                limit_ang = Robot_xy + 180;//航行器坐标点小于零，则判断界限大于零，故+180，在界限左侧则逆时针跟随，反之顺时针
-                if ((boat.Control_Phi > Robot_xy) && (boat.Control_Phi < limit_ang))
-                    Dir_flag = 1;
-            }
-            else
-            {
-                if (boat.Control_Phi > 0)
-                    Dir_flag = 1;
-            }
-            #endregion
+            double errorRobot_Pos = boat.Control_Phi - Robot_xy;
 
             #region 获取当前制导角
             double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
-            if (Dir_flag == 1)  //若标志为1，则要处理关于Y轴对称，确定是顺时针旋转还是逆时针旋转
+            if ((errorRobot_Pos > 0 && errorRobot_Pos < 180) || (errorRobot_Pos < -180))//根据船向与顺逆边界的关系，选取制导角对称与否
             {
-                if (Ref_phi > 0)
-                    Ref_phi = 180 - Ref_phi;
-                else if (Ref_phi < 0)
+                if (Ref_phi < 0)
+                {
                     Ref_phi = -180 - Ref_phi;
+                }
                 else
-                    Ref_phi = 180;
+                {
+                    Ref_phi = 180 - Ref_phi;
+                }
             }
             #endregion
 
-            #region 计算参考向，以及航行器方向相对参考向的角度，以得到控制error
-            double Dir_R = Robot_xy - 90;//得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
-            
-            ROBOTphi_r = boat.Control_Phi - Dir_R;
-           
-
-            if (ROBOTphi_r > 180)
-                ROBOTphi_r = ROBOTphi_r - 360;//使得航行器相对于参考方向角度范围总在正负180之间
-            if (ROBOTphi_r < -180)
-                ROBOTphi_r = ROBOTphi_r + 360;
-
-            /*if (Ref_phi * ROBOTphi_r < -90 * 90)//处理正负180度附近的偏差值，如期望角和当前角分别是170和-170，则偏差为360-|170|-|-170|=20，而不用170+170=340，   -90*90是阈值
+            Err_phi = boat.Control_Phi - Dir_R - Ref_phi;//实际航向减去制导角的偏差
+            if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
             {
-                Err_phi = 360 - Math.Abs(Ref_phi) - Math.Abs(ROBOTphi_r);
-                if (Ref_phi > 0)
-                    Err_phi = -Err_phi;  //若期望角为正，而实际角为负，则此时偏差值要取反
+                Err_phi = Err_phi - 360;
+            }
+            else if (Err_phi < -180)
+            {
+                Err_phi = Err_phi + 360;
             }
 
-            else
-            {
-                Err_phi = Ref_phi - ROBOTphi_r;  //阈值内取正常偏差，当Y偏差为零时，参考角度REFphi始终为零，但是ROBOTphi_r不为零，故可以一直绕圆走。
-            }*/
-            
-            Err_phi = Ref_phi - ROBOTphi_r;//加上顺逆时针跟随处理之后，偏差不可能超过180度，因此无需进行上述处理
-
-            #endregion
-            if (Math.Abs(Ye) < 0.8)
+            if (Math.Abs(Ye) < 0.5)
             {
                 boat.Err_phi_In += Err_phi;
             }
@@ -269,14 +238,14 @@ namespace HUST_1_Demo.Controller
             }
             R = R + 32;
 
-            command[3] = (byte)R;
-            Send_Command(port);
-            Get_ShipData(port);//获取最新船状态信息
+            return (byte)R;
+          //  Send_Command(port);
+          //  Get_ShipData(port);//获取最新船状态信息
         }
         #endregion
 
         #region 闭环控制区-速度控制
-        public void Closed_Control_Speed(SerialPort port, ShipData boat, double leaderShip)
+        public byte Closed_Control_Speed(SerialPort port, ShipData boat, double leaderShip)
         {
             int U = (int)(boat.K1 * 100 + boat.K2 * (leaderShip - boat.pos_X - boat.dl_err));//设置领航者船2的速度档位10,为了与舵角区分，将命令加上100传输，范围
             if (U > 200)   //将速度档位范围保持在4~16范围内
@@ -287,8 +256,9 @@ namespace HUST_1_Demo.Controller
             {
                 U = 100;
             }
-            command[4] = (byte)U;
-            Send_Command(port);
+            return (byte)U;
+           // command[4] = (byte)U;
+           // Send_Command(port);
         }
         #endregion
 

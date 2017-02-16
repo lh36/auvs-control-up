@@ -43,8 +43,8 @@ namespace HUST_1_Demo.Model
      //   public static double lat_start = 30.51584003;//定义原点位置
      //   public static double lon_start = 114.42665029;
 
-        public static double lat_start = 30;//定义原点位置
-        public static double lon_start = 114;
+        public static double lat_start = 30.51582550;//定义原点位置
+        public static double lon_start = 114.426780000;
         
         #region 更新船舶状态信息
         public void UpdataStatusData(byte[] response_data)
