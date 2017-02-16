@@ -40,11 +40,11 @@ namespace HUST_1_Demo.Model
 
         public static double a = 6378137.0;//定义地球长半轴长度  
         public static double earth_e = 0.003352810664; //定义椭球的第一偏心律
-     //   public static double lat_start = 30.51584003;//定义原点位置
-     //   public static double lon_start = 114.42665029;
+        public static double lat_start = 30.51584003;//定义原点位置
+        public static double lon_start = 114.42665029;
 
-        public static double lat_start = 30;//定义原点位置
-        public static double lon_start = 114;
+      //  public static double lat_start = 30;//定义原点位置
+     //   public static double lon_start = 114;
         
         #region 更新船舶状态信息
         public void UpdataStatusData(byte[] response_data)

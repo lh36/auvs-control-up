@@ -601,43 +601,52 @@ namespace HUST_1_Demo
                 targetCircle.x = double.Parse(circle_X.Text);
                 targetCircle.y = double.Parse(circle_Y.Text);
 
-                Control_fun(ship1Control, boat1);//1号小船控制
-                ship1Control.Closed_Control_Speed(serialPort1, boat1, boat2.pos_X);
+                ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
+                ship1Control.command[4] = ship1Control.Closed_Control_Speed(serialPort1, boat1, boat2.pos_X);
+                ship1Control.Send_Command(serialPort1);
+                ship1Control.Get_ShipData(serialPort1);
 
                 targetLine = double.Parse(line_Y2.Text);//2号船目标线和圆
                 targetCircle.Radius = double.Parse(circle_R2.Text);
-                Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+                ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+                ship2Control.Send_Command(serialPort1);
+                ship2Control.Get_ShipData(serialPort1);
 
                 targetLine = double.Parse(line_Y3.Text);//2号船目标线和圆
                 targetCircle.Radius = double.Parse(circle_R3.Text);
-                Control_fun(ship3Control, boat3);//3号小船控制
-                ship3Control.Closed_Control_Speed(serialPort1, boat3, boat2.pos_X);
-                Thread.Sleep(200);
+                ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
+                ship3Control.command[4] = ship3Control.Closed_Control_Speed(serialPort1, boat3, boat2.pos_X);
+                ship3Control.Send_Command(serialPort1);
+                ship3Control.Get_ShipData(serialPort1);
+                Thread.Sleep(195);
             }
         }
 
-        private void Control_fun(RobotControl shipControl, ShipData shipData)
+        private byte Control_fun(RobotControl shipControl, ShipData shipData)
         {
+            byte rudder = 0;
             #region 跟踪目标点
             if (path_mode.Text == "目标点")
             {
-                shipControl.Closed_Control_Point(serialPort1, shipData, targetPoint);
+               rudder =  shipControl.Closed_Control_Point(serialPort1, shipData, targetPoint);
             }
             #endregion
 
             #region 跟随直线
             if (path_mode.Text == "直线")
             {
-                shipControl.Closed_Control_Line(serialPort1, shipData, targetLine);
+                rudder = shipControl.Closed_Control_Line(serialPort1, shipData, targetLine);
             }
             #endregion
 
             #region 跟随圆轨迹
-            else if (path_mode.Text == "圆轨迹")
+            if (path_mode.Text == "圆轨迹")
             {
-                shipControl.Closed_Control_Circle(serialPort1, shipData, targetCircle);
+                rudder = shipControl.Closed_Control_Circle(serialPort1, shipData, targetCircle);
             }
             #endregion
+
+            return rudder;
         }
 
 
