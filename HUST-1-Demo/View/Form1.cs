@@ -390,20 +390,11 @@ namespace HUST_1_Demo
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            command[0] = 0xa1;
-            command[1] = 0x1a;
-            command[3] = 0x47;
-            serialPort1.Write(command, 0, 6);
+            ship1Control.Get_ShipData(serialPort1);
             Thread.Sleep(40);
-            command[0] = 0xa2;
-            command[1] = 0x2a;
-            command[3] = 0x47;
-            serialPort1.Write(command, 0, 6);
+            ship2Control.Get_ShipData(serialPort1);
             Thread.Sleep(40);
-            command[0] = 0xa3;
-            command[1] = 0x3a;
-            command[3] = 0x47;
-            serialPort1.Write(command, 0, 6);
+            ship3Control.Get_ShipData(serialPort1);
         }
 
         private void Reset_Click(object sender, EventArgs e)
