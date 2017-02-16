@@ -34,6 +34,8 @@ namespace HUST_1_Demo
             public double x;
             public double y;
         }
+        public static bool flag_ctrl = false;//绘画线程标志
+        public static bool flag_draw = false;//控制线程标志
 
         string name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
 
@@ -420,6 +422,10 @@ namespace HUST_1_Demo
                 command[1] = 0x3a;
                 command[3] = 0x53;
                 serialPort1.Write(command, 0, 5);//复位先停船
+
+                boat1.Err_phi_In = 0;
+                boat2.Err_phi_In = 0;
+                boat3.Err_phi_In = 0;
             }
 
             /*   MethodInvoker invoker1 = () => Boat1_speed.Text = "0";//面板显示速度置0
@@ -436,8 +442,7 @@ namespace HUST_1_Demo
                boat3.lat_start = boat3.Lat;
                boat3.lon_start = boat3.Lon;*/
         }
-        static bool flag_ctrl = false;//绘画线程标志
-        static bool flag_draw = false;//控制线程标志
+        
 
         private void Start_Click(object sender, EventArgs e)
         {
