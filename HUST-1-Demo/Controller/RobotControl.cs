@@ -145,7 +145,7 @@ namespace HUST_1_Demo.Controller
             {
                 Err_phi = Err_phi - 360;
             }
-            if (Math.Abs(Ye) < 0.8)
+            if (Math.Abs(Ye) < 0.2)
             {
                 boat.Err_phi_In += Err_phi;
             }
@@ -176,7 +176,7 @@ namespace HUST_1_Demo.Controller
         public byte Closed_Control_Circle(SerialPort port, ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             double Err_phi = 0.0d;
-            double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
+           // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
             double k = 3.5d;
 
             
@@ -209,7 +209,7 @@ namespace HUST_1_Demo.Controller
             }
             #endregion
 
-            Err_phi = boat.Control_Phi - Dir_R - Ref_phi;//实际航向减去制导角的偏差
+            Err_phi = Ref_phi-(boat.Control_Phi - Dir_R);//实际航向减去制导角的偏差
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
             {
                 Err_phi = Err_phi - 360;
@@ -219,7 +219,7 @@ namespace HUST_1_Demo.Controller
                 Err_phi = Err_phi + 360;
             }
 
-            if (Math.Abs(Ye) < 0.5)
+            if (Math.Abs(Ye) < 0.8)
             {
                 boat.Err_phi_In += Err_phi;
             }
@@ -257,8 +257,6 @@ namespace HUST_1_Demo.Controller
                 U = 100;
             }
             return (byte)U;
-           // command[4] = (byte)U;
-           // Send_Command(port);
         }
         #endregion
 

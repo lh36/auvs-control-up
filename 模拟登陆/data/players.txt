@@ -1,5 +1,0 @@
-[{"name":"ant","health":20,"maxHealth":20,"speed":1,"attackPower":6,"attackRate":1.5,"attackRange":1,"lastAttackTime":0},
-{"name":"goblin","health":60,"maxHealth":60,"speed":0.5,"attackPower":7,"attackRate":1.5,"attackRange":1,"lastAttackTime":0},
-{"name":"groundArrow1","health":10,"maxHealth":10,"speed":1,"attackPower":3,"attackRate":1,"attackRange":1,"lastAttackTime":0},
-{"name":"groundArrow2","health":50,"maxHealth":50,"speed":1,"attackPower":3,"attackRate":1,"attackRange":6,"lastAttackTime":0}]
-
