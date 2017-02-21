@@ -72,7 +72,7 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></发送命令端口>
         /// <param name="boat"></当前船状态>
         /// <param name="targetPoint"></目标点>
-        public byte Closed_Control_Point(SerialPort port, ShipData boat, Point targetPoint)
+        public byte Closed_Control_Point(ShipData boat, Point targetPoint)
         {
             double current_c = boat.Control_Phi;//实际航向
 
@@ -129,7 +129,7 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></跟踪目标直线>
-        public byte Closed_Control_Line(SerialPort port, ShipData boat, double line)
+        public byte Closed_Control_Line(ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
             double Err_phi = 0.0d;
@@ -145,7 +145,7 @@ namespace HUST_1_Demo.Controller
             {
                 Err_phi = Err_phi - 360;
             }
-            if (Math.Abs(Ye) < 0.8)
+            if (Math.Abs(Ye) < 0.2)
             {
                 boat.Err_phi_In += Err_phi;
             }
@@ -173,10 +173,10 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></param>
-        public byte Closed_Control_Circle(SerialPort port, ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
+        public byte Closed_Control_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             double Err_phi = 0.0d;
-            double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
+           // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
             double k = 3.5d;
 
             
@@ -209,7 +209,7 @@ namespace HUST_1_Demo.Controller
             }
             #endregion
 
-            Err_phi = boat.Control_Phi - Dir_R - Ref_phi;//实际航向减去制导角的偏差
+            Err_phi = Ref_phi-(boat.Control_Phi - Dir_R);//实际航向减去制导角的偏差
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
             {
                 Err_phi = Err_phi - 360;
@@ -219,7 +219,7 @@ namespace HUST_1_Demo.Controller
                 Err_phi = Err_phi + 360;
             }
 
-            if (Math.Abs(Ye) < 0.5)
+            if (Math.Abs(Ye) < 0.8)
             {
                 boat.Err_phi_In += Err_phi;
             }
@@ -245,20 +245,18 @@ namespace HUST_1_Demo.Controller
         #endregion
 
         #region 闭环控制区-速度控制
-        public byte Closed_Control_Speed(SerialPort port, ShipData boat, double leaderShip)
+        public byte Closed_Control_Speed(ShipData boat, double leaderShip)
         {
             int U = (int)(boat.K1 * 100 + boat.K2 * (leaderShip - boat.pos_X - boat.dl_err));//设置领航者船2的速度档位10,为了与舵角区分，将命令加上100传输，范围
-            if (U > 200)   //将速度档位范围保持在4~16范围内
+            if (U > 150)   //将速度档位范围保持在4~16范围内
             {
-                U = 200;
+                U = 150;
             }
-            else if (U < 100)
+            else if (U < 50)
             {
-                U = 100;
+                U = 50;
             }
             return (byte)U;
-           // command[4] = (byte)U;
-           // Send_Command(port);
         }
         #endregion
 

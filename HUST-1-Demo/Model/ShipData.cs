@@ -27,6 +27,8 @@ namespace HUST_1_Demo.Model
         public float speed { get; set; }//船速
         public string Time { get; set; }//时间
         public int gear { get; set; }//速度档
+        public int CtrlRudOut { get; set; }//舵角控制输出量
+        public int CtrlSpeedOut { get; set; }//速度控制输出量
         public double Err_phi_In { get; set; }//积分控制中的积分量
 
         //控制参数
@@ -45,8 +47,32 @@ namespace HUST_1_Demo.Model
 
         public static double lat_start = 30.51582550;//定义原点位置
         public static double lon_start = 114.426780000;
+
+        public static double[] FilterPosX = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static double[] FilterPosY = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+        public double Filter(double[] Lvbobuf)
+        {
+	        double average,max,min,sum=0.0d;
+	        max=Lvbobuf[0];
+	        min=Lvbobuf[0];
+	        for(int i=0;i<5;i++)
+	        {
+		        if(max<Lvbobuf[i])
+			        max=Lvbobuf[i];
+		        if(min>Lvbobuf[i])
+			        min=Lvbobuf[i];
+		        sum=sum+Lvbobuf[i];
+	        }
+	        average=(sum-max-min)/3;
+	        return average;
+        }
         
-        #region 更新船舶状态信息
+
+        /// <summary>
+        /// 更新船舶状态信息
+        /// </summary>
+        /// <param name="response_data"></param>
         public void UpdataStatusData(byte[] response_data)
         {
             ShipID = response_data[3];
@@ -55,6 +81,17 @@ namespace HUST_1_Demo.Model
 
             pos_X = (Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)), 3)));
             pos_Y = -((Lon - lon_start) * a * Math.Cos(Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2))));//Y坐标正向朝西
+            FilterPosX[4] = pos_X;
+            FilterPosY[4] = pos_Y;
+            
+            for (int i = 0; i < 9; i++)
+            {
+                FilterPosX[i] = FilterPosX[i + 1];
+                FilterPosY[i] = FilterPosY[i + 1];
+            }
+            pos_X = Filter(FilterPosX);
+            pos_Y = Filter(FilterPosY);
+
             GPS_Phi = Math.Atan2(pos_Y - last_pos_Y, pos_X - last_pos_X) / Math.PI * 180;//航迹角
             last_pos_X = pos_X;//更新上一次坐标信息
             last_pos_Y = pos_Y;
@@ -75,18 +112,29 @@ namespace HUST_1_Demo.Model
             phi = Init_Phi + Phi_buchang;
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;
-            rud = response_data[21];
+          //  rud = response_data[21];//大船没有舵角信息
+            rud = (response_data[21] - 30) * 1.8f;//小船舵角信息
             if (response_data[22] == 0) gear = response_data[22];
             else gear = response_data[22]-12;
         }
-        #endregion
 
+        /// <summary>
+        /// 存储船舶状态信息
+        /// </summary>
+        /// <param name="fileName"></param>
         public void StoreShipData(string fileName)
         {
             using (FileStream fs = new FileStream(@"D:\" + fileName + ".txt", FileMode.Append))
             {
-                string str_data = ShipID.ToString() + "," + Lat.ToString("0.00000000") + "," + Lon.ToString("0.00000000") + "," + pos_X.ToString("0.000") + "," + pos_Y.ToString("0.000") + "," + phi.ToString("0.0") + ","
-                              + GPS_Phi.ToString("0.0") + "," + speed.ToString("0.00") + "," + gear.ToString() + "," + Time.ToString();//将数据转换为字符串
+                //数据保存信息量为：
+                //船号，纬度，经度，X坐标(m)，Y坐标，航向角，航迹角，速度，速度等级，时间
+                //在速度等级后面增加舵角信息，舵角控制输出量信息和速度控制输出量信息
+                //共13个存储量
+                string str_data = ShipID.ToString() + "," + Lat.ToString("0.00000000") + "," + Lon.ToString("0.00000000") + "," 
+                                + pos_X.ToString("0.000") + "," + pos_Y.ToString("0.000") + "," + phi.ToString("0.0") + ","+ GPS_Phi.ToString("0.0") + "," 
+                                + speed.ToString("0.00") + "," + gear.ToString() + "," + rud.ToString() + ',' 
+                                + CtrlRudOut.ToString() + ',' + CtrlSpeedOut.ToString() + ',' 
+                                + Time.ToString();//将数据转换为字符串
 
                 byte[] data = System.Text.Encoding.Default.GetBytes(str_data);
                 byte[] data3 = new byte[2];

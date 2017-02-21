@@ -37,7 +37,7 @@ namespace HUST_1_Demo
         public static bool flag_ctrl = false;//绘画线程标志
         public static bool flag_draw = false;//控制线程标志
 
-        string name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
+        string name = "";//保存数据txt
 
         TargetCircle targetCircle; //目标圆
         public Point targetPoint;  //目标点
@@ -520,6 +520,7 @@ namespace HUST_1_Demo
         {
             if (button1.Text == "开始跟随")
             {
+                name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 timer1.Enabled = false;//首先关闭开环定时器获取当前状态信息的定时器
                 flag_ctrl = true;
                 Thread threadControl = new Thread(Control_PF);
@@ -582,6 +583,38 @@ namespace HUST_1_Demo
             boat3.dl_err = double.Parse(Boat3_DL.Text);
         }
 
+        private void UpdateCtrlOutput()
+        {
+            targetLine = double.Parse(line_Y1.Text);//1号船目标线和圆
+            targetCircle.Radius = double.Parse(circle_R1.Text);
+            targetCircle.x = double.Parse(circle_X.Text);
+            targetCircle.y = double.Parse(circle_Y.Text);
+
+            ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
+            ship1Control.command[4] = ship1Control.Closed_Control_Speed(boat1, boat2.pos_X);
+            boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+            boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+            ship1Control.Send_Command(serialPort1);
+            ship1Control.Get_ShipData(serialPort1);
+
+            targetLine = double.Parse(line_Y2.Text);//2号船目标线和圆
+            targetCircle.Radius = double.Parse(circle_R2.Text);
+            ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+            boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
+            boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+            ship2Control.Send_Command(serialPort1);
+            ship2Control.Get_ShipData(serialPort1);
+
+            targetLine = double.Parse(line_Y3.Text);//2号船目标线和圆
+            targetCircle.Radius = double.Parse(circle_R3.Text);
+            ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
+            ship3Control.command[4] = ship3Control.Closed_Control_Speed(boat3, boat2.pos_X);
+            boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+            boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+            ship3Control.Send_Command(serialPort1);
+            ship3Control.Get_ShipData(serialPort1);
+        }
+
         /// <summary>
         /// 控制线程
         /// </summary>
@@ -589,32 +622,10 @@ namespace HUST_1_Demo
         {
             while (flag_ctrl)
             {
-                UpdateCtrlPhi();
-                UpdateCtrlPara();
-                
-                targetLine = double.Parse(line_Y1.Text);//1号船目标线和圆
-                targetCircle.Radius = double.Parse(circle_R1.Text);
-                targetCircle.x = double.Parse(circle_X.Text);
-                targetCircle.y = double.Parse(circle_Y.Text);
-
-                ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
-                ship1Control.command[4] = ship1Control.Closed_Control_Speed(serialPort1, boat1, boat2.pos_X);
-                ship1Control.Send_Command(serialPort1);
-                ship1Control.Get_ShipData(serialPort1);
-
-                targetLine = double.Parse(line_Y2.Text);//2号船目标线和圆
-                targetCircle.Radius = double.Parse(circle_R2.Text);
-                ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-                ship2Control.Send_Command(serialPort1);
-                ship2Control.Get_ShipData(serialPort1);
-
-                targetLine = double.Parse(line_Y3.Text);//2号船目标线和圆
-                targetCircle.Radius = double.Parse(circle_R3.Text);
-                ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
-                ship3Control.command[4] = ship3Control.Closed_Control_Speed(serialPort1, boat3, boat2.pos_X);
-                ship3Control.Send_Command(serialPort1);
-                ship3Control.Get_ShipData(serialPort1);
-                Thread.Sleep(195);
+                UpdateCtrlPhi();//更新控制方式为航向角或航迹角
+                UpdateCtrlPara();//更新PID控制参数和速度控制参数
+                UpdateCtrlOutput();//更新航向和速度控制输出
+                Thread.Sleep(195);//控制周期
             }
         }
 
@@ -624,21 +635,21 @@ namespace HUST_1_Demo
             #region 跟踪目标点
             if (path_mode.Text == "目标点")
             {
-               rudder =  shipControl.Closed_Control_Point(serialPort1, shipData, targetPoint);
+               rudder =  shipControl.Closed_Control_Point(shipData, targetPoint);
             }
             #endregion
 
             #region 跟随直线
             if (path_mode.Text == "直线")
             {
-                rudder = shipControl.Closed_Control_Line(serialPort1, shipData, targetLine);
+                rudder = shipControl.Closed_Control_Line(shipData, targetLine);
             }
             #endregion
 
             #region 跟随圆轨迹
             if (path_mode.Text == "圆轨迹")
             {
-                rudder = shipControl.Closed_Control_Circle(serialPort1, shipData, targetCircle);
+                rudder = shipControl.Closed_Control_Circle(shipData, targetCircle);
             }
             #endregion
 
