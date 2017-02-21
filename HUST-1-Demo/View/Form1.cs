@@ -591,7 +591,7 @@ namespace HUST_1_Demo
             targetCircle.y = double.Parse(circle_Y.Text);
 
             ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
-            ship1Control.command[4] = ship1Control.Closed_Control_Speed(serialPort1, boat1, boat2.pos_X);
+            ship1Control.command[4] = ship1Control.Closed_Control_Speed(boat1, boat2.pos_X);
             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
             ship1Control.Send_Command(serialPort1);
@@ -608,7 +608,7 @@ namespace HUST_1_Demo
             targetLine = double.Parse(line_Y3.Text);//2号船目标线和圆
             targetCircle.Radius = double.Parse(circle_R3.Text);
             ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
-            ship3Control.command[4] = ship3Control.Closed_Control_Speed(serialPort1, boat3, boat2.pos_X);
+            ship3Control.command[4] = ship3Control.Closed_Control_Speed(boat3, boat2.pos_X);
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
             ship3Control.Send_Command(serialPort1);
@@ -635,21 +635,21 @@ namespace HUST_1_Demo
             #region 跟踪目标点
             if (path_mode.Text == "目标点")
             {
-               rudder =  shipControl.Closed_Control_Point(serialPort1, shipData, targetPoint);
+               rudder =  shipControl.Closed_Control_Point(shipData, targetPoint);
             }
             #endregion
 
             #region 跟随直线
             if (path_mode.Text == "直线")
             {
-                rudder = shipControl.Closed_Control_Line(serialPort1, shipData, targetLine);
+                rudder = shipControl.Closed_Control_Line(shipData, targetLine);
             }
             #endregion
 
             #region 跟随圆轨迹
             if (path_mode.Text == "圆轨迹")
             {
-                rudder = shipControl.Closed_Control_Circle(serialPort1, shipData, targetCircle);
+                rudder = shipControl.Closed_Control_Circle(shipData, targetCircle);
             }
             #endregion
 
