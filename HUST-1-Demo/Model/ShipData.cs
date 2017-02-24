@@ -48,8 +48,8 @@ namespace HUST_1_Demo.Model
         public static double lat_start = 30.51582550;//定义原点位置
         public static double lon_start = 114.426780000;
 
-        public static double[] FilterLat = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static double[] FilterLon = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public double[] FilterLat = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public double[] FilterLon = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         public double Filter(double[] Lvbobuf)
         {
@@ -78,7 +78,7 @@ namespace HUST_1_Demo.Model
             ShipID = response_data[3];
             Lat = ((response_data[4] << 24) + (response_data[5] << 16) + (response_data[6] << 8) + response_data[7]) / Math.Pow(10, 8) + 30;
             Lon = ((response_data[8] << 24) + (response_data[9] << 16) + (response_data[10] << 8) + response_data[11]) / Math.Pow(10, 8) + 114;
-            for (int i = 0; i < 9; i++)
+            /*for (int i = 0; i < 9; i++)
             {
                 FilterLat[i] = FilterLat[i + 1];
                 FilterLon[i] = FilterLon[i + 1];
@@ -87,7 +87,7 @@ namespace HUST_1_Demo.Model
             FilterLon[9] = Lon;
 
             Lat = Filter(FilterLat);
-            Lon = Filter(FilterLon);
+            Lon = Filter(FilterLon);*/
 
             pos_X = (Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)), 3)));
             pos_Y = -((Lon - lon_start) * a * Math.Cos(Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2))));//Y坐标正向朝西

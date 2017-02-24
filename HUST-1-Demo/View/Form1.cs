@@ -46,6 +46,7 @@ namespace HUST_1_Demo
         ShipData boat1 = new ShipData();
         ShipData boat2 = new ShipData();
         ShipData boat3 = new ShipData();
+        
 
         static byte[] ship1 = new byte[2] { 0xa1, 0x1a };
         static byte[] ship2 = new byte[2] { 0xa2, 0x2a };
