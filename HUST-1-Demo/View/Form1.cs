@@ -592,7 +592,11 @@ namespace HUST_1_Demo
             targetCircle.y = double.Parse(circle_Y.Text);
 
             ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
-            ship1Control.command[4] = ship1Control.Closed_Control_Speed(boat1, boat2.pos_X);
+            if (AutoSpeed.Checked) 
+                ship1Control.command[4] = ship1Control.Closed_Control_Speed(boat1, boat2.pos_X);
+            else 
+                ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
+ 
             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
             ship1Control.Send_Command(serialPort1);
@@ -601,6 +605,10 @@ namespace HUST_1_Demo
             targetLine = double.Parse(line_Y2.Text);//2号船目标线和圆
             targetCircle.Radius = double.Parse(circle_R2.Text);
             ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+            if (AutoSpeed.Checked) 
+                ship2Control.command[4] = ship2Control.Closed_Control_Speed(boat2, boat2.pos_X);
+            else 
+                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             ship2Control.Send_Command(serialPort1);
@@ -609,7 +617,10 @@ namespace HUST_1_Demo
             targetLine = double.Parse(line_Y3.Text);//2号船目标线和圆
             targetCircle.Radius = double.Parse(circle_R3.Text);
             ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
-            ship3Control.command[4] = ship3Control.Closed_Control_Speed(boat3, boat2.pos_X);
+            if (AutoSpeed.Checked) 
+                ship3Control.command[4] = ship3Control.Closed_Control_Speed(boat3, boat2.pos_X);
+            else 
+                ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
             ship3Control.Send_Command(serialPort1);

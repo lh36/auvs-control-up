@@ -193,6 +193,12 @@
             this.Boat3_grade = new System.Windows.Forms.TextBox();
             this.Boat3_speed = new System.Windows.Forms.TextBox();
             this.Boat3_time = new System.Windows.Forms.TextBox();
+            this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.AutoSpeed = new System.Windows.Forms.RadioButton();
+            this.ManualSpeed = new System.Windows.Forms.RadioButton();
+            this.label68 = new System.Windows.Forms.Label();
+            this.Manualspeedset = new System.Windows.Forms.TextBox();
+            this.label69 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -216,6 +222,7 @@
             this.groupBox15.SuspendLayout();
             this.groupBox16.SuspendLayout();
             this.groupBox17.SuspendLayout();
+            this.groupBox19.SuspendLayout();
             this.SuspendLayout();
             // 
             // serialPort1
@@ -239,7 +246,7 @@
             "COM11",
             "COM12",
             "COM23"});
-            this.ComPortNum1.Location = new System.Drawing.Point(42, 40);
+            this.ComPortNum1.Location = new System.Drawing.Point(13, 21);
             this.ComPortNum1.Name = "ComPortNum1";
             this.ComPortNum1.Size = new System.Drawing.Size(68, 22);
             this.ComPortNum1.TabIndex = 0;
@@ -249,7 +256,7 @@
             // 
             this.ComOpen1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.ComOpen1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ComOpen1.Location = new System.Drawing.Point(121, 44);
+            this.ComOpen1.Location = new System.Drawing.Point(20, 73);
             this.ComOpen1.Name = "ComOpen1";
             this.ComOpen1.Size = new System.Drawing.Size(55, 56);
             this.ComOpen1.TabIndex = 1;
@@ -266,7 +273,7 @@
             "38400",
             "57600",
             "115200"});
-            this.BaudRate1.Location = new System.Drawing.Point(42, 82);
+            this.BaudRate1.Location = new System.Drawing.Point(13, 47);
             this.BaudRate1.Name = "BaudRate1";
             this.BaudRate1.Size = new System.Drawing.Size(68, 22);
             this.BaudRate1.TabIndex = 0;
@@ -327,9 +334,9 @@
             this.groupBox1.Controls.Add(this.BaudRate1);
             this.groupBox1.Controls.Add(this.ComOpen1);
             this.groupBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox1.Location = new System.Drawing.Point(940, 488);
+            this.groupBox1.Location = new System.Drawing.Point(1069, 482);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(222, 137);
+            this.groupBox1.Size = new System.Drawing.Size(93, 144);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "端口配置";
@@ -755,7 +762,7 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(230, 94);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "1#Ctrl-Para";
+            this.tabPage1.Text = "1# Para";
             // 
             // Boat1_K2
             // 
@@ -880,7 +887,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(230, 94);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "2#Ctrl-Para";
+            this.tabPage2.Text = "2# Para";
             // 
             // Boat2_K2
             // 
@@ -1005,7 +1012,7 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(230, 94);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "3#Ctrl-Para";
+            this.tabPage3.Text = "3# Para";
             // 
             // Boat3_K2
             // 
@@ -1917,12 +1924,75 @@
             this.Boat3_time.TabIndex = 3;
             this.Boat3_time.Text = "0";
             // 
+            // groupBox19
+            // 
+            this.groupBox19.Controls.Add(this.Manualspeedset);
+            this.groupBox19.Controls.Add(this.label68);
+            this.groupBox19.Controls.Add(this.ManualSpeed);
+            this.groupBox19.Controls.Add(this.AutoSpeed);
+            this.groupBox19.Controls.Add(this.label69);
+            this.groupBox19.Location = new System.Drawing.Point(939, 482);
+            this.groupBox19.Name = "groupBox19";
+            this.groupBox19.Size = new System.Drawing.Size(121, 142);
+            this.groupBox19.TabIndex = 17;
+            this.groupBox19.TabStop = false;
+            this.groupBox19.Text = "Speed Control";
+            // 
+            // AutoSpeed
+            // 
+            this.AutoSpeed.AutoSize = true;
+            this.AutoSpeed.Location = new System.Drawing.Point(15, 27);
+            this.AutoSpeed.Name = "AutoSpeed";
+            this.AutoSpeed.Size = new System.Drawing.Size(83, 16);
+            this.AutoSpeed.TabIndex = 0;
+            this.AutoSpeed.TabStop = true;
+            this.AutoSpeed.Text = "Auto speed";
+            this.AutoSpeed.UseVisualStyleBackColor = true;
+            // 
+            // ManualSpeed
+            // 
+            this.ManualSpeed.AutoSize = true;
+            this.ManualSpeed.Checked = true;
+            this.ManualSpeed.Location = new System.Drawing.Point(15, 53);
+            this.ManualSpeed.Name = "ManualSpeed";
+            this.ManualSpeed.Size = new System.Drawing.Size(95, 16);
+            this.ManualSpeed.TabIndex = 0;
+            this.ManualSpeed.TabStop = true;
+            this.ManualSpeed.Text = "Manual speed";
+            this.ManualSpeed.UseVisualStyleBackColor = true;
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Location = new System.Drawing.Point(8, 81);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(41, 12);
+            this.label68.TabIndex = 1;
+            this.label68.Text = "Speed:";
+            // 
+            // Manualspeedset
+            // 
+            this.Manualspeedset.Location = new System.Drawing.Point(55, 76);
+            this.Manualspeedset.Name = "Manualspeedset";
+            this.Manualspeedset.Size = new System.Drawing.Size(56, 21);
+            this.Manualspeedset.TabIndex = 2;
+            // 
+            // label69
+            // 
+            this.label69.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label69.Location = new System.Drawing.Point(14, 106);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(101, 10);
+            this.label69.TabIndex = 3;
+            this.label69.Text = "Min: 50 Max:150";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
             this.ClientSize = new System.Drawing.Size(1168, 629);
+            this.Controls.Add(this.groupBox19);
             this.Controls.Add(this.groupBox15);
             this.Controls.Add(this.groupBox12);
             this.Controls.Add(this.groupBox7);
@@ -1970,6 +2040,8 @@
             this.groupBox16.PerformLayout();
             this.groupBox17.ResumeLayout(false);
             this.groupBox17.PerformLayout();
+            this.groupBox19.ResumeLayout(false);
+            this.groupBox19.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2140,6 +2212,12 @@
         private System.Windows.Forms.Label label64;
         private System.Windows.Forms.TextBox line_Y3;
         private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.GroupBox groupBox19;
+        private System.Windows.Forms.TextBox Manualspeedset;
+        private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.RadioButton ManualSpeed;
+        private System.Windows.Forms.RadioButton AutoSpeed;
+        private System.Windows.Forms.Label label69;
     }
 }
 
