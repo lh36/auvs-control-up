@@ -34,8 +34,10 @@ namespace HUST_1_Demo
             public double x;
             public double y;
         }
-        public static bool flag_ctrl = false;//绘画线程标志
-        public static bool flag_draw = false;//控制线程标志
+        public static bool isFlagCtrl = false;//绘画线程标志
+        public static bool isFlagDraw = false;//控制线程标志
+        public static bool isFlagPath = false;//跟随路径选择标志=false：直线，=true：圆
+        public static bool isFlagDir = false;//圆轨迹跟随方向选择标志=false：顺时针，=true：逆时针
 
         string name = "";//保存数据txt
 
@@ -161,9 +163,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); if (flag_ctrl == true) boat1.StoreShipData(name); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data); if (flag_ctrl == true) boat2.StoreShipData(name); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); if (flag_ctrl == true) boat3.StoreShipData(name); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); if (isFlagCtrl == true) boat1.StoreShipData(name); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); if (isFlagCtrl == true) boat2.StoreShipData(name); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); if (isFlagCtrl == true) boat3.StoreShipData(name); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -315,7 +317,7 @@ namespace HUST_1_Demo
 
         private void DrawMap()
         {
-            while (flag_draw)
+            while (isFlagDraw)
             {
                 Graphics g = this.PathMap.CreateGraphics();
                 g.Clear(Color.White);
@@ -344,7 +346,7 @@ namespace HUST_1_Demo
                 int paint_y3 = Heightmap - (int)(boat3.X_mm * paint_scale);
 
                 #region 画目标直线和圆
-                if (flag_ctrl)
+                if (isFlagCtrl)
                 {
                     if (path_mode.Text == "直线")
                     {
@@ -455,7 +457,7 @@ namespace HUST_1_Demo
             {
                 if (this.Start.Text == "开始")
                 {
-                    flag_draw = true;
+                    isFlagDraw = true;
                     Thread threadDraw = new Thread(DrawMap);
                     threadDraw.IsBackground = true;
                     threadDraw.Start();
@@ -466,8 +468,8 @@ namespace HUST_1_Demo
                 }
                 else if (this.Start.Text == "停止")
                 {
-                    flag_draw = false;
-                    flag_ctrl = false;//控制线程标志
+                    isFlagDraw = false;
+                    isFlagCtrl = false;//控制线程标志
                     timer1.Enabled = false;//坐标跟新
                     this.Start.Text = "开始";
                 }
@@ -523,7 +525,7 @@ namespace HUST_1_Demo
             {
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 timer1.Enabled = false;//首先关闭开环定时器获取当前状态信息的定时器
-                flag_ctrl = true;
+                isFlagCtrl = true;
                 Thread threadControl = new Thread(Control_PF);
                 threadControl.IsBackground = true;
                 threadControl.Start();
@@ -533,7 +535,7 @@ namespace HUST_1_Demo
             else
             {
                 timer1.Enabled = true;//关闭闭环控制后，重新开启开环获取船位姿状态信息
-                flag_ctrl = false;
+                isFlagCtrl = false;
                 ship1Control.Stop_Robot(serialPort1);
                 Thread.Sleep(40);
                 ship2Control.Stop_Robot(serialPort1);
@@ -583,7 +585,7 @@ namespace HUST_1_Demo
             boat3.K2 = double.Parse(Boat3_K2.Text);
             boat3.dl_err = double.Parse(Boat3_DL.Text);
         }
-
+        
         private void UpdateCtrlOutput()
         {
             targetLine = double.Parse(line_Y1.Text);//1号船目标线和圆
@@ -592,10 +594,10 @@ namespace HUST_1_Demo
             targetCircle.y = double.Parse(circle_Y.Text);
 
             ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
-            if (AutoSpeed.Checked) 
-                ship1Control.command[4] = ship1Control.Closed_Control_Speed(boat1, boat2.pos_X);
+            if (AutoSpeed.Checked)
+                ship1Control.command[4] = ship1Control.Closed_Control_LineSpeed(boat1, boat2, isFlagPath, isFlagDir);
             else 
-                ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
+                ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text)); 
  
             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
@@ -605,10 +607,11 @@ namespace HUST_1_Demo
             targetLine = double.Parse(line_Y2.Text);//2号船目标线和圆
             targetCircle.Radius = double.Parse(circle_R2.Text);
             ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-            if (AutoSpeed.Checked) 
+           /* if (AutoSpeed.Checked) 
                 ship2Control.command[4] = ship2Control.Closed_Control_Speed(boat2, boat2.pos_X);
             else 
-                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
+                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  */
+            ship2Control.command[4] = 100;
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             ship2Control.Send_Command(serialPort1);
@@ -617,10 +620,11 @@ namespace HUST_1_Demo
             targetLine = double.Parse(line_Y3.Text);//2号船目标线和圆
             targetCircle.Radius = double.Parse(circle_R3.Text);
             ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
-            if (AutoSpeed.Checked) 
-                ship3Control.command[4] = ship3Control.Closed_Control_Speed(boat3, boat2.pos_X);
+            if (AutoSpeed.Checked)
+                ship3Control.command[4] = ship3Control.Closed_Control_LineSpeed(boat3, boat2, isFlagPath, isFlagDir);
             else 
-                ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
+                ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+           // ship3Control.command[4] = 110;
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
             ship3Control.Send_Command(serialPort1);
@@ -632,7 +636,7 @@ namespace HUST_1_Demo
         /// </summary>
         private void Control_PF()
         {
-            while (flag_ctrl)
+            while (isFlagCtrl)
             {
                 UpdateCtrlPhi();//更新控制方式为航向角或航迹角
                 UpdateCtrlPara();//更新PID控制参数和速度控制参数
@@ -640,7 +644,7 @@ namespace HUST_1_Demo
                 Thread.Sleep(195);//控制周期
             }
         }
-
+        
         private byte Control_fun(RobotControl shipControl, ShipData shipData)
         {
             byte rudder = 0;
@@ -655,6 +659,7 @@ namespace HUST_1_Demo
             if (path_mode.Text == "直线")
             {
                 rudder = shipControl.Closed_Control_Line(shipData, targetLine);
+                isFlagPath = false;
             }
             #endregion
 
@@ -662,6 +667,7 @@ namespace HUST_1_Demo
             if (path_mode.Text == "圆轨迹")
             {
                 rudder = shipControl.Closed_Control_Circle(shipData, targetCircle);
+                isFlagPath = true;
             }
             #endregion
 
@@ -697,7 +703,7 @@ namespace HUST_1_Demo
 
                 tar_Point_X.Text = (targetPoint.X / 1000).ToString();
                 tar_Point_Y.Text = (targetPoint.Y / 1000).ToString();
-                flag_ctrl = true;
+                isFlagCtrl = true;
             }
         }
 

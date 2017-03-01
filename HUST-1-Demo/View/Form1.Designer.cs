@@ -194,10 +194,10 @@
             this.Boat3_speed = new System.Windows.Forms.TextBox();
             this.Boat3_time = new System.Windows.Forms.TextBox();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
-            this.AutoSpeed = new System.Windows.Forms.RadioButton();
-            this.ManualSpeed = new System.Windows.Forms.RadioButton();
-            this.label68 = new System.Windows.Forms.Label();
             this.Manualspeedset = new System.Windows.Forms.TextBox();
+            this.label68 = new System.Windows.Forms.Label();
+            this.ManualSpeed = new System.Windows.Forms.RadioButton();
+            this.AutoSpeed = new System.Windows.Forms.RadioButton();
             this.label69 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -1938,16 +1938,22 @@
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "Speed Control";
             // 
-            // AutoSpeed
+            // Manualspeedset
             // 
-            this.AutoSpeed.AutoSize = true;
-            this.AutoSpeed.Location = new System.Drawing.Point(15, 27);
-            this.AutoSpeed.Name = "AutoSpeed";
-            this.AutoSpeed.Size = new System.Drawing.Size(83, 16);
-            this.AutoSpeed.TabIndex = 0;
-            this.AutoSpeed.TabStop = true;
-            this.AutoSpeed.Text = "Auto speed";
-            this.AutoSpeed.UseVisualStyleBackColor = true;
+            this.Manualspeedset.Location = new System.Drawing.Point(55, 76);
+            this.Manualspeedset.Name = "Manualspeedset";
+            this.Manualspeedset.Size = new System.Drawing.Size(56, 21);
+            this.Manualspeedset.TabIndex = 2;
+            this.Manualspeedset.Text = "0";
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Location = new System.Drawing.Point(8, 81);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(41, 12);
+            this.label68.TabIndex = 1;
+            this.label68.Text = "Speed:";
             // 
             // ManualSpeed
             // 
@@ -1961,21 +1967,16 @@
             this.ManualSpeed.Text = "Manual speed";
             this.ManualSpeed.UseVisualStyleBackColor = true;
             // 
-            // label68
+            // AutoSpeed
             // 
-            this.label68.AutoSize = true;
-            this.label68.Location = new System.Drawing.Point(8, 81);
-            this.label68.Name = "label68";
-            this.label68.Size = new System.Drawing.Size(41, 12);
-            this.label68.TabIndex = 1;
-            this.label68.Text = "Speed:";
-            // 
-            // Manualspeedset
-            // 
-            this.Manualspeedset.Location = new System.Drawing.Point(55, 76);
-            this.Manualspeedset.Name = "Manualspeedset";
-            this.Manualspeedset.Size = new System.Drawing.Size(56, 21);
-            this.Manualspeedset.TabIndex = 2;
+            this.AutoSpeed.AutoSize = true;
+            this.AutoSpeed.Location = new System.Drawing.Point(15, 27);
+            this.AutoSpeed.Name = "AutoSpeed";
+            this.AutoSpeed.Size = new System.Drawing.Size(83, 16);
+            this.AutoSpeed.TabIndex = 0;
+            this.AutoSpeed.TabStop = true;
+            this.AutoSpeed.Text = "Auto speed";
+            this.AutoSpeed.UseVisualStyleBackColor = true;
             // 
             // label69
             // 

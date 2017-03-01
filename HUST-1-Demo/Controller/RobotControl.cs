@@ -81,7 +81,7 @@ namespace HUST_1_Demo.Controller
             if (distance <= 800.0d)
             {
               //  Stop_Robot(port);
-                HUST_1_Demo.Form1.flag_ctrl = false;
+                HUST_1_Demo.Form1.isFlagCtrl = false;
 
                 return 0x53;
             }
@@ -206,6 +206,7 @@ namespace HUST_1_Demo.Controller
                 {
                     Ref_phi = 180 - Ref_phi;
                 }
+                HUST_1_Demo.Form1.isFlagDir = true;
             }
             #endregion
 
@@ -245,9 +246,37 @@ namespace HUST_1_Demo.Controller
         #endregion
 
         #region 闭环控制区-速度控制
-        public byte Closed_Control_Speed(ShipData boat, double leaderShip)
+        public byte Closed_Control_LineSpeed(ShipData boat, ShipData leaderboat, bool flagPathSelect, bool flagFollowDir)
         {
-            int U = (int)(boat.K1 * 100 + boat.K2 * (leaderShip - boat.pos_X - boat.dl_err));//设置领航者船2的速度档位10,为了与舵角区分，将命令加上100传输，范围
+            double tempLeader = 0.0d;
+            double tempFollow = 0.0d;//跟随者变量
+            double deltaError = 0.0d;//距离误差
+            if (flagPathSelect == false)//判断为跟随直线控制还是跟随圆轨迹控制
+            {
+                tempLeader = leaderboat.pos_X;
+                tempFollow = boat.pos_X;
+            }
+            else
+            {
+                tempLeader = leaderboat.Pos_Phi;
+                tempFollow = boat.Pos_Phi;
+            }
+
+            if (flagFollowDir == false)
+            {
+                if ((tempFollow < 0) && (tempLeader > 0)) //处理正负180°附近的情况
+                    tempFollow = tempFollow + 360;
+                deltaError = tempFollow - tempLeader;
+            }
+            else
+            {
+                if ((tempLeader < 0) && (tempFollow > 0)) //处理正负180°附近的情况
+                    tempLeader = tempLeader + 360;
+                deltaError = tempLeader - tempFollow;
+            }
+
+            
+            int U = (int)(boat.K1 * 100 + boat.K2 * (deltaError - boat.dl_err));//速度控制
             if (U > 150)   //将速度档位范围保持在4~16范围内
             {
                 U = 150;
@@ -258,8 +287,8 @@ namespace HUST_1_Demo.Controller
             }
             return (byte)U;
         }
+
         #endregion
 
-        
     }
 }

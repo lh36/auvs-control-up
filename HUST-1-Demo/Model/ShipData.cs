@@ -23,6 +23,7 @@ namespace HUST_1_Demo.Model
         public float phi { get; set; }//航向角惯导
         public float Init_Phi { get; set; }//惯导原始数据，由于进行惯导0°初始化时需要获取当前惯导原始数据，所以这里需要保存惯导原始数据
         public float Phi_buchang { get; set; }//惯导补偿值
+        public double Pos_Phi { get; set; }//位置坐标角（极坐标，范围[-180, 180])
         public double rud { get; set; }//舵角
         public float speed { get; set; }//船速
         public string Time { get; set; }//时间
@@ -132,7 +133,7 @@ namespace HUST_1_Demo.Model
                 //共13个存储量
                 string str_data = ShipID.ToString() + "," + Lat.ToString("0.00000000") + "," + Lon.ToString("0.00000000") + "," 
                                 + pos_X.ToString("0.000") + "," + pos_Y.ToString("0.000") + "," + phi.ToString("0.0") + ","+ GPS_Phi.ToString("0.0") + "," 
-                                + speed.ToString("0.00") + "," + gear.ToString() + "," + rud.ToString() + ',' 
+                                + speed.ToString("0.00") + "," + gear.ToString() + "," + rud.ToString("0.0") + ',' 
                                 + CtrlRudOut.ToString() + ',' + CtrlSpeedOut.ToString() + ',' 
                                 + Time.ToString();//将数据转换为字符串
 
