@@ -129,22 +129,27 @@ namespace HUST_1_Demo.Controller
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></跟踪目标直线>
-        public byte Closed_Control_Line(ShipData boat, double line)
+        public byte Closed_Control_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
-            double k = 3.5d;//制导角参数
-            double Err_phi = 0.0d;
-            double y_d = line;//目标直线，单位为米
+            float k = 3.5f;//制导角参数
+            float Err_phi = 0.0f;
 
-            double Ye = boat.pos_Y - y_d;//实际坐标减参考坐标
-            double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
+            float deltaY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
+            float refDir = (float)(Math.Atan(line.LineK) / Math.PI * 180); //参考方向，与目标直线平行
+            float Ye = boat.pos_Y - deltaY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
+            float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
             
-            Err_phi = Ref_phi - boat.Control_Phi;
-           
+            Err_phi = Ref_phi - (boat.Control_Phi - refDir);
 
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
             {
                 Err_phi = Err_phi - 360;
             }
+            if (Err_phi < -180)
+            {
+                Err_phi = Err_phi + 360;
+            }
+
             if (Math.Abs(Ye) < 0.2)
             {
                 boat.Err_phi_In += Err_phi;
@@ -163,19 +168,17 @@ namespace HUST_1_Demo.Controller
             R = R + 32;
 
             return (byte)R;
-           // Send_Command(port);
-           // Get_ShipData(port);//获取最新船状态信息
         }
 
         /// <summary>
-        /// 
+        /// 跟随圆轨迹
         /// </summary>
         /// <param name="port"></param>
         /// <param name="boat"></param>
         /// <param name="line"></param>
         public byte Closed_Control_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
-            double Err_phi = 0.0d;
+            float Err_phi = 0.0f;
            // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
             double k = 3.5d;
 
@@ -186,8 +189,8 @@ namespace HUST_1_Demo.Controller
 
             double Ye = (Math.Sqrt((boat.pos_X - Center_X) * (boat.pos_X - Center_X) + (boat.pos_Y - Center_Y) * (boat.pos_Y - Center_Y)) - Radius);
 
-            double Robot_xy = Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180;//航行器相对于原点的极坐标点
-            double Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
+            float Robot_xy = (float)(Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180);//航行器相对于原点的极坐标点
+            float Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
 
             if (Dir_R > 180) Dir_R = Dir_R - 360;
             else if (Dir_R < -180) Dir_R = Dir_R + 360;
@@ -195,7 +198,7 @@ namespace HUST_1_Demo.Controller
             double errorRobot_Pos = boat.Control_Phi - Robot_xy;
 
             #region 获取当前制导角
-            double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
+            float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
             if ((errorRobot_Pos > 0 && errorRobot_Pos < 180) || (errorRobot_Pos < -180))//根据船向与顺逆边界的关系，选取制导角对称与否
             {
                 if (Ref_phi < 0)
