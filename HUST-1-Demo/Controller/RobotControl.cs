@@ -132,11 +132,12 @@ namespace HUST_1_Demo.Controller
         public byte Closed_Control_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
             float k = 3.5f;//制导角参数
-            float Err_phi = 0.0f;
+            double Err_phi = 0.0f;
 
-            float deltaY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
-            float refDir = (float)(Math.Atan(line.LineK) / Math.PI * 180); //参考方向，与目标直线平行
-            float Ye = boat.pos_Y - deltaY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
+            float targetY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
+            double refDir = Math.Atan(line.LineK)/Math.PI*180; //参考方向，与目标直线平行
+            float deltaY = boat.pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
+            double Ye=deltaY*Math.Cos(refDir/180*Math.PI);//航行器到目标线的垂向距离
             float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
             
             Err_phi = Ref_phi - (boat.Control_Phi - refDir);

@@ -30,7 +30,7 @@ namespace HUST_1_Demo.Model
         public int gear { get; set; }//速度档
         public int CtrlRudOut { get; set; }//舵角控制输出量
         public int CtrlSpeedOut { get; set; }//速度控制输出量
-        public float Err_phi_In { get; set; }//积分控制中的积分量
+        public double Err_phi_In { get; set; }//积分控制中的积分量
 
         //控制参数
         public float Kp { get; set; }
