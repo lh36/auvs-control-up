@@ -668,14 +668,14 @@ namespace HUST_1_Demo
         {
             byte rudder = 0;
             #region 跟踪目标点
-            if (path_mode.Text == "目标点")
+            if (path_mode.Text == "Point")
             {
                rudder =  shipControl.Closed_Control_Point(shipData, tarPoint);
             }
             #endregion
 
             #region 跟随直线
-            if (path_mode.Text == "直线")
+            if (path_mode.Text == "General Line")
             {
                 rudder = shipControl.Closed_Control_Line(shipData, tarLineGe);
                 isFlagPath = false;
@@ -683,7 +683,7 @@ namespace HUST_1_Demo
             #endregion
 
             #region 跟随圆轨迹
-            if (path_mode.Text == "圆轨迹")
+            if (path_mode.Text == "Circular path")
             {
                 rudder = shipControl.Closed_Control_Circle(shipData, tarCircle);
                 isFlagPath = true;

@@ -1284,14 +1284,15 @@
             this.path_mode.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.path_mode.FormattingEnabled = true;
             this.path_mode.Items.AddRange(new object[] {
-            "目标点",
-            "直线",
-            "圆轨迹"});
+            "Point",
+            "General Line",
+            "Special Line",
+            "Circular path"});
             this.path_mode.Location = new System.Drawing.Point(285, 177);
             this.path_mode.Name = "path_mode";
             this.path_mode.Size = new System.Drawing.Size(89, 24);
             this.path_mode.TabIndex = 0;
-            this.path_mode.Text = "目标点";
+            this.path_mode.Text = "Point";
             // 
             // groupBox9
             // 
