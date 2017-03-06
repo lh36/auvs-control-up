@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace HUST_1_Demo
 {
     public partial class Form1 : Form
@@ -51,6 +52,7 @@ namespace HUST_1_Demo
         Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
 
         string name = "";//保存数据txt
+        DataTable dataRec = new DataTable();
 
         public TargetCircle tarCircle; //目标圆
         public Point tarPoint;  //目标点
@@ -175,9 +177,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); if (isFlagCtrl == true) boat1.StoreShipData(name); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data); if (isFlagCtrl == true) boat2.StoreShipData(name); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); if (isFlagCtrl == true) boat3.StoreShipData(name); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -713,10 +715,29 @@ namespace HUST_1_Demo
             return rudder;
         }
 
-
+        //初始化表格表头
+        private void InitRecTable()
+        {
+            dataRec.Columns.Add("ShipID", Type.GetType("System.String"));
+            dataRec.Columns.Add("Lat", Type.GetType("System.String"));
+            dataRec.Columns.Add("Lon", Type.GetType("System.String"));
+            dataRec.Columns.Add("X", Type.GetType("System.String"));
+            dataRec.Columns.Add("Y", Type.GetType("System.String"));
+            dataRec.Columns.Add("X Error", Type.GetType("System.String"));
+            dataRec.Columns.Add("Phi", Type.GetType("System.String"));
+            dataRec.Columns.Add("GPSPhi", Type.GetType("System.String"));
+            dataRec.Columns.Add("Speed", Type.GetType("System.String"));
+            dataRec.Columns.Add("Gear", Type.GetType("System.String"));
+            dataRec.Columns.Add("Rud", Type.GetType("System.String"));
+            dataRec.Columns.Add("CtrlRudOut", Type.GetType("System.String"));
+            dataRec.Columns.Add("CtrlSpeedOut", Type.GetType("System.String"));
+            dataRec.Columns.Add("Time", Type.GetType("System.String"));
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
+            InitRecTable();
             Control.CheckForIllegalCrossThreadCalls = false;
+            
         }
         
         private void PathMap_MouseDown(object sender, MouseEventArgs e)
@@ -780,5 +801,22 @@ namespace HUST_1_Demo
         {
             boat3.Phi_buchang = -boat3.Init_Phi;
         }
+
+        private void BTNStoreData_Click(object sender, EventArgs e)
+        {
+            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+            excel.Application.Workbooks.Add(true);
+            //填充数据
+            for (int i = 0; i < dataRec.Rows.Count; i++)
+            {
+                for (int j = 0; j < dataRec.Columns.Count; j++)
+                {
+                    excel.Cells[i + 1, j + 1] = dataRec.Rows[i][j];
+                }
+
+            }
+            excel.Visible = true;
+        }
+
     }
 }

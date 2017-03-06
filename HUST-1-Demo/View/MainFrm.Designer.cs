@@ -52,9 +52,12 @@
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label71 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.label70 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.xError1 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.Boat1_speed = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -63,8 +66,6 @@
             this.Boat1_Y = new System.Windows.Forms.TextBox();
             this.Boat1_phi = new System.Windows.Forms.TextBox();
             this.Boat1_X = new System.Windows.Forms.TextBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.PathMap = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.Reset = new System.Windows.Forms.Button();
             this.Start = new System.Windows.Forms.Button();
@@ -163,10 +164,13 @@
             this.label27 = new System.Windows.Forms.Label();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.label28 = new System.Windows.Forms.Label();
+            this.label73 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
+            this.xError2 = new System.Windows.Forms.TextBox();
             this.Boat2_grade = new System.Windows.Forms.TextBox();
             this.Boat2_speed = new System.Windows.Forms.TextBox();
             this.Boat2_time = new System.Windows.Forms.TextBox();
@@ -186,11 +190,14 @@
             this.label40 = new System.Windows.Forms.Label();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
             this.label41 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
             this.label42 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
             this.label45 = new System.Windows.Forms.Label();
+            this.label74 = new System.Windows.Forms.Label();
             this.Boat3_grade = new System.Windows.Forms.TextBox();
+            this.xError3 = new System.Windows.Forms.TextBox();
             this.Boat3_speed = new System.Windows.Forms.TextBox();
             this.Boat3_time = new System.Windows.Forms.TextBox();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
@@ -199,21 +206,15 @@
             this.ManualSpeed = new System.Windows.Forms.RadioButton();
             this.AutoSpeed = new System.Windows.Forms.RadioButton();
             this.label69 = new System.Windows.Forms.Label();
-            this.xError1 = new System.Windows.Forms.TextBox();
-            this.label70 = new System.Windows.Forms.Label();
-            this.label71 = new System.Windows.Forms.Label();
-            this.xError2 = new System.Windows.Forms.TextBox();
-            this.label72 = new System.Windows.Forms.Label();
-            this.label73 = new System.Windows.Forms.Label();
-            this.xError3 = new System.Windows.Forms.TextBox();
-            this.label74 = new System.Windows.Forms.Label();
-            this.label75 = new System.Windows.Forms.Label();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.PathMap = new System.Windows.Forms.PictureBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.BTNStoreData = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PathMap)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -232,6 +233,9 @@
             this.groupBox16.SuspendLayout();
             this.groupBox17.SuspendLayout();
             this.groupBox19.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PathMap)).BeginInit();
             this.SuspendLayout();
             // 
             // serialPort1
@@ -516,6 +520,15 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "时间";
             // 
+            // label71
+            // 
+            this.label71.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label71.Location = new System.Drawing.Point(6, 116);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(31, 24);
+            this.label71.TabIndex = 4;
+            this.label71.Text = "编队误差";
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -536,6 +549,16 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "船速";
             // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label70.Location = new System.Drawing.Point(100, 122);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(12, 12);
+            this.label70.TabIndex = 6;
+            this.label70.Text = "m";
+            // 
             // label10
             // 
             this.label10.AutoSize = true;
@@ -545,6 +568,14 @@
             this.label10.Size = new System.Drawing.Size(18, 12);
             this.label10.TabIndex = 6;
             this.label10.Text = "级";
+            // 
+            // xError1
+            // 
+            this.xError1.Location = new System.Drawing.Point(41, 117);
+            this.xError1.Name = "xError1";
+            this.xError1.Size = new System.Drawing.Size(53, 23);
+            this.xError1.TabIndex = 3;
+            this.xError1.Text = "0";
             // 
             // label9
             // 
@@ -617,27 +648,6 @@
             this.Boat1_X.Size = new System.Drawing.Size(57, 23);
             this.Boat1_X.TabIndex = 3;
             this.Boat1_X.Text = "0";
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.PathMap);
-            this.groupBox4.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox4.Location = new System.Drawing.Point(12, 12);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(460, 613);
-            this.groupBox4.TabIndex = 7;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "图像显示";
-            // 
-            // PathMap
-            // 
-            this.PathMap.BackColor = System.Drawing.Color.White;
-            this.PathMap.Location = new System.Drawing.Point(6, 15);
-            this.PathMap.Name = "PathMap";
-            this.PathMap.Size = new System.Drawing.Size(448, 587);
-            this.PathMap.TabIndex = 0;
-            this.PathMap.TabStop = false;
-            this.PathMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PathMap_MouseDown);
             // 
             // timer1
             // 
@@ -1456,7 +1466,7 @@
             // 
             this.groupBox7.Controls.Add(this.groupBox8);
             this.groupBox7.Controls.Add(this.groupBox3);
-            this.groupBox7.Location = new System.Drawing.Point(478, 12);
+            this.groupBox7.Location = new System.Drawing.Point(478, 13);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(268, 186);
             this.groupBox7.TabIndex = 16;
@@ -1467,7 +1477,7 @@
             // 
             this.groupBox12.Controls.Add(this.groupBox13);
             this.groupBox12.Controls.Add(this.groupBox14);
-            this.groupBox12.Location = new System.Drawing.Point(478, 225);
+            this.groupBox12.Location = new System.Drawing.Point(478, 205);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Size = new System.Drawing.Size(268, 186);
             this.groupBox12.TabIndex = 16;
@@ -1639,6 +1649,15 @@
             this.label28.TabIndex = 4;
             this.label28.Text = "时间";
             // 
+            // label73
+            // 
+            this.label73.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label73.Location = new System.Drawing.Point(6, 116);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(31, 24);
+            this.label73.TabIndex = 4;
+            this.label73.Text = "编队误差";
+            // 
             // label29
             // 
             this.label29.AutoSize = true;
@@ -1669,6 +1688,16 @@
             this.label31.TabIndex = 6;
             this.label31.Text = "级";
             // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label72.Location = new System.Drawing.Point(99, 122);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(12, 12);
+            this.label72.TabIndex = 6;
+            this.label72.Text = "m";
+            // 
             // label32
             // 
             this.label32.AutoSize = true;
@@ -1678,6 +1707,14 @@
             this.label32.Size = new System.Drawing.Size(31, 14);
             this.label32.TabIndex = 6;
             this.label32.Text = "m/s";
+            // 
+            // xError2
+            // 
+            this.xError2.Location = new System.Drawing.Point(38, 117);
+            this.xError2.Name = "xError2";
+            this.xError2.Size = new System.Drawing.Size(53, 23);
+            this.xError2.TabIndex = 3;
+            this.xError2.Text = "0";
             // 
             // Boat2_grade
             // 
@@ -1707,7 +1744,7 @@
             // 
             this.groupBox15.Controls.Add(this.groupBox16);
             this.groupBox15.Controls.Add(this.groupBox17);
-            this.groupBox15.Location = new System.Drawing.Point(478, 438);
+            this.groupBox15.Location = new System.Drawing.Point(478, 398);
             this.groupBox15.Name = "groupBox15";
             this.groupBox15.Size = new System.Drawing.Size(268, 186);
             this.groupBox15.TabIndex = 16;
@@ -1879,6 +1916,15 @@
             this.label41.TabIndex = 4;
             this.label41.Text = "时间";
             // 
+            // label75
+            // 
+            this.label75.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label75.Location = new System.Drawing.Point(6, 116);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(31, 24);
+            this.label75.TabIndex = 4;
+            this.label75.Text = "编队误差";
+            // 
             // label42
             // 
             this.label42.AutoSize = true;
@@ -1919,6 +1965,16 @@
             this.label45.TabIndex = 6;
             this.label45.Text = "m/s";
             // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label74.Location = new System.Drawing.Point(97, 120);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(12, 12);
+            this.label74.TabIndex = 6;
+            this.label74.Text = "m";
+            // 
             // Boat3_grade
             // 
             this.Boat3_grade.Location = new System.Drawing.Point(38, 86);
@@ -1926,6 +1982,14 @@
             this.Boat3_grade.Size = new System.Drawing.Size(53, 23);
             this.Boat3_grade.TabIndex = 3;
             this.Boat3_grade.Text = "0";
+            // 
+            // xError3
+            // 
+            this.xError3.Location = new System.Drawing.Point(38, 116);
+            this.xError3.Name = "xError3";
+            this.xError3.Size = new System.Drawing.Size(53, 23);
+            this.xError3.TabIndex = 3;
+            this.xError3.Text = "0";
             // 
             // Boat3_speed
             // 
@@ -2006,86 +2070,56 @@
             this.label69.TabIndex = 3;
             this.label69.Text = "Min: 50 Max:150";
             // 
-            // xError1
+            // tabControl2
             // 
-            this.xError1.Location = new System.Drawing.Point(41, 117);
-            this.xError1.Name = "xError1";
-            this.xError1.Size = new System.Drawing.Size(53, 23);
-            this.xError1.TabIndex = 3;
-            this.xError1.Text = "0";
+            this.tabControl2.Controls.Add(this.tabPage4);
+            this.tabControl2.Controls.Add(this.tabPage5);
+            this.tabControl2.Location = new System.Drawing.Point(12, 12);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(460, 614);
+            this.tabControl2.TabIndex = 1;
             // 
-            // label70
+            // tabPage4
             // 
-            this.label70.AutoSize = true;
-            this.label70.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label70.Location = new System.Drawing.Point(100, 122);
-            this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(12, 12);
-            this.label70.TabIndex = 6;
-            this.label70.Text = "m";
+            this.tabPage4.Controls.Add(this.PathMap);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(452, 588);
+            this.tabPage4.TabIndex = 0;
+            this.tabPage4.Text = "Trajectory";
+            this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // label71
+            // PathMap
             // 
-            this.label71.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label71.Location = new System.Drawing.Point(6, 116);
-            this.label71.Name = "label71";
-            this.label71.Size = new System.Drawing.Size(31, 24);
-            this.label71.TabIndex = 4;
-            this.label71.Text = "编队误差";
+            this.PathMap.BackColor = System.Drawing.Color.White;
+            this.PathMap.Location = new System.Drawing.Point(0, 0);
+            this.PathMap.Name = "PathMap";
+            this.PathMap.Size = new System.Drawing.Size(452, 590);
+            this.PathMap.TabIndex = 0;
+            this.PathMap.TabStop = false;
+            this.PathMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PathMap_MouseDown);
             // 
-            // xError2
+            // tabPage5
             // 
-            this.xError2.Location = new System.Drawing.Point(38, 117);
-            this.xError2.Name = "xError2";
-            this.xError2.Size = new System.Drawing.Size(53, 23);
-            this.xError2.TabIndex = 3;
-            this.xError2.Text = "0";
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(452, 588);
+            this.tabPage5.TabIndex = 1;
+            this.tabPage5.Text = "Map display";
+            this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // label72
+            // BTNStoreData
             // 
-            this.label72.AutoSize = true;
-            this.label72.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label72.Location = new System.Drawing.Point(99, 122);
-            this.label72.Name = "label72";
-            this.label72.Size = new System.Drawing.Size(12, 12);
-            this.label72.TabIndex = 6;
-            this.label72.Text = "m";
-            // 
-            // label73
-            // 
-            this.label73.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label73.Location = new System.Drawing.Point(6, 116);
-            this.label73.Name = "label73";
-            this.label73.Size = new System.Drawing.Size(31, 24);
-            this.label73.TabIndex = 4;
-            this.label73.Text = "编队误差";
-            // 
-            // xError3
-            // 
-            this.xError3.Location = new System.Drawing.Point(38, 116);
-            this.xError3.Name = "xError3";
-            this.xError3.Size = new System.Drawing.Size(53, 23);
-            this.xError3.TabIndex = 3;
-            this.xError3.Text = "0";
-            // 
-            // label74
-            // 
-            this.label74.AutoSize = true;
-            this.label74.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label74.Location = new System.Drawing.Point(97, 120);
-            this.label74.Name = "label74";
-            this.label74.Size = new System.Drawing.Size(12, 12);
-            this.label74.TabIndex = 6;
-            this.label74.Text = "m";
-            // 
-            // label75
-            // 
-            this.label75.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label75.Location = new System.Drawing.Point(6, 116);
-            this.label75.Name = "label75";
-            this.label75.Size = new System.Drawing.Size(31, 24);
-            this.label75.TabIndex = 4;
-            this.label75.Text = "编队误差";
+            this.BTNStoreData.Location = new System.Drawing.Point(552, 590);
+            this.BTNStoreData.Name = "BTNStoreData";
+            this.BTNStoreData.Size = new System.Drawing.Size(113, 30);
+            this.BTNStoreData.TabIndex = 18;
+            this.BTNStoreData.Text = "Store data";
+            this.BTNStoreData.UseVisualStyleBackColor = true;
+            this.BTNStoreData.Click += new System.EventHandler(this.BTNStoreData_Click);
             // 
             // Form1
             // 
@@ -2093,6 +2127,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
             this.ClientSize = new System.Drawing.Size(1168, 629);
+            this.Controls.Add(this.BTNStoreData);
+            this.Controls.Add(this.tabControl2);
             this.Controls.Add(this.groupBox19);
             this.Controls.Add(this.groupBox15);
             this.Controls.Add(this.groupBox12);
@@ -2101,7 +2137,6 @@
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
             this.Name = "Form1";
             this.Text = "HUST-1号";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -2111,8 +2146,6 @@
             this.groupBox18.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.PathMap)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
@@ -2143,6 +2176,9 @@
             this.groupBox17.PerformLayout();
             this.groupBox19.ResumeLayout(false);
             this.groupBox19.PerformLayout();
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.PathMap)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2175,8 +2211,6 @@
         private System.Windows.Forms.Button leftdown;
         private System.Windows.Forms.Button rightup;
         private System.Windows.Forms.Button leftup;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.PictureBox PathMap;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button Reset;
         private System.Windows.Forms.Button Start;
@@ -2328,6 +2362,11 @@
         private System.Windows.Forms.Label label75;
         private System.Windows.Forms.Label label74;
         private System.Windows.Forms.TextBox xError3;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.PictureBox PathMap;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Button BTNStoreData;
     }
 }
 
