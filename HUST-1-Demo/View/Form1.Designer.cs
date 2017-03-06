@@ -193,6 +193,21 @@
             this.Boat3_grade = new System.Windows.Forms.TextBox();
             this.Boat3_speed = new System.Windows.Forms.TextBox();
             this.Boat3_time = new System.Windows.Forms.TextBox();
+            this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.Manualspeedset = new System.Windows.Forms.TextBox();
+            this.label68 = new System.Windows.Forms.Label();
+            this.ManualSpeed = new System.Windows.Forms.RadioButton();
+            this.AutoSpeed = new System.Windows.Forms.RadioButton();
+            this.label69 = new System.Windows.Forms.Label();
+            this.xError1 = new System.Windows.Forms.TextBox();
+            this.label70 = new System.Windows.Forms.Label();
+            this.label71 = new System.Windows.Forms.Label();
+            this.xError2 = new System.Windows.Forms.TextBox();
+            this.label72 = new System.Windows.Forms.Label();
+            this.label73 = new System.Windows.Forms.Label();
+            this.xError3 = new System.Windows.Forms.TextBox();
+            this.label74 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -216,6 +231,7 @@
             this.groupBox15.SuspendLayout();
             this.groupBox16.SuspendLayout();
             this.groupBox17.SuspendLayout();
+            this.groupBox19.SuspendLayout();
             this.SuspendLayout();
             // 
             // serialPort1
@@ -239,7 +255,7 @@
             "COM11",
             "COM12",
             "COM23"});
-            this.ComPortNum1.Location = new System.Drawing.Point(42, 40);
+            this.ComPortNum1.Location = new System.Drawing.Point(13, 21);
             this.ComPortNum1.Name = "ComPortNum1";
             this.ComPortNum1.Size = new System.Drawing.Size(68, 22);
             this.ComPortNum1.TabIndex = 0;
@@ -249,7 +265,7 @@
             // 
             this.ComOpen1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.ComOpen1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ComOpen1.Location = new System.Drawing.Point(121, 44);
+            this.ComOpen1.Location = new System.Drawing.Point(20, 73);
             this.ComOpen1.Name = "ComOpen1";
             this.ComOpen1.Size = new System.Drawing.Size(55, 56);
             this.ComOpen1.TabIndex = 1;
@@ -266,7 +282,7 @@
             "38400",
             "57600",
             "115200"});
-            this.BaudRate1.Location = new System.Drawing.Point(42, 82);
+            this.BaudRate1.Location = new System.Drawing.Point(13, 47);
             this.BaudRate1.Name = "BaudRate1";
             this.BaudRate1.Size = new System.Drawing.Size(68, 22);
             this.BaudRate1.TabIndex = 0;
@@ -307,7 +323,7 @@
             // 
             // Boat1_time
             // 
-            this.Boat1_time.Location = new System.Drawing.Point(41, 36);
+            this.Boat1_time.Location = new System.Drawing.Point(41, 27);
             this.Boat1_time.Name = "Boat1_time";
             this.Boat1_time.Size = new System.Drawing.Size(80, 23);
             this.Boat1_time.TabIndex = 3;
@@ -315,7 +331,7 @@
             // 
             // Boat1_grade
             // 
-            this.Boat1_grade.Location = new System.Drawing.Point(41, 100);
+            this.Boat1_grade.Location = new System.Drawing.Point(41, 87);
             this.Boat1_grade.Name = "Boat1_grade";
             this.Boat1_grade.Size = new System.Drawing.Size(53, 23);
             this.Boat1_grade.TabIndex = 3;
@@ -327,9 +343,9 @@
             this.groupBox1.Controls.Add(this.BaudRate1);
             this.groupBox1.Controls.Add(this.ComOpen1);
             this.groupBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox1.Location = new System.Drawing.Point(940, 488);
+            this.groupBox1.Location = new System.Drawing.Point(1069, 482);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(222, 137);
+            this.groupBox1.Size = new System.Drawing.Size(93, 144);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "端口配置";
@@ -472,9 +488,12 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.label1);
+            this.groupBox3.Controls.Add(this.label71);
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.label3);
+            this.groupBox3.Controls.Add(this.label70);
             this.groupBox3.Controls.Add(this.label10);
+            this.groupBox3.Controls.Add(this.xError1);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.Boat1_grade);
             this.groupBox3.Controls.Add(this.Boat1_speed);
@@ -491,7 +510,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(6, 41);
+            this.label1.Location = new System.Drawing.Point(6, 32);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(31, 12);
             this.label1.TabIndex = 4;
@@ -501,7 +520,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(6, 100);
+            this.label2.Location = new System.Drawing.Point(6, 87);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(31, 24);
             this.label2.TabIndex = 4;
@@ -511,7 +530,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.Location = new System.Drawing.Point(6, 72);
+            this.label3.Location = new System.Drawing.Point(6, 62);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(31, 12);
             this.label3.TabIndex = 4;
@@ -521,7 +540,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label10.Location = new System.Drawing.Point(103, 106);
+            this.label10.Location = new System.Drawing.Point(100, 93);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(18, 12);
             this.label10.TabIndex = 6;
@@ -531,7 +550,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label9.Location = new System.Drawing.Point(96, 71);
+            this.label9.Location = new System.Drawing.Point(94, 62);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(31, 14);
             this.label9.TabIndex = 6;
@@ -539,7 +558,7 @@
             // 
             // Boat1_speed
             // 
-            this.Boat1_speed.Location = new System.Drawing.Point(41, 67);
+            this.Boat1_speed.Location = new System.Drawing.Point(41, 57);
             this.Boat1_speed.Name = "Boat1_speed";
             this.Boat1_speed.Size = new System.Drawing.Size(53, 23);
             this.Boat1_speed.TabIndex = 3;
@@ -577,7 +596,7 @@
             // 
             // Boat1_Y
             // 
-            this.Boat1_Y.Location = new System.Drawing.Point(31, 56);
+            this.Boat1_Y.Location = new System.Drawing.Point(29, 57);
             this.Boat1_Y.Name = "Boat1_Y";
             this.Boat1_Y.Size = new System.Drawing.Size(57, 23);
             this.Boat1_Y.TabIndex = 3;
@@ -585,7 +604,7 @@
             // 
             // Boat1_phi
             // 
-            this.Boat1_phi.Location = new System.Drawing.Point(31, 88);
+            this.Boat1_phi.Location = new System.Drawing.Point(29, 87);
             this.Boat1_phi.Name = "Boat1_phi";
             this.Boat1_phi.Size = new System.Drawing.Size(57, 23);
             this.Boat1_phi.TabIndex = 3;
@@ -593,7 +612,7 @@
             // 
             // Boat1_X
             // 
-            this.Boat1_X.Location = new System.Drawing.Point(31, 24);
+            this.Boat1_X.Location = new System.Drawing.Point(29, 27);
             this.Boat1_X.Name = "Boat1_X";
             this.Boat1_X.Size = new System.Drawing.Size(57, 23);
             this.Boat1_X.TabIndex = 3;
@@ -755,7 +774,7 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(230, 94);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "1#Ctrl-Para";
+            this.tabPage1.Text = "1# Para";
             // 
             // Boat1_K2
             // 
@@ -880,7 +899,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(230, 94);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "2#Ctrl-Para";
+            this.tabPage2.Text = "2# Para";
             // 
             // Boat2_K2
             // 
@@ -1005,7 +1024,7 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(230, 94);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "3#Ctrl-Para";
+            this.tabPage3.Text = "3# Para";
             // 
             // Boat3_K2
             // 
@@ -1115,9 +1134,9 @@
             this.Phi_mode.Items.AddRange(new object[] {
             "航向角",
             "航迹角"});
-            this.Phi_mode.Location = new System.Drawing.Point(285, 145);
+            this.Phi_mode.Location = new System.Drawing.Point(280, 145);
             this.Phi_mode.Name = "Phi_mode";
-            this.Phi_mode.Size = new System.Drawing.Size(89, 22);
+            this.Phi_mode.Size = new System.Drawing.Size(100, 22);
             this.Phi_mode.TabIndex = 8;
             this.Phi_mode.Text = "航向角";
             // 
@@ -1274,17 +1293,18 @@
             // 
             // path_mode
             // 
-            this.path_mode.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.path_mode.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.path_mode.FormattingEnabled = true;
             this.path_mode.Items.AddRange(new object[] {
-            "目标点",
-            "直线",
-            "圆轨迹"});
-            this.path_mode.Location = new System.Drawing.Point(285, 177);
+            "Point",
+            "General line",
+            "Special line",
+            "Circular path"});
+            this.path_mode.Location = new System.Drawing.Point(280, 177);
             this.path_mode.Name = "path_mode";
-            this.path_mode.Size = new System.Drawing.Size(89, 24);
+            this.path_mode.Size = new System.Drawing.Size(100, 20);
             this.path_mode.TabIndex = 0;
-            this.path_mode.Text = "目标点";
+            this.path_mode.Text = "Point";
             // 
             // groupBox9
             // 
@@ -1406,7 +1426,7 @@
             // 
             // Boat1_Ru
             // 
-            this.Boat1_Ru.Location = new System.Drawing.Point(31, 117);
+            this.Boat1_Ru.Location = new System.Drawing.Point(29, 117);
             this.Boat1_Ru.Name = "Boat1_Ru";
             this.Boat1_Ru.Size = new System.Drawing.Size(57, 23);
             this.Boat1_Ru.TabIndex = 3;
@@ -1498,7 +1518,7 @@
             // 
             // Boat2_Y
             // 
-            this.Boat2_Y.Location = new System.Drawing.Point(31, 56);
+            this.Boat2_Y.Location = new System.Drawing.Point(31, 55);
             this.Boat2_Y.Name = "Boat2_Y";
             this.Boat2_Y.Size = new System.Drawing.Size(57, 23);
             this.Boat2_Y.TabIndex = 3;
@@ -1514,7 +1534,7 @@
             // 
             // Boat2_phi
             // 
-            this.Boat2_phi.Location = new System.Drawing.Point(31, 88);
+            this.Boat2_phi.Location = new System.Drawing.Point(31, 86);
             this.Boat2_phi.Name = "Boat2_phi";
             this.Boat2_phi.Size = new System.Drawing.Size(57, 23);
             this.Boat2_phi.TabIndex = 3;
@@ -1591,10 +1611,13 @@
             // groupBox14
             // 
             this.groupBox14.Controls.Add(this.label28);
+            this.groupBox14.Controls.Add(this.label73);
             this.groupBox14.Controls.Add(this.label29);
             this.groupBox14.Controls.Add(this.label30);
             this.groupBox14.Controls.Add(this.label31);
+            this.groupBox14.Controls.Add(this.label72);
             this.groupBox14.Controls.Add(this.label32);
+            this.groupBox14.Controls.Add(this.xError2);
             this.groupBox14.Controls.Add(this.Boat2_grade);
             this.groupBox14.Controls.Add(this.Boat2_speed);
             this.groupBox14.Controls.Add(this.Boat2_time);
@@ -1610,7 +1633,7 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label28.Location = new System.Drawing.Point(6, 41);
+            this.label28.Location = new System.Drawing.Point(6, 29);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(31, 12);
             this.label28.TabIndex = 4;
@@ -1620,7 +1643,7 @@
             // 
             this.label29.AutoSize = true;
             this.label29.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label29.Location = new System.Drawing.Point(6, 100);
+            this.label29.Location = new System.Drawing.Point(6, 85);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(31, 24);
             this.label29.TabIndex = 4;
@@ -1630,7 +1653,7 @@
             // 
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label30.Location = new System.Drawing.Point(6, 72);
+            this.label30.Location = new System.Drawing.Point(6, 60);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(31, 12);
             this.label30.TabIndex = 4;
@@ -1640,7 +1663,7 @@
             // 
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label31.Location = new System.Drawing.Point(103, 106);
+            this.label31.Location = new System.Drawing.Point(99, 95);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(18, 12);
             this.label31.TabIndex = 6;
@@ -1650,7 +1673,7 @@
             // 
             this.label32.AutoSize = true;
             this.label32.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label32.Location = new System.Drawing.Point(96, 71);
+            this.label32.Location = new System.Drawing.Point(93, 60);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(31, 14);
             this.label32.TabIndex = 6;
@@ -1658,7 +1681,7 @@
             // 
             // Boat2_grade
             // 
-            this.Boat2_grade.Location = new System.Drawing.Point(41, 100);
+            this.Boat2_grade.Location = new System.Drawing.Point(38, 86);
             this.Boat2_grade.Name = "Boat2_grade";
             this.Boat2_grade.Size = new System.Drawing.Size(53, 23);
             this.Boat2_grade.TabIndex = 3;
@@ -1666,7 +1689,7 @@
             // 
             // Boat2_speed
             // 
-            this.Boat2_speed.Location = new System.Drawing.Point(41, 67);
+            this.Boat2_speed.Location = new System.Drawing.Point(38, 55);
             this.Boat2_speed.Name = "Boat2_speed";
             this.Boat2_speed.Size = new System.Drawing.Size(53, 23);
             this.Boat2_speed.TabIndex = 3;
@@ -1674,7 +1697,7 @@
             // 
             // Boat2_time
             // 
-            this.Boat2_time.Location = new System.Drawing.Point(41, 36);
+            this.Boat2_time.Location = new System.Drawing.Point(38, 24);
             this.Boat2_time.Name = "Boat2_time";
             this.Boat2_time.Size = new System.Drawing.Size(80, 23);
             this.Boat2_time.TabIndex = 3;
@@ -1735,7 +1758,7 @@
             // 
             // Boat3_Y
             // 
-            this.Boat3_Y.Location = new System.Drawing.Point(31, 56);
+            this.Boat3_Y.Location = new System.Drawing.Point(31, 55);
             this.Boat3_Y.Name = "Boat3_Y";
             this.Boat3_Y.Size = new System.Drawing.Size(57, 23);
             this.Boat3_Y.TabIndex = 3;
@@ -1751,7 +1774,7 @@
             // 
             // Boat3_phi
             // 
-            this.Boat3_phi.Location = new System.Drawing.Point(31, 88);
+            this.Boat3_phi.Location = new System.Drawing.Point(31, 86);
             this.Boat3_phi.Name = "Boat3_phi";
             this.Boat3_phi.Size = new System.Drawing.Size(57, 23);
             this.Boat3_phi.TabIndex = 3;
@@ -1828,11 +1851,14 @@
             // groupBox17
             // 
             this.groupBox17.Controls.Add(this.label41);
+            this.groupBox17.Controls.Add(this.label75);
             this.groupBox17.Controls.Add(this.label42);
             this.groupBox17.Controls.Add(this.label43);
             this.groupBox17.Controls.Add(this.label44);
             this.groupBox17.Controls.Add(this.label45);
+            this.groupBox17.Controls.Add(this.label74);
             this.groupBox17.Controls.Add(this.Boat3_grade);
+            this.groupBox17.Controls.Add(this.xError3);
             this.groupBox17.Controls.Add(this.Boat3_speed);
             this.groupBox17.Controls.Add(this.Boat3_time);
             this.groupBox17.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -1847,7 +1873,7 @@
             // 
             this.label41.AutoSize = true;
             this.label41.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label41.Location = new System.Drawing.Point(6, 41);
+            this.label41.Location = new System.Drawing.Point(6, 31);
             this.label41.Name = "label41";
             this.label41.Size = new System.Drawing.Size(31, 12);
             this.label41.TabIndex = 4;
@@ -1857,7 +1883,7 @@
             // 
             this.label42.AutoSize = true;
             this.label42.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label42.Location = new System.Drawing.Point(6, 100);
+            this.label42.Location = new System.Drawing.Point(6, 85);
             this.label42.Name = "label42";
             this.label42.Size = new System.Drawing.Size(31, 24);
             this.label42.TabIndex = 4;
@@ -1867,7 +1893,7 @@
             // 
             this.label43.AutoSize = true;
             this.label43.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label43.Location = new System.Drawing.Point(6, 72);
+            this.label43.Location = new System.Drawing.Point(6, 61);
             this.label43.Name = "label43";
             this.label43.Size = new System.Drawing.Size(31, 12);
             this.label43.TabIndex = 4;
@@ -1877,7 +1903,7 @@
             // 
             this.label44.AutoSize = true;
             this.label44.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label44.Location = new System.Drawing.Point(103, 106);
+            this.label44.Location = new System.Drawing.Point(97, 93);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(18, 12);
             this.label44.TabIndex = 6;
@@ -1887,7 +1913,7 @@
             // 
             this.label45.AutoSize = true;
             this.label45.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label45.Location = new System.Drawing.Point(96, 71);
+            this.label45.Location = new System.Drawing.Point(93, 60);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(31, 14);
             this.label45.TabIndex = 6;
@@ -1895,7 +1921,7 @@
             // 
             // Boat3_grade
             // 
-            this.Boat3_grade.Location = new System.Drawing.Point(41, 100);
+            this.Boat3_grade.Location = new System.Drawing.Point(38, 86);
             this.Boat3_grade.Name = "Boat3_grade";
             this.Boat3_grade.Size = new System.Drawing.Size(53, 23);
             this.Boat3_grade.TabIndex = 3;
@@ -1903,7 +1929,7 @@
             // 
             // Boat3_speed
             // 
-            this.Boat3_speed.Location = new System.Drawing.Point(41, 67);
+            this.Boat3_speed.Location = new System.Drawing.Point(38, 56);
             this.Boat3_speed.Name = "Boat3_speed";
             this.Boat3_speed.Size = new System.Drawing.Size(53, 23);
             this.Boat3_speed.TabIndex = 3;
@@ -1911,11 +1937,155 @@
             // 
             // Boat3_time
             // 
-            this.Boat3_time.Location = new System.Drawing.Point(41, 36);
+            this.Boat3_time.Location = new System.Drawing.Point(38, 26);
             this.Boat3_time.Name = "Boat3_time";
             this.Boat3_time.Size = new System.Drawing.Size(80, 23);
             this.Boat3_time.TabIndex = 3;
             this.Boat3_time.Text = "0";
+            // 
+            // groupBox19
+            // 
+            this.groupBox19.Controls.Add(this.Manualspeedset);
+            this.groupBox19.Controls.Add(this.label68);
+            this.groupBox19.Controls.Add(this.ManualSpeed);
+            this.groupBox19.Controls.Add(this.AutoSpeed);
+            this.groupBox19.Controls.Add(this.label69);
+            this.groupBox19.Location = new System.Drawing.Point(939, 482);
+            this.groupBox19.Name = "groupBox19";
+            this.groupBox19.Size = new System.Drawing.Size(121, 142);
+            this.groupBox19.TabIndex = 17;
+            this.groupBox19.TabStop = false;
+            this.groupBox19.Text = "Speed Control";
+            // 
+            // Manualspeedset
+            // 
+            this.Manualspeedset.Location = new System.Drawing.Point(55, 76);
+            this.Manualspeedset.Name = "Manualspeedset";
+            this.Manualspeedset.Size = new System.Drawing.Size(56, 21);
+            this.Manualspeedset.TabIndex = 2;
+            this.Manualspeedset.Text = "0";
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Location = new System.Drawing.Point(8, 81);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(41, 12);
+            this.label68.TabIndex = 1;
+            this.label68.Text = "Speed:";
+            // 
+            // ManualSpeed
+            // 
+            this.ManualSpeed.AutoSize = true;
+            this.ManualSpeed.Checked = true;
+            this.ManualSpeed.Location = new System.Drawing.Point(15, 53);
+            this.ManualSpeed.Name = "ManualSpeed";
+            this.ManualSpeed.Size = new System.Drawing.Size(95, 16);
+            this.ManualSpeed.TabIndex = 0;
+            this.ManualSpeed.TabStop = true;
+            this.ManualSpeed.Text = "Manual speed";
+            this.ManualSpeed.UseVisualStyleBackColor = true;
+            // 
+            // AutoSpeed
+            // 
+            this.AutoSpeed.AutoSize = true;
+            this.AutoSpeed.Location = new System.Drawing.Point(15, 27);
+            this.AutoSpeed.Name = "AutoSpeed";
+            this.AutoSpeed.Size = new System.Drawing.Size(83, 16);
+            this.AutoSpeed.TabIndex = 0;
+            this.AutoSpeed.TabStop = true;
+            this.AutoSpeed.Text = "Auto speed";
+            this.AutoSpeed.UseVisualStyleBackColor = true;
+            // 
+            // label69
+            // 
+            this.label69.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label69.Location = new System.Drawing.Point(14, 106);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(101, 10);
+            this.label69.TabIndex = 3;
+            this.label69.Text = "Min: 50 Max:150";
+            // 
+            // xError1
+            // 
+            this.xError1.Location = new System.Drawing.Point(41, 117);
+            this.xError1.Name = "xError1";
+            this.xError1.Size = new System.Drawing.Size(53, 23);
+            this.xError1.TabIndex = 3;
+            this.xError1.Text = "0";
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label70.Location = new System.Drawing.Point(100, 122);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(12, 12);
+            this.label70.TabIndex = 6;
+            this.label70.Text = "m";
+            // 
+            // label71
+            // 
+            this.label71.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label71.Location = new System.Drawing.Point(6, 116);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(31, 24);
+            this.label71.TabIndex = 4;
+            this.label71.Text = "编队误差";
+            // 
+            // xError2
+            // 
+            this.xError2.Location = new System.Drawing.Point(38, 117);
+            this.xError2.Name = "xError2";
+            this.xError2.Size = new System.Drawing.Size(53, 23);
+            this.xError2.TabIndex = 3;
+            this.xError2.Text = "0";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label72.Location = new System.Drawing.Point(99, 122);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(12, 12);
+            this.label72.TabIndex = 6;
+            this.label72.Text = "m";
+            // 
+            // label73
+            // 
+            this.label73.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label73.Location = new System.Drawing.Point(6, 116);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(31, 24);
+            this.label73.TabIndex = 4;
+            this.label73.Text = "编队误差";
+            // 
+            // xError3
+            // 
+            this.xError3.Location = new System.Drawing.Point(38, 116);
+            this.xError3.Name = "xError3";
+            this.xError3.Size = new System.Drawing.Size(53, 23);
+            this.xError3.TabIndex = 3;
+            this.xError3.Text = "0";
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label74.Location = new System.Drawing.Point(97, 120);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(12, 12);
+            this.label74.TabIndex = 6;
+            this.label74.Text = "m";
+            // 
+            // label75
+            // 
+            this.label75.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label75.Location = new System.Drawing.Point(6, 116);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(31, 24);
+            this.label75.TabIndex = 4;
+            this.label75.Text = "编队误差";
             // 
             // Form1
             // 
@@ -1923,6 +2093,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
             this.ClientSize = new System.Drawing.Size(1168, 629);
+            this.Controls.Add(this.groupBox19);
             this.Controls.Add(this.groupBox15);
             this.Controls.Add(this.groupBox12);
             this.Controls.Add(this.groupBox7);
@@ -1970,6 +2141,8 @@
             this.groupBox16.PerformLayout();
             this.groupBox17.ResumeLayout(false);
             this.groupBox17.PerformLayout();
+            this.groupBox19.ResumeLayout(false);
+            this.groupBox19.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2140,6 +2313,21 @@
         private System.Windows.Forms.Label label64;
         private System.Windows.Forms.TextBox line_Y3;
         private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.GroupBox groupBox19;
+        private System.Windows.Forms.TextBox Manualspeedset;
+        private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.RadioButton ManualSpeed;
+        private System.Windows.Forms.RadioButton AutoSpeed;
+        private System.Windows.Forms.Label label69;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.TextBox xError1;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.TextBox xError2;
+        private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.TextBox xError3;
     }
 }
 
