@@ -129,13 +129,15 @@ namespace HUST_1_Demo.Model
             using (FileStream fs = new FileStream(@"D:\" + fileName + ".txt", FileMode.Append))
             {
                 //数据保存信息量为：
-                //船号，纬度，经度，X坐标(m)，Y坐标，航向角，航迹角，速度，速度等级，时间
+                //船号，纬度，经度，X坐标(m)，Y坐标，和领队误差，航向角，航迹角，速度，速度等级，时间
                 //在速度等级后面增加舵角信息，舵角控制输出量信息和速度控制输出量信息
                 //共13个存储量
-                string str_data = ShipID.ToString() + "," + Lat.ToString("0.00000000") + "," + Lon.ToString("0.00000000") + "," 
-                                + pos_X.ToString("0.000") + "," + pos_Y.ToString("0.000") + "," + phi.ToString("0.0") + ","+ GPS_Phi.ToString("0.0") + "," 
-                                + speed.ToString("0.00") + "," + gear.ToString() + "," + rud.ToString("0.0") + ',' 
-                                + CtrlRudOut.ToString() + ',' + CtrlSpeedOut.ToString() + ',' 
+                string str_data = ShipID.ToString() + "," + Lat.ToString("0.00000000") + "," + Lon.ToString("0.00000000") + ","
+                                + pos_X.ToString("0.000") + "," + pos_Y.ToString("0.000") + ","
+                                + XError.ToString("0.000") + ","
+                                + phi.ToString("0.0") + "," + GPS_Phi.ToString("0.0") + ","
+                                + speed.ToString("0.00") + "," + gear.ToString() + "," + rud.ToString("0.0") + ','
+                                + CtrlRudOut.ToString() + ',' + CtrlSpeedOut.ToString() + ','
                                 + Time.ToString();//将数据转换为字符串
 
                 byte[] data = System.Text.Encoding.Default.GetBytes(str_data);
