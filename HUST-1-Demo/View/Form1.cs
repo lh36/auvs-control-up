@@ -625,6 +625,7 @@ namespace HUST_1_Demo
  
             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+            boat1.XError = boat2.pos_X - boat1.pos_X;
             ship1Control.Send_Command(serialPort1);
             ship1Control.Get_ShipData(serialPort1);
 
@@ -638,6 +639,7 @@ namespace HUST_1_Demo
             ship2Control.command[4] = 100;
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+            boat2.XError = boat1.pos_X - boat3.pos_X;
             ship2Control.Send_Command(serialPort1);
             ship2Control.Get_ShipData(serialPort1);
 
@@ -651,8 +653,13 @@ namespace HUST_1_Demo
            // ship3Control.command[4] = 110;
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+            boat3.XError = boat2.pos_X - boat3.pos_X;
             ship3Control.Send_Command(serialPort1);
             ship3Control.Get_ShipData(serialPort1);
+
+            xError1.Text = boat1.XError.ToString("0.000");//领队减1号
+            xError2.Text = boat2.XError.ToString("0.000");//1号减2号
+            xError3.Text = boat3.XError.ToString("0.000");//领队减3号
         }
 
         /// <summary>

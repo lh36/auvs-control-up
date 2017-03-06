@@ -14,6 +14,7 @@ namespace HUST_1_Demo.Model
         public double Lon { get; set; }//经度
         public float pos_X { get; set; }//当前X坐标，此为测量坐标系下的坐标，北向为X，东向为Y
         public float pos_Y { get; set; }//Y坐标
+        public float XError { get; set; }//编队误差，与leader的跟随误差
         public float last_pos_X { get; set; }//上一坐标值
         public float last_pos_Y { get; set; }//Y坐标
         public float X_mm { get; set; }//图上X坐标
