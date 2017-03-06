@@ -43,7 +43,7 @@ namespace HUST_1_Demo
         }
         public static bool isFlagCtrl = false;//绘画线程标志
         public static bool isFlagDraw = false;//控制线程标志
-        public static bool isFlagPath = false;//跟随路径选择标志=false：直线，=true：圆
+        public static bool isCirPath = false;//跟随路径选择标志=false：直线，=true：圆
         public static bool isFlagDir = false;//圆轨迹跟随方向选择标志=false：顺时针，=true：逆时针
         public static bool isStartPt = false;//直线跟踪起始点
         public static bool isTarLineSet = false;//是否已设置目标直线
@@ -54,8 +54,8 @@ namespace HUST_1_Demo
 
         public TargetCircle tarCircle; //目标圆
         public Point tarPoint;  //目标点
-        public TargetLine tarLineGe;//普通直线
-        public float tarLine;  //目标线，平行于X轴的特殊直线
+        public TargetLine tarLineGe;//一般直线
+        public float tarLineSp;  //平行于X轴的特殊直线
 
         ShipData boat1 = new ShipData();
         ShipData boat2 = new ShipData();
@@ -358,12 +358,12 @@ namespace HUST_1_Demo
                 int paint_y3 = Heightmap - (int)(boat3.X_mm * paint_scale);
 
                 #region 画目标直线和圆
-                if (path_mode.Text == "目标点")//绘制目标点
+                if (path_mode.Text == "Point")//绘制目标点
                 {
                     g.DrawRectangle(new Pen(Color.Red, 2), target_pt.X - 4, target_pt.Y - 4, 4, 4);
                 }
                 
-                else if (path_mode.Text == "直线")
+                else if (path_mode.Text == "General line")
                 {
                     if (isTarLineSet)
                     {
@@ -375,7 +375,12 @@ namespace HUST_1_Demo
                         g.DrawLine(new Pen(Color.Blue, 1), x1, y1, x2, y2);
                     }
                 }
-                else 
+                else if (path_mode.Text == "Special line")
+                {
+                    int x = Widthmap - (int)(Convert.ToInt32(this.line_Y2.Text) * 1000 * paint_scale);
+                    g.DrawLine(new Pen(Color.Blue, 2), x, 0, x, PathMap.Height);
+                }
+                else
                 {
                     int x = Convert.ToInt32(this.circle_X.Text);
                     int y = Convert.ToInt32(this.circle_Y.Text);
@@ -607,14 +612,14 @@ namespace HUST_1_Demo
         
         private void UpdateCtrlOutput()
         {
-            tarLine = float.Parse(line_Y1.Text);//1号船目标线和圆
+            tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R1.Text);
             tarCircle.x = float.Parse(circle_X.Text);
             tarCircle.y = float.Parse(circle_Y.Text);
 
             ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
             if (AutoSpeed.Checked)
-                ship1Control.command[4] = ship1Control.Closed_Control_LineSpeed(boat1, boat2, isFlagPath, isFlagDir);
+                ship1Control.command[4] = ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
             else 
                 ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text)); 
  
@@ -623,7 +628,7 @@ namespace HUST_1_Demo
             ship1Control.Send_Command(serialPort1);
             ship1Control.Get_ShipData(serialPort1);
 
-            tarLine = float.Parse(line_Y2.Text);//2号船目标线和圆
+            tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
             ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
            /* if (AutoSpeed.Checked) 
@@ -636,11 +641,11 @@ namespace HUST_1_Demo
             ship2Control.Send_Command(serialPort1);
             ship2Control.Get_ShipData(serialPort1);
 
-            tarLine = float.Parse(line_Y3.Text);//2号船目标线和圆
+            tarLineSp = float.Parse(line_Y3.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R3.Text);
             ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
             if (AutoSpeed.Checked)
-                ship3Control.command[4] = ship3Control.Closed_Control_LineSpeed(boat3, boat2, isFlagPath, isFlagDir);
+                ship3Control.command[4] = ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
             else 
                 ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
            // ship3Control.command[4] = 110;
@@ -674,11 +679,19 @@ namespace HUST_1_Demo
             }
             #endregion
 
-            #region 跟随直线
-            if (path_mode.Text == "General Line")
+            #region 跟随一般直线
+            if (path_mode.Text == "General line")
             {
                 rudder = shipControl.Closed_Control_Line(shipData, tarLineGe);
-                isFlagPath = false;
+                isCirPath = false;//直线
+            }
+            #endregion
+
+            #region 跟随特殊直线
+            if (path_mode.Text == "Special line")
+            {
+                rudder = shipControl.Closed_Control_Line(shipData, tarLineSp);
+                isCirPath = false;
             }
             #endregion
 
@@ -686,7 +699,7 @@ namespace HUST_1_Demo
             if (path_mode.Text == "Circular path")
             {
                 rudder = shipControl.Closed_Control_Circle(shipData, tarCircle);
-                isFlagPath = true;
+                isCirPath = true;
             }
             #endregion
 

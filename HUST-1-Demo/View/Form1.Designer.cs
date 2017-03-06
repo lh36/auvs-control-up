@@ -1122,9 +1122,9 @@
             this.Phi_mode.Items.AddRange(new object[] {
             "航向角",
             "航迹角"});
-            this.Phi_mode.Location = new System.Drawing.Point(285, 145);
+            this.Phi_mode.Location = new System.Drawing.Point(280, 145);
             this.Phi_mode.Name = "Phi_mode";
-            this.Phi_mode.Size = new System.Drawing.Size(89, 22);
+            this.Phi_mode.Size = new System.Drawing.Size(100, 22);
             this.Phi_mode.TabIndex = 8;
             this.Phi_mode.Text = "航向角";
             // 
@@ -1281,16 +1281,16 @@
             // 
             // path_mode
             // 
-            this.path_mode.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.path_mode.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.path_mode.FormattingEnabled = true;
             this.path_mode.Items.AddRange(new object[] {
             "Point",
-            "General Line",
-            "Special Line",
+            "General line",
+            "Special line",
             "Circular path"});
-            this.path_mode.Location = new System.Drawing.Point(285, 177);
+            this.path_mode.Location = new System.Drawing.Point(280, 177);
             this.path_mode.Name = "path_mode";
-            this.path_mode.Size = new System.Drawing.Size(89, 24);
+            this.path_mode.Size = new System.Drawing.Size(100, 20);
             this.path_mode.TabIndex = 0;
             this.path_mode.Text = "Point";
             // 

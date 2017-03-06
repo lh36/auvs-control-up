@@ -66,12 +66,7 @@ namespace HUST_1_Demo.Controller
         #endregion
 
         #region 闭环控制区-航向控制
-        /// <summary>
-        /// 跟踪目标点
-        /// </summary>
-        /// <param name="port"></发送命令端口>
-        /// <param name="boat"></当前船状态>
-        /// <param name="targetPoint"></目标点>
+        //点跟随
         public byte Closed_Control_Point(ShipData boat, Point targetPoint)
         {
             double current_c = boat.Control_Phi;//实际航向
@@ -122,13 +117,7 @@ namespace HUST_1_Demo.Controller
               //  Get_ShipData(port);//获取最新船状态信息
             }
         }
-
-        /// <summary>
-        /// 跟踪目标直线
-        /// </summary>
-        /// <param name="port"></param>
-        /// <param name="boat"></param>
-        /// <param name="line"></跟踪目标直线>
+        //一般直线跟随
         public byte Closed_Control_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
             float k = 3.5f;//制导角参数
@@ -170,13 +159,45 @@ namespace HUST_1_Demo.Controller
 
             return (byte)R;
         }
+        //特殊直线跟随
+        public byte Closed_Control_Line(ShipData boat, double line)
+        {
+            double k = 3.5d;//制导角参数
+            double Err_phi = 0.0d;
+            double y_d = line;//目标直线，单位为米
 
-        /// <summary>
-        /// 跟随圆轨迹
-        /// </summary>
-        /// <param name="port"></param>
-        /// <param name="boat"></param>
-        /// <param name="line"></param>
+            double Ye = boat.pos_Y - y_d;//实际坐标减参考坐标
+            double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
+
+            Err_phi = Ref_phi - boat.Control_Phi;
+
+
+            if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
+            {
+                Err_phi = Err_phi - 360;
+            }
+            if (Math.Abs(Ye) < 0.2)
+            {
+                boat.Err_phi_In += Err_phi;
+            }
+
+            int R = (int)(boat.Kp * Err_phi + boat.Ki * boat.Err_phi_In);
+
+            if (R > 32)
+            {
+                R = 32;
+            }
+            else if (R < -32)
+            {
+                R = -32;
+            }
+            R = R + 32;
+
+            return (byte)R;
+            // Send_Command(port);
+            // Get_ShipData(port);//获取最新船状态信息
+        }
+        //圆轨迹跟随
         public byte Closed_Control_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             float Err_phi = 0.0f;
