@@ -27,8 +27,6 @@ namespace HUST_1_Demo
         /// <summary>
         /// 定义全局变量
         /// </summary>
-        /// 
-
         public struct TargetCircle  //目标圆参数
         {
             public float Radius;
@@ -87,7 +85,7 @@ namespace HUST_1_Demo
                 try   //try:尝试下面的代码，如果错误就跳出来执行catch里面的代码
                 {
                     serialPort1.Open();
-                    ComOpen1.Text = "关闭串口";
+                    ComOpen1.Text = "Close port";
                     ComPortNum1.Enabled = false;
                     BaudRate1.Enabled = false;
                 }
@@ -100,7 +98,7 @@ namespace HUST_1_Demo
             {
                 timer1.Enabled = false;
                 serialPort1.Close();
-                ComOpen1.Text = "打开串口";
+                ComOpen1.Text = "Open port";
                 ComPortNum1.Enabled = true;
                 BaudRate1.Enabled = true;
             }
@@ -481,7 +479,7 @@ namespace HUST_1_Demo
             }
             else
             {
-                if (this.Start.Text == "开始")
+                if (this.Start.Text == "Start")
                 {
                     isFlagDraw = true;
                     Thread threadDraw = new Thread(DrawMap);
@@ -489,15 +487,15 @@ namespace HUST_1_Demo
                     threadDraw.Start();
 
                     timer1.Enabled = true;//默认是开环控制，则启动获取三船位姿线程
-                    this.Start.Text = "停止";
+                    this.Start.Text = "Stop";
 
                 }
-                else if (this.Start.Text == "停止")
+                else if (this.Start.Text == "Stop")
                 {
                     isFlagDraw = false;
                     isFlagCtrl = false;//控制线程标志
                     timer1.Enabled = false;//坐标跟新
-                    this.Start.Text = "开始";
+                    this.Start.Text = "Start";
                 }
 
             }
@@ -547,7 +545,7 @@ namespace HUST_1_Demo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (button1.Text == "开始跟随")
+            if (button1.Text == "Start following")
             {
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 timer1.Enabled = false;//首先关闭开环定时器获取当前状态信息的定时器
@@ -555,7 +553,7 @@ namespace HUST_1_Demo
                 Thread threadControl = new Thread(Control_PF);
                 threadControl.IsBackground = true;
                 threadControl.Start();
-                button1.Text = "停止跟随";
+                button1.Text = "Stop following";
 
             }
             else
@@ -567,14 +565,14 @@ namespace HUST_1_Demo
                 ship2Control.Stop_Robot(serialPort1);
                 Thread.Sleep(40);
                 ship3Control.Stop_Robot(serialPort1);
-                button1.Text = "开始跟随";
+                button1.Text = "Start following";
             }
 
         }
 
         private void UpdateCtrlPhi()
         {
-            if (Phi_mode.Text == "航向角")
+            if (Phi_mode.Text == "Heading angle")
             {
                 boat1.Control_Phi = boat1.phi;
                 boat2.Control_Phi = boat2.phi;
@@ -582,9 +580,9 @@ namespace HUST_1_Demo
             }
             else
             {
-                boat1.Control_Phi = boat1.GPS_Phi;
-                boat2.Control_Phi = boat2.GPS_Phi;
-                boat3.Control_Phi = boat3.GPS_Phi;
+                boat1.Control_Phi = boat1.Fter_GPS_Phi;
+                boat2.Control_Phi = boat2.Fter_GPS_Phi;
+                boat3.Control_Phi = boat3.Fter_GPS_Phi;
             }
         }
 
