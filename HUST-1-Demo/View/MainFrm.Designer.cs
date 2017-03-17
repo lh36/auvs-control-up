@@ -256,7 +256,7 @@
             "COM11",
             "COM12",
             "COM23"});
-            this.ComPortNum1.Location = new System.Drawing.Point(36, 18);
+            this.ComPortNum1.Location = new System.Drawing.Point(36, 24);
             this.ComPortNum1.Name = "ComPortNum1";
             this.ComPortNum1.Size = new System.Drawing.Size(68, 22);
             this.ComPortNum1.TabIndex = 0;
@@ -283,7 +283,7 @@
             "38400",
             "57600",
             "115200"});
-            this.BaudRate1.Location = new System.Drawing.Point(36, 43);
+            this.BaudRate1.Location = new System.Drawing.Point(36, 49);
             this.BaudRate1.Name = "BaudRate1";
             this.BaudRate1.Size = new System.Drawing.Size(68, 22);
             this.BaudRate1.TabIndex = 0;
@@ -1307,7 +1307,8 @@
             "Point",
             "General line",
             "Special line",
-            "Circular path"});
+            "Circular path",
+            "Oval path"});
             this.path_mode.Location = new System.Drawing.Point(249, 187);
             this.path_mode.Name = "path_mode";
             this.path_mode.Size = new System.Drawing.Size(100, 20);

@@ -39,6 +39,7 @@ namespace HUST_1_Demo
             public Point End;
             public float LineK;
             public float LineB;
+            public bool isReverse; 
         }
         public static bool isFlagCtrl = false;//绘画线程标志
         public static bool isFlagDraw = false;//控制线程标志
@@ -753,36 +754,58 @@ namespace HUST_1_Demo
             double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
             double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
             
-            if (e.Button == MouseButtons.Left)//如果是鼠标左键，则为设定目标点
+            #region 设定目标点
+            if (path_mode.Text == "Point")
             {
-                tarPoint.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
-                tarPoint.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
-
-                tar_Point_X.Text = (tarPoint.X / 1000).ToString();
-                tar_Point_Y.Text = (tarPoint.Y / 1000).ToString();
-            }
-
-            if (e.Button == MouseButtons.Right)//如果是鼠标右键，则为设定直线
-            {
-                if (isStartPt == false)//说明该点是第一个点，即起始点
+                if (e.Button == MouseButtons.Left)//如果是鼠标左键，则为设定目标点
                 {
-                    tarLineGe.Start.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
-                    tarLineGe.Start.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
-                    isStartPt = true;
-                    isTarLineSet = false;
-                }
-                else  //说明该点是第二个点，即终止点
-                {
-                    tarLineGe.End.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
-                    tarLineGe.End.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
+                    tarPoint.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
+                    tarPoint.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
 
-                    tarLineGe.LineK = (float)(tarLineGe.Start.Y - tarLineGe.End.Y) / (float)(tarLineGe.Start.X - tarLineGe.End.X);
-                    tarLineGe.LineB = (tarLineGe.Start.Y - tarLineGe.LineK * tarLineGe.Start.X) / 1000.0f;
-                    isStartPt = false; //将起始点置位，即又可以重新开始设置起始点
-                    isTarLineSet = true;
+                    tar_Point_X.Text = (tarPoint.X / 1000).ToString();
+                    tar_Point_Y.Text = (tarPoint.Y / 1000).ToString();
                 }
             }
-               
+            #endregion
+
+            #region 一般直线跟随
+            if (path_mode.Text == "General line")
+            {
+                if (e.Button == MouseButtons.Right)//如果是鼠标右键，则为设定直线
+                {
+                    if (isStartPt == false)//说明该点是第一个点，即起始点
+                    {
+                        tarLineGe.Start.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
+                        tarLineGe.Start.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
+                        isStartPt = true;
+                        isTarLineSet = false;
+                    }
+                    else  //说明该点是第二个点，即终止点
+                    {
+                        tarLineGe.End.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
+                        tarLineGe.End.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
+
+                        tarLineGe.LineK = (float)(tarLineGe.Start.Y - tarLineGe.End.Y) / (float)(tarLineGe.Start.X - tarLineGe.End.X);
+                        tarLineGe.LineB = (tarLineGe.Start.Y - tarLineGe.LineK * tarLineGe.Start.X) / 1000.0f;
+
+                        if (tarLineGe.End.X < tarLineGe.Start.X)//判断是否为逆向直线
+                            tarLineGe.isReverse = true;
+                        else
+                            tarLineGe.isReverse = false;
+                        isStartPt = false; //将起始点置位，即又可以重新开始设置起始点
+                        isTarLineSet = true;
+                    }
+                }
+            }
+            #endregion
+
+            if (path_mode.Text == "Oval path")
+            {
+
+            }
+
+
+
         }
 
         private void boat1_init_Phi_Click(object sender, EventArgs e)
@@ -813,6 +836,9 @@ namespace HUST_1_Demo
                 }
 
             }
+            excel.Cells[dataRec.Rows.Count + 1, 1] = tarLineGe.LineK;//记录一般直线的斜率和截距
+            excel.Cells[dataRec.Rows.Count + 1, 2] = tarLineGe.LineB;
+
             excel.Visible = true;
         }
 

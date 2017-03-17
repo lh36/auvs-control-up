@@ -117,6 +117,7 @@ namespace HUST_1_Demo.Controller
               //  Get_ShipData(port);//获取最新船状态信息
             }
         }
+        
         //一般直线跟随
         public byte Closed_Control_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
@@ -128,7 +129,19 @@ namespace HUST_1_Demo.Controller
             float deltaY = boat.pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
             double Ye=deltaY*Math.Cos(refDir/180*Math.PI);//航行器到目标线的垂向距离
             float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
-            
+           
+            if (line.isReverse == true)//如果为逆向直线，则需要对制导角进行Y轴对称变换
+            {
+                if (Ref_phi < 0)
+                {
+                    Ref_phi = -180 - Ref_phi;
+                }
+                else
+                {
+                    Ref_phi = 180 - Ref_phi;
+                }
+            }
+              
             Err_phi = Ref_phi - (boat.Control_Phi - refDir);
 
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
@@ -159,6 +172,7 @@ namespace HUST_1_Demo.Controller
 
             return (byte)R;
         }
+        
         //特殊直线跟随
         public byte Closed_Control_Line(ShipData boat, double line)
         {
@@ -197,6 +211,7 @@ namespace HUST_1_Demo.Controller
             // Send_Command(port);
             // Get_ShipData(port);//获取最新船状态信息
         }
+        
         //圆轨迹跟随
         public byte Closed_Control_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
