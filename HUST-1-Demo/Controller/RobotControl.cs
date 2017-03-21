@@ -67,7 +67,7 @@ namespace HUST_1_Demo.Controller
 
         #region 闭环控制区-航向控制
         //点跟随
-        public byte Closed_Control_Point(ShipData boat, Point targetPoint)
+        public byte Closed_Ctrl_Point(ShipData boat, Point targetPoint)
         {
             double current_c = boat.Control_Phi;//实际航向
 
@@ -119,14 +119,14 @@ namespace HUST_1_Demo.Controller
         }
         
         //一般直线跟随
-        public byte Closed_Control_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
+        public byte Closed_Ctrl_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
             float k = 3.5f;//制导角参数
             double Err_phi = 0.0f;
 
-            float targetY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
+            double targetY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
             double refDir = Math.Atan(line.LineK)/Math.PI*180; //参考方向，与目标直线平行
-            float deltaY = boat.pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
+            double deltaY = boat.pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
             double Ye=deltaY*Math.Cos(refDir/180*Math.PI);//航行器到目标线的垂向距离
             float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
            
@@ -174,7 +174,7 @@ namespace HUST_1_Demo.Controller
         }
         
         //特殊直线跟随
-        public byte Closed_Control_Line(ShipData boat, double line)
+        public byte Closed_Ctrl_Line(ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
             double Err_phi = 0.0d;
@@ -213,7 +213,7 @@ namespace HUST_1_Demo.Controller
         }
         
         //圆轨迹跟随
-        public byte Closed_Control_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
+        public byte Closed_Ctrl_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             float Err_phi = 0.0f;
            // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
@@ -282,6 +282,68 @@ namespace HUST_1_Demo.Controller
             return (byte)R;
           //  Send_Command(port);
           //  Get_ShipData(port);//获取最新船状态信息
+        }
+
+        //椭圆轨迹跟随
+        public byte Closed_Ctrl_Oval(ShipData boat, HUST_1_Demo.Form1.TargetOval oval)
+        {
+            byte R = 0 ;
+            switch (HUST_1_Demo.Form1.SetOvalPathID)
+            {
+                case 0:
+                    {
+                        HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+                        line.Start = oval.Pt1;
+                        line.End = oval.Pt2;
+                        line.LineK = oval.K1;
+                        line.LineB = oval.B1/1000d;
+                        R = Closed_Ctrl_Line(boat, line);
+
+                        if (Math.Sqrt((boat.X_mm - oval.Pt1.X) * (boat.X_mm - oval.Pt1.X) + (boat.Y_mm - oval.Pt1.Y) * (boat.Y_mm - oval.Pt1.Y)) < 800)
+                            HUST_1_Demo.Form1.SetOvalPathID = 1;
+                        break;
+                    }
+                case 1:
+                    {
+                        HUST_1_Demo.Form1.TargetCircle circle = new Form1.TargetCircle();
+                        circle.x = oval.OriPt1.X / 1000d;
+                        circle.y = oval.OriPt1.Y / 1000d;
+                        circle.Radius = oval.R / 1000d;
+
+                        R = Closed_Ctrl_Circle(boat, circle);
+                        if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B3) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 800)
+                            HUST_1_Demo.Form1.SetOvalPathID = 2;
+                        break;
+                    }
+                case 2:
+                    {
+                        HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+                        line.Start = oval.Pt3;
+                        line.End = oval.Pt4;
+                        line.LineK = oval.K1;
+                        line.LineB = oval.B3 / 1000d;
+                        line.isReverse = true;
+                        R = Closed_Ctrl_Line(boat, line);
+
+                        if (Math.Sqrt((boat.X_mm - oval.Pt4.X) * (boat.X_mm - oval.Pt4.X) + (boat.Y_mm - oval.Pt4.Y) * (boat.Y_mm - oval.Pt4.Y)) < 800)
+                            HUST_1_Demo.Form1.SetOvalPathID = 3;
+                        break;
+                    }
+                case 3:
+                    {
+                        HUST_1_Demo.Form1.TargetCircle circle = new Form1.TargetCircle();
+                        circle.x = oval.OriPt2.X / 1000d;
+                        circle.y = oval.OriPt2.Y / 1000d;
+                        circle.Radius = oval.R / 1000d;
+
+                        R = Closed_Ctrl_Circle(boat, circle);
+                        if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B1) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 800)
+                            HUST_1_Demo.Form1.SetOvalPathID = 0;
+                        break;
+                    }
+            }
+
+            return R;
         }
         #endregion
 

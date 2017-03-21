@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -27,35 +28,60 @@ namespace HUST_1_Demo
         /// <summary>
         /// 定义全局变量
         /// </summary>
-        public struct TargetCircle  //目标圆参数
-        {
-            public float Radius;
-            public float x;
-            public float y;
-        }
-        public struct TargetLine
+        /// 
+        public struct TargetLine  //目标直线，一般直线
         {
             public Point Start;
             public Point End;
-            public float LineK;
-            public float LineB;
-            public bool isReverse; 
+            public double LineK;
+            public double LineB;
+            public bool isReverse;
         }
+        public struct TargetCircle  //目标圆参数
+        {
+            public double Radius;
+            public double x;
+            public double y;
+        }
+        public struct TargetOval   //椭圆
+        {
+            public Point Pt1;
+            public Point Pt2;
+            public Point Pt3;
+            public Point Pt4;
+
+            public Point OriPt1;//上半圆圆心1
+            public Point OriPt2;//下半圆圆心2
+            public double R;//半圆半径
+
+            public double K1;//L1、L3斜率
+            public double K2;//L2、L4斜率
+            public double B1;//L1截距
+            public double B2;//L2截距
+            public double B3;//L3截距
+            public double B4;//L4截距
+        }
+        
         public static bool isFlagCtrl = false;//绘画线程标志
         public static bool isFlagDraw = false;//控制线程标志
         public static bool isCirPath = false;//跟随路径选择标志=false：直线，=true：圆
         public static bool isFlagDir = false;//圆轨迹跟随方向选择标志=false：顺时针，=true：逆时针
         public static bool isStartPt = false;//直线跟踪起始点
         public static bool isTarLineSet = false;//是否已设置目标直线
-
-        Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
+        public static bool isOvalSet = false;//是否已设置目标椭圆成功
+        public static int SetOvalPtFlag = 0;//获取椭圆点的标志，0为Pt1，1为Pt2，2为Pt3
+        public static int SetOvalPathID = 0;//椭圆跟随边（两条直线/两个椭圆）切换标志
+        
 
         string name = "";//保存数据txt
         DataTable dataRec = new DataTable();
 
-        public TargetCircle tarCircle; //目标圆
+        Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
+        
         public Point tarPoint;  //目标点
         public TargetLine tarLineGe;//一般直线
+        public TargetCircle tarCircle; //目标圆
+        public TargetOval tarOval;//椭圆
         public float tarLineSp;  //平行于X轴的特殊直线
 
         ShipData boat1 = new ShipData();
@@ -381,7 +407,7 @@ namespace HUST_1_Demo
                     int x = Widthmap - (int)(Convert.ToInt32(this.line_Y2.Text) * 1000 * paint_scale);
                     g.DrawLine(new Pen(Color.Blue, 2), x, 0, x, PathMap.Height);
                 }
-                else
+                else if (path_mode.Text == "Circular path")
                 {
                     int x = Convert.ToInt32(this.circle_X.Text);
                     int y = Convert.ToInt32(this.circle_Y.Text);
@@ -392,6 +418,36 @@ namespace HUST_1_Demo
 
                     g.DrawEllipse(new Pen(Color.Cyan, 2), x1, y1, (int)(r * 1000 * paint_scale) * 2, (int)(r * 1000 * paint_scale) * 2);
 
+                }
+                else
+                {
+                    if (isOvalSet == true)
+                    {
+                        Pen penOval = new Pen(Color.Blue, 1);//定义了一个蓝色,宽度为的画笔
+                        int x1 = Widthmap - (int)(tarOval.Pt1.Y * paint_scale);
+                        int y1 = Heightmap - (int)(tarOval.Pt1.X * paint_scale);
+                        int x2 = Widthmap - (int)(tarOval.Pt2.Y * paint_scale);
+                        int y2 = Heightmap - (int)(tarOval.Pt2.X * paint_scale);
+                        int x3 = Widthmap - (int)(tarOval.Pt3.Y * paint_scale);
+                        int y3 = Heightmap - (int)(tarOval.Pt3.X * paint_scale);
+                        int x4 = Widthmap - (int)(tarOval.Pt4.Y * paint_scale);
+                        int y4 = Heightmap - (int)(tarOval.Pt4.X * paint_scale);
+                      
+                        g.DrawLine(penOval, x1, y1, x2, y2);
+                        g.DrawLine(penOval, x2, y2, x3, y3);
+                        g.DrawLine(penOval, x3, y3, x4, y4);
+                        g.DrawLine(penOval, x4, y4, x1, y1);
+
+                      //  g.DrawRectangle(penOval;
+                        Matrix myMatrix = new Matrix();
+                      //  Single angle = (float)(Math.Atan(tarOval.K2) / Math.PI * 180);
+                        Single angle = 30;
+                        PointF rotatePoint = new PointF((x2+x3)/2, (y2+y3)/2);//定点中心坐标(x,y)
+                        myMatrix.RotateAt(angle, rotatePoint, MatrixOrder.Append);
+                        g.Transform = myMatrix;
+
+                    //    g.DrawArc(penOval, x2, y2, 100, 200, 30, 330);
+                    }
                 }
                 
                 #endregion
@@ -411,7 +467,7 @@ namespace HUST_1_Demo
                     g.DrawCurve(new Pen(Color.Gold, 2), listPoint_Boat3.ToArray());
                 }
                 
-                Thread.Sleep(100);
+                Thread.Sleep(200);
             }
 
         }
@@ -683,14 +739,14 @@ namespace HUST_1_Demo
             #region 跟踪目标点
             if (path_mode.Text == "Point")
             {
-               rudder =  shipControl.Closed_Control_Point(shipData, tarPoint);
+               rudder =  shipControl.Closed_Ctrl_Point(shipData, tarPoint);
             }
             #endregion
 
             #region 跟随一般直线
             if (path_mode.Text == "General line")
             {
-                rudder = shipControl.Closed_Control_Line(shipData, tarLineGe);
+                rudder = shipControl.Closed_Ctrl_Line(shipData, tarLineGe);
                 isCirPath = false;//直线
             }
             #endregion
@@ -698,7 +754,7 @@ namespace HUST_1_Demo
             #region 跟随特殊直线
             if (path_mode.Text == "Special line")
             {
-                rudder = shipControl.Closed_Control_Line(shipData, tarLineSp);
+                rudder = shipControl.Closed_Ctrl_Line(shipData, tarLineSp);
                 isCirPath = false;
             }
             #endregion
@@ -706,8 +762,16 @@ namespace HUST_1_Demo
             #region 跟随圆轨迹
             if (path_mode.Text == "Circular path")
             {
-                rudder = shipControl.Closed_Control_Circle(shipData, tarCircle);
+                rudder = shipControl.Closed_Ctrl_Circle(shipData, tarCircle);
                 isCirPath = true;
+            }
+            #endregion
+
+            #region 跟随椭圆
+            if (path_mode.Text == "Oval path")
+            {
+                rudder = shipControl.Closed_Ctrl_Oval(shipData, tarOval);
+                isCirPath = false;
             }
             #endregion
 
@@ -754,7 +818,7 @@ namespace HUST_1_Demo
             double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
             double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
             
-            #region 设定目标点
+            #region 目标点跟随设置
             if (path_mode.Text == "Point")
             {
                 if (e.Button == MouseButtons.Left)//如果是鼠标左键，则为设定目标点
@@ -768,7 +832,7 @@ namespace HUST_1_Demo
             }
             #endregion
 
-            #region 一般直线跟随
+            #region 一般直线属性点设置
             if (path_mode.Text == "General line")
             {
                 if (e.Button == MouseButtons.Right)//如果是鼠标右键，则为设定直线
@@ -799,11 +863,70 @@ namespace HUST_1_Demo
             }
             #endregion
 
+            #region 椭圆属性点设置
             if (path_mode.Text == "Oval path")
             {
+                if (e.Button == MouseButtons.Left)//左键设置
+                {
+                    switch (SetOvalPtFlag)
+                    {
+                        case 0: 
+                            {
+                                tarOval.Pt1.X = (int)((Heightmap - target_pt.Y) * scale);
+                                tarOval.Pt1.Y = (int)((Widthmap - target_pt.X) * scale);
+                                SetOvalPtFlag++;
+                                isOvalSet = false;
+                                break; 
+                            }
+                        case 1:
+                            {
+                                tarOval.Pt2.X = (int)((Heightmap - target_pt.Y) * scale);
+                                tarOval.Pt2.Y = (int)((Widthmap - target_pt.X) * scale);
+                                SetOvalPtFlag++;
+                                break;
+                            }
+                        case 2:
+                            {
+                                tarOval.Pt3.X = (int)((Heightmap - target_pt.Y) * scale);
+                                tarOval.Pt3.Y = (int)((Widthmap - target_pt.X) * scale);
 
+                                //计算椭圆直线斜率
+                                tarOval.K1 = (double)(tarOval.Pt2.Y - tarOval.Pt1.Y) / (double)(tarOval.Pt2.X - tarOval.Pt1.X);
+                                tarOval.K2 = -1 / tarOval.K1;//椭圆第二条线斜率，半圆直径方向
+
+                                //计算椭圆直线截距
+                                tarOval.B1 = (tarOval.Pt1.Y- tarOval.K1 * tarOval.Pt1.X);//截距 毫米单位
+                                tarOval.B2 = (tarOval.Pt2.Y - tarOval.K2 * tarOval.Pt2.X);//截距 毫米单位
+                                double R = ((tarOval.K1 * tarOval.Pt3.X - tarOval.Pt3.Y + tarOval.B1) / Math.Sqrt(Math.Pow(tarOval.K1, 2) + 1)) / 2;//半径，毫米单位,带符号
+                                tarOval.B3 = tarOval.B1 - 2 * R * Math.Sqrt(Math.Pow(tarOval.K1, 2) + 1);
+                                tarOval.B4 = (tarOval.Pt1.Y - tarOval.K2 * tarOval.Pt1.X);
+
+                                //重新计算椭圆的Pt3
+                                tarOval.Pt3.X = (int)((tarOval.B2 - tarOval.B3) / (tarOval.K1 - tarOval.K2));//
+                                tarOval.Pt3.Y = (int)((tarOval.K2 * tarOval.Pt3.X + tarOval.B2));
+
+                                //计算上半圆圆心Ori1
+                                tarOval.OriPt1.X = (tarOval.Pt2.X + tarOval.Pt3.X) / 2;
+                                tarOval.OriPt1.Y = (tarOval.Pt2.Y + tarOval.Pt3.Y) / 2;
+
+                                //计算Pt4
+                                tarOval.Pt4.X = (int)((tarOval.B3 - tarOval.B4) / (tarOval.K2 - tarOval.K1));//mm单位
+                                tarOval.Pt4.Y = (int)((tarOval.K2 * tarOval.Pt4.X + tarOval.B4));
+
+                                //计算下半圆圆心Ori2
+                                tarOval.OriPt2.X = (tarOval.Pt3.X + tarOval.Pt4.X) / 2;
+                                tarOval.OriPt2.Y = (tarOval.Pt3.Y + tarOval.Pt4.Y) / 2;
+                                tarOval.R = Math.Abs(R);
+
+                                isOvalSet = true;
+                                SetOvalPtFlag = 0;
+                                break;
+                            }
+                    }
+
+                 }
             }
-
+            #endregion
 
 
         }
