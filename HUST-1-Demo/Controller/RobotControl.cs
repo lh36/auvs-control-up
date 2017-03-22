@@ -67,7 +67,7 @@ namespace HUST_1_Demo.Controller
 
         #region 闭环控制区-航向控制
         //点跟随
-        public byte Closed_Ctrl_Point(ShipData boat, Point targetPoint)
+        public byte FollowPoint(ShipData boat, Point targetPoint)
         {
             double current_c = boat.Control_Phi;//实际航向
 
@@ -119,7 +119,7 @@ namespace HUST_1_Demo.Controller
         }
         
         //一般直线跟随
-        public byte Closed_Ctrl_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
+        public byte FollowLine(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
             float k = 3.5f;//制导角参数
             double Err_phi = 0.0f;
@@ -174,7 +174,7 @@ namespace HUST_1_Demo.Controller
         }
         
         //特殊直线跟随
-        public byte Closed_Ctrl_Line(ShipData boat, double line)
+        public byte FollowLine(ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
             double Err_phi = 0.0d;
@@ -211,9 +211,28 @@ namespace HUST_1_Demo.Controller
             // Send_Command(port);
             // Get_ShipData(port);//获取最新船状态信息
         }
+
+        public byte FollowMulLine(ShipData boat)
+        {
+            byte R = 0;
+            HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+            line.Start = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID);//线段起始点
+            line.End = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID+1);//线端终点
+            line.LineK = (double)(line.Start.Y - line.End.Y) / (double)(line.Start.X - line.End.X);
+            line.LineB = (line.Start.Y - line.LineK * line.Start.X) / 1000.0f;
+            if (line.End.X < line.Start.X)//判断是否为逆向直线
+                line.isReverse = true;
+
+            R = FollowLine(boat, line);
+            if (Math.Sqrt((boat.X_mm - line.End.X) * (boat.X_mm - line.End.X) + (boat.Y_mm - line.End.Y) * (boat.Y_mm - line.End.Y)) < 800)
+                HUST_1_Demo.Form1.followLineID++;
+            if (HUST_1_Demo.Form1.followLineID == HUST_1_Demo.Form1.tarMultiLine.Count - 1)
+                R = 0x53;
+            return R;
+        }
         
         //圆轨迹跟随
-        public byte Closed_Ctrl_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
+        public byte FollowCircle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             float Err_phi = 0.0f;
            // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
@@ -285,7 +304,7 @@ namespace HUST_1_Demo.Controller
         }
 
         //椭圆轨迹跟随
-        public byte Closed_Ctrl_Oval(ShipData boat, HUST_1_Demo.Form1.TargetOval oval)
+        public byte FollowOval(ShipData boat, HUST_1_Demo.Form1.TargetOval oval)
         {
             byte R = 0 ;
             switch (HUST_1_Demo.Form1.SetOvalPathID)
@@ -297,7 +316,7 @@ namespace HUST_1_Demo.Controller
                         line.End = oval.Pt2;
                         line.LineK = oval.K1;
                         line.LineB = oval.B1/1000d;
-                        R = Closed_Ctrl_Line(boat, line);
+                        R = FollowLine(boat, line);
 
                         if (Math.Sqrt((boat.X_mm - oval.Pt1.X) * (boat.X_mm - oval.Pt1.X) + (boat.Y_mm - oval.Pt1.Y) * (boat.Y_mm - oval.Pt1.Y)) < 800)
                             HUST_1_Demo.Form1.SetOvalPathID = 1;
@@ -310,7 +329,7 @@ namespace HUST_1_Demo.Controller
                         circle.y = oval.OriPt1.Y / 1000d;
                         circle.Radius = oval.R / 1000d;
 
-                        R = Closed_Ctrl_Circle(boat, circle);
+                        R = FollowCircle(boat, circle);
                         if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B3) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 800)
                             HUST_1_Demo.Form1.SetOvalPathID = 2;
                         break;
@@ -323,7 +342,7 @@ namespace HUST_1_Demo.Controller
                         line.LineK = oval.K1;
                         line.LineB = oval.B3 / 1000d;
                         line.isReverse = true;
-                        R = Closed_Ctrl_Line(boat, line);
+                        R = FollowLine(boat, line);
 
                         if (Math.Sqrt((boat.X_mm - oval.Pt4.X) * (boat.X_mm - oval.Pt4.X) + (boat.Y_mm - oval.Pt4.Y) * (boat.Y_mm - oval.Pt4.Y)) < 800)
                             HUST_1_Demo.Form1.SetOvalPathID = 3;
@@ -336,7 +355,7 @@ namespace HUST_1_Demo.Controller
                         circle.y = oval.OriPt2.Y / 1000d;
                         circle.Radius = oval.R / 1000d;
 
-                        R = Closed_Ctrl_Circle(boat, circle);
+                        R = FollowCircle(boat, circle);
                         if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B1) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 800)
                             HUST_1_Demo.Form1.SetOvalPathID = 0;
                         break;

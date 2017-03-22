@@ -71,6 +71,7 @@ namespace HUST_1_Demo
         public static bool isOvalSet = false;//是否已设置目标椭圆成功
         public static int SetOvalPtFlag = 0;//获取椭圆点的标志，0为Pt1，1为Pt2，2为Pt3
         public static int SetOvalPathID = 0;//椭圆跟随边（两条直线/两个椭圆）切换标志
+        public static bool isMulLineEnd = false;//多段直线设定结束
         
 
         string name = "";//保存数据txt
@@ -80,6 +81,9 @@ namespace HUST_1_Demo
         
         public Point tarPoint;  //目标点
         public TargetLine tarLineGe;//一般直线
+        public static List<Point> tarMultiLine = new List<Point>();//多段直线
+        static List<Point> tarMultiLineDraw = new List<Point>();//绘图使用
+        public static int followLineID = 0;//跟随多段直线分段标志
         public TargetCircle tarCircle; //目标圆
         public TargetOval tarOval;//椭圆
         public float tarLineSp;  //平行于X轴的特殊直线
@@ -390,7 +394,7 @@ namespace HUST_1_Demo
                     g.DrawRectangle(new Pen(Color.Red, 2), target_pt.X - 4, target_pt.Y - 4, 4, 4);
                 }
                 
-                else if (path_mode.Text == "General line")
+                if (path_mode.Text == "General line")
                 {
                     if (isTarLineSet)
                     {
@@ -402,12 +406,22 @@ namespace HUST_1_Demo
                         g.DrawLine(new Pen(Color.Blue, 1), x1, y1, x2, y2);
                     }
                 }
-                else if (path_mode.Text == "Special line")
+                if (path_mode.Text == "Special line")
                 {
                     int x = Widthmap - (int)(Convert.ToInt32(this.line_Y2.Text) * 1000 * paint_scale);
                     g.DrawLine(new Pen(Color.Blue, 2), x, 0, x, PathMap.Height);
                 }
-                else if (path_mode.Text == "Circular path")
+                if (path_mode.Text == "Multi line")
+                {
+                    if (tarMultiLineDraw.Count >= 2)
+                    {
+                        for (int i = 0; i < tarMultiLineDraw.Count-1; i++)
+                        {
+                            g.DrawLine(new Pen(Color.Blue, 1),tarMultiLineDraw.ElementAt(i),tarMultiLineDraw.ElementAt(i+1));
+                        }
+                    }
+                }
+                if (path_mode.Text == "Circular path")
                 {
                     int x = Convert.ToInt32(this.circle_X.Text);
                     int y = Convert.ToInt32(this.circle_Y.Text);
@@ -419,7 +433,7 @@ namespace HUST_1_Demo
                     g.DrawEllipse(new Pen(Color.Cyan, 2), x1, y1, (int)(r * 1000 * paint_scale) * 2, (int)(r * 1000 * paint_scale) * 2);
 
                 }
-                else
+                if (path_mode.Text == "Oval path")
                 {
                     if (isOvalSet == true)
                     {
@@ -451,6 +465,8 @@ namespace HUST_1_Demo
                 }
                 
                 #endregion
+
+
                 listPoint_Boat1.Add(new Point(paint_x1, paint_y1));
                 listPoint_Boat2.Add(new Point(paint_x2, paint_y2));
                 listPoint_Boat3.Add(new Point(paint_x3, paint_y3));
@@ -485,9 +501,17 @@ namespace HUST_1_Demo
 
         private void Reset_Click(object sender, EventArgs e)
         {
+            //三船状态数据清除
             listPoint_Boat1.Clear();
             listPoint_Boat2.Clear();
             listPoint_Boat3.Clear();
+            
+            //多段直线数据清除
+            tarMultiLine.Clear();
+            tarMultiLineDraw.Clear();//画图数据清除
+            isMulLineEnd = false;//多段直线设定完成置位
+            followLineID = 0;//多段直线分段标志置位
+
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
             {
                 MessageBox.Show("请先打开串口！\r\n");
@@ -567,7 +591,7 @@ namespace HUST_1_Demo
                 command[3] = 0x59;
                 serialPort1.Write(command, 0, 6);//引脚拉高
                 swich_flag = true;
-                this.Switch.Text = "遥控";
+                this.Switch.Text = "Manual";
             }
             else
             {
@@ -577,7 +601,7 @@ namespace HUST_1_Demo
                 serialPort1.Write(command, 0, 6);
                 // serialPort1.Write("Z");//引脚拉低
                 swich_flag = false;
-                this.Switch.Text = "自主";
+                this.Switch.Text = "Auto";
             }
         }
 
@@ -739,14 +763,14 @@ namespace HUST_1_Demo
             #region 跟踪目标点
             if (path_mode.Text == "Point")
             {
-               rudder =  shipControl.Closed_Ctrl_Point(shipData, tarPoint);
+               rudder =  shipControl.FollowPoint(shipData, tarPoint);
             }
             #endregion
 
             #region 跟随一般直线
             if (path_mode.Text == "General line")
             {
-                rudder = shipControl.Closed_Ctrl_Line(shipData, tarLineGe);
+                rudder = shipControl.FollowLine(shipData, tarLineGe);
                 isCirPath = false;//直线
             }
             #endregion
@@ -754,7 +778,15 @@ namespace HUST_1_Demo
             #region 跟随特殊直线
             if (path_mode.Text == "Special line")
             {
-                rudder = shipControl.Closed_Ctrl_Line(shipData, tarLineSp);
+                rudder = shipControl.FollowLine(shipData, tarLineSp);
+                isCirPath = false;
+            }
+            #endregion
+
+            #region 跟随多段直线
+            if (path_mode.Text == "Multi line")
+            {
+                rudder = shipControl.FollowMulLine(shipData);
                 isCirPath = false;
             }
             #endregion
@@ -762,7 +794,7 @@ namespace HUST_1_Demo
             #region 跟随圆轨迹
             if (path_mode.Text == "Circular path")
             {
-                rudder = shipControl.Closed_Ctrl_Circle(shipData, tarCircle);
+                rudder = shipControl.FollowCircle(shipData, tarCircle);
                 isCirPath = true;
             }
             #endregion
@@ -770,7 +802,7 @@ namespace HUST_1_Demo
             #region 跟随椭圆
             if (path_mode.Text == "Oval path")
             {
-                rudder = shipControl.Closed_Ctrl_Oval(shipData, tarOval);
+                rudder = shipControl.FollowOval(shipData, tarOval);
                 isCirPath = false;
             }
             #endregion
@@ -849,7 +881,7 @@ namespace HUST_1_Demo
                         tarLineGe.End.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
                         tarLineGe.End.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
 
-                        tarLineGe.LineK = (float)(tarLineGe.Start.Y - tarLineGe.End.Y) / (float)(tarLineGe.Start.X - tarLineGe.End.X);
+                        tarLineGe.LineK = (double)(tarLineGe.Start.Y - tarLineGe.End.Y) / (double)(tarLineGe.Start.X - tarLineGe.End.X);
                         tarLineGe.LineB = (tarLineGe.Start.Y - tarLineGe.LineK * tarLineGe.Start.X) / 1000.0f;
 
                         if (tarLineGe.End.X < tarLineGe.Start.X)//判断是否为逆向直线
@@ -925,6 +957,24 @@ namespace HUST_1_Demo
                     }
 
                  }
+            }
+            #endregion
+
+            #region 多段直线
+            if (path_mode.Text == "Multi line")
+            {
+                if (isMulLineEnd == false)
+                {
+                    int x = (int)((Heightmap - target_pt.Y) * scale);
+                    int y = (int)((Widthmap - target_pt.X) * scale);
+                    tarMultiLine.Add(new Point(x, y));
+                    tarMultiLineDraw.Add(target_pt);
+                }
+                
+                if (e.Button == MouseButtons.Right)
+                {
+                    isMulLineEnd = true;
+                }
             }
             #endregion
 

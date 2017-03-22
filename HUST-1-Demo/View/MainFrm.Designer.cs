@@ -200,7 +200,6 @@
             this.label45 = new System.Windows.Forms.Label();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
             this.Manualspeedset = new System.Windows.Forms.TextBox();
-            this.label68 = new System.Windows.Forms.Label();
             this.ManualSpeed = new System.Windows.Forms.RadioButton();
             this.AutoSpeed = new System.Windows.Forms.RadioButton();
             this.label69 = new System.Windows.Forms.Label();
@@ -208,6 +207,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PathMap = new System.Windows.Forms.PictureBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.label68 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -1305,8 +1305,9 @@
             this.path_mode.FormattingEnabled = true;
             this.path_mode.Items.AddRange(new object[] {
             "Point",
-            "General line",
             "Special line",
+            "General line",
+            "Multi line",
             "Circular path",
             "Oval path"});
             this.path_mode.Location = new System.Drawing.Point(249, 187);
@@ -2004,15 +2005,6 @@
             this.Manualspeedset.TabIndex = 2;
             this.Manualspeedset.Text = "0";
             // 
-            // label68
-            // 
-            this.label68.AutoSize = true;
-            this.label68.Location = new System.Drawing.Point(135, 28);
-            this.label68.Name = "label68";
-            this.label68.Size = new System.Drawing.Size(41, 12);
-            this.label68.TabIndex = 1;
-            this.label68.Text = "Speed:";
-            // 
             // ManualSpeed
             // 
             this.ManualSpeed.AutoSize = true;
@@ -2085,6 +2077,15 @@
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Map display";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Location = new System.Drawing.Point(135, 28);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(41, 12);
+            this.label68.TabIndex = 1;
+            this.label68.Text = "Speed:";
             // 
             // Form1
             // 
@@ -2296,7 +2297,6 @@
         private System.Windows.Forms.Label label65;
         private System.Windows.Forms.GroupBox groupBox19;
         private System.Windows.Forms.TextBox Manualspeedset;
-        private System.Windows.Forms.Label label68;
         private System.Windows.Forms.RadioButton ManualSpeed;
         private System.Windows.Forms.RadioButton AutoSpeed;
         private System.Windows.Forms.Label label69;
@@ -2328,6 +2328,7 @@
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label label68;
     }
 }
 
