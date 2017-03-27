@@ -212,6 +212,7 @@ namespace HUST_1_Demo.Controller
             // Get_ShipData(port);//获取最新船状态信息
         }
 
+        //多段直线跟踪
         public byte FollowMulLine(ShipData boat)
         {
             byte R = 0;
@@ -224,10 +225,13 @@ namespace HUST_1_Demo.Controller
                 line.isReverse = true;
 
             R = FollowLine(boat, line);
-            if (Math.Sqrt((boat.X_mm - line.End.X) * (boat.X_mm - line.End.X) + (boat.Y_mm - line.End.Y) * (boat.Y_mm - line.End.Y)) < 800)
+            if (Math.Sqrt((boat.X_mm - line.End.X) * (boat.X_mm - line.End.X) + (boat.Y_mm - line.End.Y) * (boat.Y_mm - line.End.Y)) < 3000)
                 HUST_1_Demo.Form1.followLineID++;
             if (HUST_1_Demo.Form1.followLineID == HUST_1_Demo.Form1.tarMultiLine.Count - 1)
-                R = 0x53;
+            {
+                HUST_1_Demo.Form1.followLineID = 0;
+            }
+                
             return R;
         }
         
@@ -318,7 +322,7 @@ namespace HUST_1_Demo.Controller
                         line.LineB = oval.B1/1000d;
                         R = FollowLine(boat, line);
 
-                        if (Math.Sqrt((boat.X_mm - oval.Pt1.X) * (boat.X_mm - oval.Pt1.X) + (boat.Y_mm - oval.Pt1.Y) * (boat.Y_mm - oval.Pt1.Y)) < 800)
+                        if (Math.Sqrt((boat.X_mm - oval.Pt1.X) * (boat.X_mm - oval.Pt1.X) + (boat.Y_mm - oval.Pt1.Y) * (boat.Y_mm - oval.Pt1.Y)) < 1000)
                             HUST_1_Demo.Form1.SetOvalPathID = 1;
                         break;
                     }
@@ -330,7 +334,7 @@ namespace HUST_1_Demo.Controller
                         circle.Radius = oval.R / 1000d;
 
                         R = FollowCircle(boat, circle);
-                        if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B3) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 800)
+                        if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B3) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 1000)
                             HUST_1_Demo.Form1.SetOvalPathID = 2;
                         break;
                     }
@@ -344,7 +348,7 @@ namespace HUST_1_Demo.Controller
                         line.isReverse = true;
                         R = FollowLine(boat, line);
 
-                        if (Math.Sqrt((boat.X_mm - oval.Pt4.X) * (boat.X_mm - oval.Pt4.X) + (boat.Y_mm - oval.Pt4.Y) * (boat.Y_mm - oval.Pt4.Y)) < 800)
+                        if (Math.Sqrt((boat.X_mm - oval.Pt4.X) * (boat.X_mm - oval.Pt4.X) + (boat.Y_mm - oval.Pt4.Y) * (boat.Y_mm - oval.Pt4.Y)) < 1000)
                             HUST_1_Demo.Form1.SetOvalPathID = 3;
                         break;
                     }
@@ -356,7 +360,7 @@ namespace HUST_1_Demo.Controller
                         circle.Radius = oval.R / 1000d;
 
                         R = FollowCircle(boat, circle);
-                        if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B1) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 800)
+                        if ((Math.Abs(oval.K1 * boat.X_mm - boat.Y_mm + oval.B1) / Math.Sqrt(oval.K1 * oval.K1 + 1)) < 1000)
                             HUST_1_Demo.Form1.SetOvalPathID = 0;
                         break;
                     }

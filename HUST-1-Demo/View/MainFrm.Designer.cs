@@ -200,6 +200,7 @@
             this.label45 = new System.Windows.Forms.Label();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
             this.Manualspeedset = new System.Windows.Forms.TextBox();
+            this.label68 = new System.Windows.Forms.Label();
             this.ManualSpeed = new System.Windows.Forms.RadioButton();
             this.AutoSpeed = new System.Windows.Forms.RadioButton();
             this.label69 = new System.Windows.Forms.Label();
@@ -207,7 +208,6 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PathMap = new System.Windows.Forms.PictureBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.label68 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -260,7 +260,7 @@
             this.ComPortNum1.Name = "ComPortNum1";
             this.ComPortNum1.Size = new System.Drawing.Size(68, 22);
             this.ComPortNum1.TabIndex = 0;
-            this.ComPortNum1.Text = "COM1";
+            this.ComPortNum1.Text = "COM3";
             // 
             // ComOpen1
             // 
@@ -287,7 +287,7 @@
             this.BaudRate1.Name = "BaudRate1";
             this.BaudRate1.Size = new System.Drawing.Size(68, 22);
             this.BaudRate1.TabIndex = 0;
-            this.BaudRate1.Text = "9600";
+            this.BaudRate1.Text = "38400";
             // 
             // Stop
             // 
@@ -840,7 +840,7 @@
             this.Boat1_Ki.Name = "Boat1_Ki";
             this.Boat1_Ki.Size = new System.Drawing.Size(52, 21);
             this.Boat1_Ki.TabIndex = 25;
-            this.Boat1_Ki.Text = "0";
+            this.Boat1_Ki.Text = "0.01";
             // 
             // Boat1_Kd
             // 
@@ -1090,7 +1090,7 @@
             this.Boat3_Ki.Name = "Boat3_Ki";
             this.Boat3_Ki.Size = new System.Drawing.Size(52, 21);
             this.Boat3_Ki.TabIndex = 25;
-            this.Boat3_Ki.Text = "0";
+            this.Boat3_Ki.Text = "0.01";
             // 
             // Boat3_Kd
             // 
@@ -1146,7 +1146,7 @@
             this.Phi_mode.Name = "Phi_mode";
             this.Phi_mode.Size = new System.Drawing.Size(100, 20);
             this.Phi_mode.TabIndex = 8;
-            this.Phi_mode.Text = "Heading angle";
+            this.Phi_mode.Text = "Track angle";
             // 
             // groupBox11
             // 
@@ -1314,7 +1314,7 @@
             this.path_mode.Name = "path_mode";
             this.path_mode.Size = new System.Drawing.Size(100, 20);
             this.path_mode.TabIndex = 0;
-            this.path_mode.Text = "Point";
+            this.path_mode.Text = "Special line";
             // 
             // groupBox9
             // 
@@ -1337,7 +1337,7 @@
             this.line_Y1.Name = "line_Y1";
             this.line_Y1.Size = new System.Drawing.Size(38, 23);
             this.line_Y1.TabIndex = 1;
-            this.line_Y1.Text = "0";
+            this.line_Y1.Text = "5";
             // 
             // label64
             // 
@@ -1354,7 +1354,7 @@
             this.line_Y3.Name = "line_Y3";
             this.line_Y3.Size = new System.Drawing.Size(38, 23);
             this.line_Y3.TabIndex = 1;
-            this.line_Y3.Text = "0";
+            this.line_Y3.Text = "12";
             // 
             // label65
             // 
@@ -2005,6 +2005,15 @@
             this.Manualspeedset.TabIndex = 2;
             this.Manualspeedset.Text = "0";
             // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Location = new System.Drawing.Point(135, 28);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(41, 12);
+            this.label68.TabIndex = 1;
+            this.label68.Text = "Speed:";
+            // 
             // ManualSpeed
             // 
             this.ManualSpeed.AutoSize = true;
@@ -2077,15 +2086,6 @@
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Map display";
             this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // label68
-            // 
-            this.label68.AutoSize = true;
-            this.label68.Location = new System.Drawing.Point(135, 28);
-            this.label68.Name = "label68";
-            this.label68.Size = new System.Drawing.Size(41, 12);
-            this.label68.TabIndex = 1;
-            this.label68.Text = "Speed:";
             // 
             // Form1
             // 

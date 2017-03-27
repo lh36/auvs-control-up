@@ -511,7 +511,7 @@ namespace HUST_1_Demo
             tarMultiLineDraw.Clear();//画图数据清除
             isMulLineEnd = false;//多段直线设定完成置位
             followLineID = 0;//多段直线分段标志置位
-
+            dataRec.Clear();
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
             {
                 MessageBox.Show("请先打开串口！\r\n");
