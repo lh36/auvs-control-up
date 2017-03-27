@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace HUST_1_Demo
 {
@@ -27,34 +29,63 @@ namespace HUST_1_Demo
         /// 定义全局变量
         /// </summary>
         /// 
-
-        public struct TargetCircle  //目标圆参数
-        {
-            public float Radius;
-            public float x;
-            public float y;
-        }
-        public struct TargetLine
+        public struct TargetLine  //目标直线，一般直线
         {
             public Point Start;
             public Point End;
-            public float LineK;
-            public float LineB;
+            public double LineK;
+            public double LineB;
+            public bool isReverse;
         }
+        public struct TargetCircle  //目标圆参数
+        {
+            public double Radius;
+            public double x;
+            public double y;
+        }
+        public struct TargetOval   //椭圆
+        {
+            public Point Pt1;
+            public Point Pt2;
+            public Point Pt3;
+            public Point Pt4;
+
+            public Point OriPt1;//上半圆圆心1
+            public Point OriPt2;//下半圆圆心2
+            public double R;//半圆半径
+
+            public double K1;//L1、L3斜率
+            public double K2;//L2、L4斜率
+            public double B1;//L1截距
+            public double B2;//L2截距
+            public double B3;//L3截距
+            public double B4;//L4截距
+        }
+        
         public static bool isFlagCtrl = false;//绘画线程标志
         public static bool isFlagDraw = false;//控制线程标志
         public static bool isCirPath = false;//跟随路径选择标志=false：直线，=true：圆
         public static bool isFlagDir = false;//圆轨迹跟随方向选择标志=false：顺时针，=true：逆时针
         public static bool isStartPt = false;//直线跟踪起始点
         public static bool isTarLineSet = false;//是否已设置目标直线
-
-        Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
+        public static bool isOvalSet = false;//是否已设置目标椭圆成功
+        public static int SetOvalPtFlag = 0;//获取椭圆点的标志，0为Pt1，1为Pt2，2为Pt3
+        public static int SetOvalPathID = 0;//椭圆跟随边（两条直线/两个椭圆）切换标志
+        public static bool isMulLineEnd = false;//多段直线设定结束
+        
 
         string name = "";//保存数据txt
+        DataTable dataRec = new DataTable();
 
-        public TargetCircle tarCircle; //目标圆
+        Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
+        
         public Point tarPoint;  //目标点
         public TargetLine tarLineGe;//一般直线
+        public static List<Point> tarMultiLine = new List<Point>();//多段直线
+        static List<Point> tarMultiLineDraw = new List<Point>();//绘图使用
+        public static int followLineID = 0;//跟随多段直线分段标志
+        public TargetCircle tarCircle; //目标圆
+        public TargetOval tarOval;//椭圆
         public float tarLineSp;  //平行于X轴的特殊直线
 
         ShipData boat1 = new ShipData();
@@ -85,7 +116,7 @@ namespace HUST_1_Demo
                 try   //try:尝试下面的代码，如果错误就跳出来执行catch里面的代码
                 {
                     serialPort1.Open();
-                    ComOpen1.Text = "关闭串口";
+                    ComOpen1.Text = "Close port";
                     ComPortNum1.Enabled = false;
                     BaudRate1.Enabled = false;
                 }
@@ -98,7 +129,7 @@ namespace HUST_1_Demo
             {
                 timer1.Enabled = false;
                 serialPort1.Close();
-                ComOpen1.Text = "打开串口";
+                ComOpen1.Text = "Open port";
                 ComPortNum1.Enabled = true;
                 BaudRate1.Enabled = true;
             }
@@ -175,9 +206,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); if (isFlagCtrl == true) boat1.StoreShipData(name); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data); if (isFlagCtrl == true) boat2.StoreShipData(name); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); if (isFlagCtrl == true) boat3.StoreShipData(name); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -363,7 +394,7 @@ namespace HUST_1_Demo
                     g.DrawRectangle(new Pen(Color.Red, 2), target_pt.X - 4, target_pt.Y - 4, 4, 4);
                 }
                 
-                else if (path_mode.Text == "General line")
+                if (path_mode.Text == "General line")
                 {
                     if (isTarLineSet)
                     {
@@ -375,12 +406,22 @@ namespace HUST_1_Demo
                         g.DrawLine(new Pen(Color.Blue, 1), x1, y1, x2, y2);
                     }
                 }
-                else if (path_mode.Text == "Special line")
+                if (path_mode.Text == "Special line")
                 {
                     int x = Widthmap - (int)(Convert.ToInt32(this.line_Y2.Text) * 1000 * paint_scale);
                     g.DrawLine(new Pen(Color.Blue, 2), x, 0, x, PathMap.Height);
                 }
-                else
+                if (path_mode.Text == "Multi line")
+                {
+                    if (tarMultiLineDraw.Count >= 2)
+                    {
+                        for (int i = 0; i < tarMultiLineDraw.Count-1; i++)
+                        {
+                            g.DrawLine(new Pen(Color.Blue, 1),tarMultiLineDraw.ElementAt(i),tarMultiLineDraw.ElementAt(i+1));
+                        }
+                    }
+                }
+                if (path_mode.Text == "Circular path")
                 {
                     int x = Convert.ToInt32(this.circle_X.Text);
                     int y = Convert.ToInt32(this.circle_Y.Text);
@@ -392,8 +433,40 @@ namespace HUST_1_Demo
                     g.DrawEllipse(new Pen(Color.Cyan, 2), x1, y1, (int)(r * 1000 * paint_scale) * 2, (int)(r * 1000 * paint_scale) * 2);
 
                 }
+                if (path_mode.Text == "Oval path")
+                {
+                    if (isOvalSet == true)
+                    {
+                        Pen penOval = new Pen(Color.Blue, 1);//定义了一个蓝色,宽度为的画笔
+                        int x1 = Widthmap - (int)(tarOval.Pt1.Y * paint_scale);
+                        int y1 = Heightmap - (int)(tarOval.Pt1.X * paint_scale);
+                        int x2 = Widthmap - (int)(tarOval.Pt2.Y * paint_scale);
+                        int y2 = Heightmap - (int)(tarOval.Pt2.X * paint_scale);
+                        int x3 = Widthmap - (int)(tarOval.Pt3.Y * paint_scale);
+                        int y3 = Heightmap - (int)(tarOval.Pt3.X * paint_scale);
+                        int x4 = Widthmap - (int)(tarOval.Pt4.Y * paint_scale);
+                        int y4 = Heightmap - (int)(tarOval.Pt4.X * paint_scale);
+                      
+                        g.DrawLine(penOval, x1, y1, x2, y2);
+                        g.DrawLine(penOval, x2, y2, x3, y3);
+                        g.DrawLine(penOval, x3, y3, x4, y4);
+                        g.DrawLine(penOval, x4, y4, x1, y1);
+
+                      //  g.DrawRectangle(penOval;
+                        Matrix myMatrix = new Matrix();
+                      //  Single angle = (float)(Math.Atan(tarOval.K2) / Math.PI * 180);
+                        Single angle = 30;
+                        PointF rotatePoint = new PointF((x2+x3)/2, (y2+y3)/2);//定点中心坐标(x,y)
+                        myMatrix.RotateAt(angle, rotatePoint, MatrixOrder.Append);
+                        g.Transform = myMatrix;
+
+                    //    g.DrawArc(penOval, x2, y2, 100, 200, 30, 330);
+                    }
+                }
                 
                 #endregion
+
+
                 listPoint_Boat1.Add(new Point(paint_x1, paint_y1));
                 listPoint_Boat2.Add(new Point(paint_x2, paint_y2));
                 listPoint_Boat3.Add(new Point(paint_x3, paint_y3));
@@ -410,7 +483,7 @@ namespace HUST_1_Demo
                     g.DrawCurve(new Pen(Color.Gold, 2), listPoint_Boat3.ToArray());
                 }
                 
-                Thread.Sleep(100);
+                Thread.Sleep(200);
             }
 
         }
@@ -428,9 +501,17 @@ namespace HUST_1_Demo
 
         private void Reset_Click(object sender, EventArgs e)
         {
+            //三船状态数据清除
             listPoint_Boat1.Clear();
             listPoint_Boat2.Clear();
             listPoint_Boat3.Clear();
+            
+            //多段直线数据清除
+            tarMultiLine.Clear();
+            tarMultiLineDraw.Clear();//画图数据清除
+            isMulLineEnd = false;//多段直线设定完成置位
+            followLineID = 0;//多段直线分段标志置位
+            dataRec.Clear();
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
             {
                 MessageBox.Show("请先打开串口！\r\n");
@@ -479,7 +560,7 @@ namespace HUST_1_Demo
             }
             else
             {
-                if (this.Start.Text == "开始")
+                if (this.Start.Text == "Start")
                 {
                     isFlagDraw = true;
                     Thread threadDraw = new Thread(DrawMap);
@@ -487,15 +568,15 @@ namespace HUST_1_Demo
                     threadDraw.Start();
 
                     timer1.Enabled = true;//默认是开环控制，则启动获取三船位姿线程
-                    this.Start.Text = "停止";
+                    this.Start.Text = "Stop";
 
                 }
-                else if (this.Start.Text == "停止")
+                else if (this.Start.Text == "Stop")
                 {
                     isFlagDraw = false;
                     isFlagCtrl = false;//控制线程标志
                     timer1.Enabled = false;//坐标跟新
-                    this.Start.Text = "开始";
+                    this.Start.Text = "Start";
                 }
 
             }
@@ -510,7 +591,7 @@ namespace HUST_1_Demo
                 command[3] = 0x59;
                 serialPort1.Write(command, 0, 6);//引脚拉高
                 swich_flag = true;
-                this.Switch.Text = "遥控";
+                this.Switch.Text = "Manual";
             }
             else
             {
@@ -520,7 +601,7 @@ namespace HUST_1_Demo
                 serialPort1.Write(command, 0, 6);
                 // serialPort1.Write("Z");//引脚拉低
                 swich_flag = false;
-                this.Switch.Text = "自主";
+                this.Switch.Text = "Auto";
             }
         }
 
@@ -545,7 +626,7 @@ namespace HUST_1_Demo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (button1.Text == "开始跟随")
+            if (button1.Text == "Start following")
             {
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 timer1.Enabled = false;//首先关闭开环定时器获取当前状态信息的定时器
@@ -553,7 +634,7 @@ namespace HUST_1_Demo
                 Thread threadControl = new Thread(Control_PF);
                 threadControl.IsBackground = true;
                 threadControl.Start();
-                button1.Text = "停止跟随";
+                button1.Text = "Stop following";
 
             }
             else
@@ -565,14 +646,14 @@ namespace HUST_1_Demo
                 ship2Control.Stop_Robot(serialPort1);
                 Thread.Sleep(40);
                 ship3Control.Stop_Robot(serialPort1);
-                button1.Text = "开始跟随";
+                button1.Text = "Start following";
             }
 
         }
 
         private void UpdateCtrlPhi()
         {
-            if (Phi_mode.Text == "航向角")
+            if (Phi_mode.Text == "Heading angle")
             {
                 boat1.Control_Phi = boat1.phi;
                 boat2.Control_Phi = boat2.phi;
@@ -580,9 +661,9 @@ namespace HUST_1_Demo
             }
             else
             {
-                boat1.Control_Phi = boat1.GPS_Phi;
-                boat2.Control_Phi = boat2.GPS_Phi;
-                boat3.Control_Phi = boat3.GPS_Phi;
+                boat1.Control_Phi = boat1.Fter_GPS_Phi;
+                boat2.Control_Phi = boat2.Fter_GPS_Phi;
+                boat3.Control_Phi = boat3.Fter_GPS_Phi;
             }
         }
 
@@ -682,14 +763,14 @@ namespace HUST_1_Demo
             #region 跟踪目标点
             if (path_mode.Text == "Point")
             {
-               rudder =  shipControl.Closed_Control_Point(shipData, tarPoint);
+               rudder =  shipControl.FollowPoint(shipData, tarPoint);
             }
             #endregion
 
             #region 跟随一般直线
             if (path_mode.Text == "General line")
             {
-                rudder = shipControl.Closed_Control_Line(shipData, tarLineGe);
+                rudder = shipControl.FollowLine(shipData, tarLineGe);
                 isCirPath = false;//直线
             }
             #endregion
@@ -697,7 +778,15 @@ namespace HUST_1_Demo
             #region 跟随特殊直线
             if (path_mode.Text == "Special line")
             {
-                rudder = shipControl.Closed_Control_Line(shipData, tarLineSp);
+                rudder = shipControl.FollowLine(shipData, tarLineSp);
+                isCirPath = false;
+            }
+            #endregion
+
+            #region 跟随多段直线
+            if (path_mode.Text == "Multi line")
+            {
+                rudder = shipControl.FollowMulLine(shipData);
                 isCirPath = false;
             }
             #endregion
@@ -705,18 +794,45 @@ namespace HUST_1_Demo
             #region 跟随圆轨迹
             if (path_mode.Text == "Circular path")
             {
-                rudder = shipControl.Closed_Control_Circle(shipData, tarCircle);
+                rudder = shipControl.FollowCircle(shipData, tarCircle);
                 isCirPath = true;
+            }
+            #endregion
+
+            #region 跟随椭圆
+            if (path_mode.Text == "Oval path")
+            {
+                rudder = shipControl.FollowOval(shipData, tarOval);
+                isCirPath = false;
             }
             #endregion
 
             return rudder;
         }
 
-
+        //初始化表格表头
+        private void InitRecTable()
+        {
+            dataRec.Columns.Add("ShipID", Type.GetType("System.String"));
+            dataRec.Columns.Add("Lat", Type.GetType("System.String"));
+            dataRec.Columns.Add("Lon", Type.GetType("System.String"));
+            dataRec.Columns.Add("X", Type.GetType("System.String"));
+            dataRec.Columns.Add("Y", Type.GetType("System.String"));
+            dataRec.Columns.Add("X Error", Type.GetType("System.String"));
+            dataRec.Columns.Add("Phi", Type.GetType("System.String"));
+            dataRec.Columns.Add("GPSPhi", Type.GetType("System.String"));
+            dataRec.Columns.Add("Speed", Type.GetType("System.String"));
+            dataRec.Columns.Add("Gear", Type.GetType("System.String"));
+            dataRec.Columns.Add("Rud", Type.GetType("System.String"));
+            dataRec.Columns.Add("CtrlRudOut", Type.GetType("System.String"));
+            dataRec.Columns.Add("CtrlSpeedOut", Type.GetType("System.String"));
+            dataRec.Columns.Add("Time", Type.GetType("System.String"));
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
+            InitRecTable();
             Control.CheckForIllegalCrossThreadCalls = false;
+            
         }
         
         private void PathMap_MouseDown(object sender, MouseEventArgs e)
@@ -734,36 +850,135 @@ namespace HUST_1_Demo
             double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
             double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
             
-            if (e.Button == MouseButtons.Left)//如果是鼠标左键，则为设定目标点
+            #region 目标点跟随设置
+            if (path_mode.Text == "Point")
             {
-                tarPoint.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
-                tarPoint.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
-
-                tar_Point_X.Text = (tarPoint.X / 1000).ToString();
-                tar_Point_Y.Text = (tarPoint.Y / 1000).ToString();
-            }
-
-            if (e.Button == MouseButtons.Right)//如果是鼠标右键，则为设定直线
-            {
-                if (isStartPt == false)//说明该点是第一个点，即起始点
+                if (e.Button == MouseButtons.Left)//如果是鼠标左键，则为设定目标点
                 {
-                    tarLineGe.Start.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
-                    tarLineGe.Start.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
-                    isStartPt = true;
-                    isTarLineSet = false;
-                }
-                else  //说明该点是第二个点，即终止点
-                {
-                    tarLineGe.End.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
-                    tarLineGe.End.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
+                    tarPoint.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
+                    tarPoint.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
 
-                    tarLineGe.LineK = (float)(tarLineGe.Start.Y - tarLineGe.End.Y) / (float)(tarLineGe.Start.X - tarLineGe.End.X);
-                    tarLineGe.LineB = (tarLineGe.Start.Y - tarLineGe.LineK * tarLineGe.Start.X) / 1000.0f;
-                    isStartPt = false; //将起始点置位，即又可以重新开始设置起始点
-                    isTarLineSet = true;
+                    tar_Point_X.Text = (tarPoint.X / 1000).ToString();
+                    tar_Point_Y.Text = (tarPoint.Y / 1000).ToString();
                 }
             }
-               
+            #endregion
+
+            #region 一般直线属性点设置
+            if (path_mode.Text == "General line")
+            {
+                if (e.Button == MouseButtons.Right)//如果是鼠标右键，则为设定直线
+                {
+                    if (isStartPt == false)//说明该点是第一个点，即起始点
+                    {
+                        tarLineGe.Start.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
+                        tarLineGe.Start.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
+                        isStartPt = true;
+                        isTarLineSet = false;
+                    }
+                    else  //说明该点是第二个点，即终止点
+                    {
+                        tarLineGe.End.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
+                        tarLineGe.End.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
+
+                        tarLineGe.LineK = (double)(tarLineGe.Start.Y - tarLineGe.End.Y) / (double)(tarLineGe.Start.X - tarLineGe.End.X);
+                        tarLineGe.LineB = (tarLineGe.Start.Y - tarLineGe.LineK * tarLineGe.Start.X) / 1000.0f;
+
+                        if (tarLineGe.End.X < tarLineGe.Start.X)//判断是否为逆向直线
+                            tarLineGe.isReverse = true;
+                        else
+                            tarLineGe.isReverse = false;
+                        isStartPt = false; //将起始点置位，即又可以重新开始设置起始点
+                        isTarLineSet = true;
+                    }
+                }
+            }
+            #endregion
+
+            #region 椭圆属性点设置
+            if (path_mode.Text == "Oval path")
+            {
+                if (e.Button == MouseButtons.Left)//左键设置
+                {
+                    switch (SetOvalPtFlag)
+                    {
+                        case 0: 
+                            {
+                                tarOval.Pt1.X = (int)((Heightmap - target_pt.Y) * scale);
+                                tarOval.Pt1.Y = (int)((Widthmap - target_pt.X) * scale);
+                                SetOvalPtFlag++;
+                                isOvalSet = false;
+                                break; 
+                            }
+                        case 1:
+                            {
+                                tarOval.Pt2.X = (int)((Heightmap - target_pt.Y) * scale);
+                                tarOval.Pt2.Y = (int)((Widthmap - target_pt.X) * scale);
+                                SetOvalPtFlag++;
+                                break;
+                            }
+                        case 2:
+                            {
+                                tarOval.Pt3.X = (int)((Heightmap - target_pt.Y) * scale);
+                                tarOval.Pt3.Y = (int)((Widthmap - target_pt.X) * scale);
+
+                                //计算椭圆直线斜率
+                                tarOval.K1 = (double)(tarOval.Pt2.Y - tarOval.Pt1.Y) / (double)(tarOval.Pt2.X - tarOval.Pt1.X);
+                                tarOval.K2 = -1 / tarOval.K1;//椭圆第二条线斜率，半圆直径方向
+
+                                //计算椭圆直线截距
+                                tarOval.B1 = (tarOval.Pt1.Y- tarOval.K1 * tarOval.Pt1.X);//截距 毫米单位
+                                tarOval.B2 = (tarOval.Pt2.Y - tarOval.K2 * tarOval.Pt2.X);//截距 毫米单位
+                                double R = ((tarOval.K1 * tarOval.Pt3.X - tarOval.Pt3.Y + tarOval.B1) / Math.Sqrt(Math.Pow(tarOval.K1, 2) + 1)) / 2;//半径，毫米单位,带符号
+                                tarOval.B3 = tarOval.B1 - 2 * R * Math.Sqrt(Math.Pow(tarOval.K1, 2) + 1);
+                                tarOval.B4 = (tarOval.Pt1.Y - tarOval.K2 * tarOval.Pt1.X);
+
+                                //重新计算椭圆的Pt3
+                                tarOval.Pt3.X = (int)((tarOval.B2 - tarOval.B3) / (tarOval.K1 - tarOval.K2));//
+                                tarOval.Pt3.Y = (int)((tarOval.K2 * tarOval.Pt3.X + tarOval.B2));
+
+                                //计算上半圆圆心Ori1
+                                tarOval.OriPt1.X = (tarOval.Pt2.X + tarOval.Pt3.X) / 2;
+                                tarOval.OriPt1.Y = (tarOval.Pt2.Y + tarOval.Pt3.Y) / 2;
+
+                                //计算Pt4
+                                tarOval.Pt4.X = (int)((tarOval.B3 - tarOval.B4) / (tarOval.K2 - tarOval.K1));//mm单位
+                                tarOval.Pt4.Y = (int)((tarOval.K2 * tarOval.Pt4.X + tarOval.B4));
+
+                                //计算下半圆圆心Ori2
+                                tarOval.OriPt2.X = (tarOval.Pt3.X + tarOval.Pt4.X) / 2;
+                                tarOval.OriPt2.Y = (tarOval.Pt3.Y + tarOval.Pt4.Y) / 2;
+                                tarOval.R = Math.Abs(R);
+
+                                isOvalSet = true;
+                                SetOvalPtFlag = 0;
+                                break;
+                            }
+                    }
+
+                 }
+            }
+            #endregion
+
+            #region 多段直线
+            if (path_mode.Text == "Multi line")
+            {
+                if (isMulLineEnd == false)
+                {
+                    int x = (int)((Heightmap - target_pt.Y) * scale);
+                    int y = (int)((Widthmap - target_pt.X) * scale);
+                    tarMultiLine.Add(new Point(x, y));
+                    tarMultiLineDraw.Add(target_pt);
+                }
+                
+                if (e.Button == MouseButtons.Right)
+                {
+                    isMulLineEnd = true;
+                }
+            }
+            #endregion
+
+
         }
 
         private void boat1_init_Phi_Click(object sender, EventArgs e)
@@ -780,5 +995,25 @@ namespace HUST_1_Demo
         {
             boat3.Phi_buchang = -boat3.Init_Phi;
         }
+
+        private void BTNStoreData_Click(object sender, EventArgs e)
+        {
+            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+            excel.Application.Workbooks.Add(true);
+            //填充数据
+            for (int i = 0; i < dataRec.Rows.Count; i++)
+            {
+                for (int j = 0; j < dataRec.Columns.Count; j++)
+                {
+                    excel.Cells[i + 1, j + 1] = dataRec.Rows[i][j];
+                }
+
+            }
+            excel.Cells[dataRec.Rows.Count + 1, 1] = tarLineGe.LineK;//记录一般直线的斜率和截距
+            excel.Cells[dataRec.Rows.Count + 1, 2] = tarLineGe.LineB;
+
+            excel.Visible = true;
+        }
+
     }
 }
