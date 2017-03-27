@@ -62,6 +62,7 @@ namespace HUST_1_Demo
             public double B4;//L4截距
         }
         
+        
         public static bool isFlagCtrl = false;//绘画线程标志
         public static bool isFlagDraw = false;//控制线程标志
         public static bool isCirPath = false;//跟随路径选择标志=false：直线，=true：圆
@@ -78,6 +79,8 @@ namespace HUST_1_Demo
         DataTable dataRec = new DataTable();
 
         Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
+        List<double[]> PtPoolGPSBd = new List<double[]>();//泳池边界点经纬度
+        List<double[]> PtPoolXYBd = new List<double[]>();//泳池边界点经纬度
         
         public Point tarPoint;  //目标点
         public TargetLine tarLineGe;//一般直线
@@ -87,6 +90,7 @@ namespace HUST_1_Demo
         public TargetCircle tarCircle; //目标圆
         public TargetOval tarOval;//椭圆
         public float tarLineSp;  //平行于X轴的特殊直线
+
 
         ShipData boat1 = new ShipData();
         ShipData boat2 = new ShipData();
@@ -360,6 +364,8 @@ namespace HUST_1_Demo
 
         private void DrawMap()
         {
+            
+            
             while (isFlagDraw)
             {
                 Graphics g = this.PathMap.CreateGraphics();
@@ -387,6 +393,40 @@ namespace HUST_1_Demo
 
                 int paint_x3 = Widthmap - (int)(boat3.Y_mm * paint_scale);//转换为图上的坐标
                 int paint_y3 = Heightmap - (int)(boat3.X_mm * paint_scale);
+
+                #region 绘制泳池边界
+                List<Point> PtPaint = new List<Point>();//绘图
+                double[] Pt1 = new double[2] { 30.51582550, 114.42678 };
+                double[] Pt2 = new double[2] { 30.51582550, 114.42656 };
+                double[] Pt3 = new double[2] { 30.51625550, 114.42656 };
+                double[] Pt4 = new double[2] { 30.51625550, 114.42678 };
+                
+                PtPoolGPSBd.Add(Pt1);
+                PtPoolGPSBd.Add(Pt2);
+                PtPoolGPSBd.Add(Pt3);
+                PtPoolGPSBd.Add(Pt4);
+
+                for (int i = 0; i < 4;i++ )
+                {
+                    double[] tepXY = HUST_1_Demo.Model.ShipData.GPS2XY(PtPoolGPSBd.ElementAt(i));
+                    PtPoolXYBd.Add(tepXY);
+                }
+
+                for (int i = 0; i < 4;i++ )
+                {
+                    Point tepPaint = new Point();
+                    tepPaint.X = Widthmap - (int)(PtPoolXYBd.ElementAt(i).ElementAt(1)*1000 * paint_scale);//转换为图上的坐标
+                    tepPaint.Y = Heightmap - (int)(PtPoolXYBd.ElementAt(i).ElementAt(0) * 1000 * paint_scale);//转换为图上的坐标
+                    PtPaint.Add(tepPaint);
+                }
+
+
+                for (int i = 0; i < PtPaint.Count - 1; i++)
+                {
+                    g.DrawLine(new Pen(Color.Blue, 1), PtPaint.ElementAt(i), PtPaint.ElementAt(i + 1));
+                }
+                
+                #endregion
 
                 #region 画目标直线和圆
                 if (path_mode.Text == "Point")//绘制目标点
