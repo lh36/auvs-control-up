@@ -208,6 +208,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PathMap = new System.Windows.Forms.PictureBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.TckAngFter = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -490,7 +491,7 @@
             // 
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(244, 213);
+            this.button1.Location = new System.Drawing.Point(244, 224);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(110, 42);
             this.button1.TabIndex = 5;
@@ -733,6 +734,7 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.TckAngFter);
             this.groupBox6.Controls.Add(this.tabControl1);
             this.groupBox6.Controls.Add(this.Phi_mode);
             this.groupBox6.Controls.Add(this.groupBox11);
@@ -1142,7 +1144,7 @@
             this.Phi_mode.Items.AddRange(new object[] {
             "Heading angle",
             "Track angle"});
-            this.Phi_mode.Location = new System.Drawing.Point(249, 155);
+            this.Phi_mode.Location = new System.Drawing.Point(249, 170);
             this.Phi_mode.Name = "Phi_mode";
             this.Phi_mode.Size = new System.Drawing.Size(100, 20);
             this.Phi_mode.TabIndex = 8;
@@ -1310,7 +1312,7 @@
             "Multi line",
             "Circular path",
             "Oval path"});
-            this.path_mode.Location = new System.Drawing.Point(249, 187);
+            this.path_mode.Location = new System.Drawing.Point(249, 199);
             this.path_mode.Name = "path_mode";
             this.path_mode.Size = new System.Drawing.Size(100, 20);
             this.path_mode.TabIndex = 0;
@@ -2087,6 +2089,17 @@
             this.tabPage5.Text = "Map display";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // TckAngFter
+            // 
+            this.TckAngFter.AutoSize = true;
+            this.TckAngFter.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.TckAngFter.Location = new System.Drawing.Point(249, 147);
+            this.TckAngFter.Name = "TckAngFter";
+            this.TckAngFter.Size = new System.Drawing.Size(60, 16);
+            this.TckAngFter.TabIndex = 18;
+            this.TckAngFter.Text = "Filter";
+            this.TckAngFter.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -2113,6 +2126,7 @@
             this.groupBox3.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -2329,6 +2343,7 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.CheckBox TckAngFter;
     }
 }
 

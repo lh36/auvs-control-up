@@ -364,8 +364,6 @@ namespace HUST_1_Demo
 
         private void DrawMap()
         {
-            
-            
             while (isFlagDraw)
             {
                 Graphics g = this.PathMap.CreateGraphics();
@@ -396,7 +394,7 @@ namespace HUST_1_Demo
 
                 #region 绘制泳池边界
                 List<Point> PtPaint = new List<Point>();//绘图
-                double[] Pt1 = new double[2] { 30.51582550, 114.42678 };
+                double[] Pt1 = new double[2] { 30.51582550, 114.42678 };//定义边界点
                 double[] Pt2 = new double[2] { 30.51582550, 114.42656 };
                 double[] Pt3 = new double[2] { 30.51625550, 114.42656 };
                 double[] Pt4 = new double[2] { 30.51625550, 114.42678 };
@@ -406,13 +404,13 @@ namespace HUST_1_Demo
                 PtPoolGPSBd.Add(Pt3);
                 PtPoolGPSBd.Add(Pt4);
 
-                for (int i = 0; i < 4;i++ )
+                for (int i = 0; i < 4;i++ )//将经纬度转为平面坐标xy
                 {
                     double[] tepXY = HUST_1_Demo.Model.ShipData.GPS2XY(PtPoolGPSBd.ElementAt(i));
                     PtPoolXYBd.Add(tepXY);
                 }
 
-                for (int i = 0; i < 4;i++ )
+                for (int i = 0; i < 4;i++ )//将xy坐标转为绘图坐标
                 {
                     Point tepPaint = new Point();
                     tepPaint.X = Widthmap - (int)(PtPoolXYBd.ElementAt(i).ElementAt(1)*1000 * paint_scale);//转换为图上的坐标
@@ -421,7 +419,7 @@ namespace HUST_1_Demo
                 }
 
 
-                for (int i = 0; i < PtPaint.Count - 1; i++)
+                for (int i = 0; i < PtPaint.Count - 1; i++)//绘制泳池边界
                 {
                     g.DrawLine(new Pen(Color.Blue, 1), PtPaint.ElementAt(i), PtPaint.ElementAt(i + 1));
                 }
@@ -701,9 +699,18 @@ namespace HUST_1_Demo
             }
             else
             {
-                boat1.Control_Phi = boat1.Fter_GPS_Phi;
-                boat2.Control_Phi = boat2.Fter_GPS_Phi;
-                boat3.Control_Phi = boat3.Fter_GPS_Phi;
+                if(TckAngFter.Checked)//是否滤波
+                {
+                    boat1.Control_Phi = boat1.Fter_GPS_Phi;
+                    boat2.Control_Phi = boat2.Fter_GPS_Phi;
+                    boat3.Control_Phi = boat3.Fter_GPS_Phi;
+                }
+                else
+                {
+                    boat1.Control_Phi = boat1.GPS_Phi;
+                    boat2.Control_Phi = boat2.GPS_Phi;
+                    boat3.Control_Phi = boat3.GPS_Phi;
+                }
             }
         }
 
@@ -1007,8 +1014,8 @@ namespace HUST_1_Demo
                 {
                     int x = (int)((Heightmap - target_pt.Y) * scale);
                     int y = (int)((Widthmap - target_pt.X) * scale);
-                    tarMultiLine.Add(new Point(x, y));
-                    tarMultiLineDraw.Add(target_pt);
+                    tarMultiLine.Add(new Point(x, y));//毫米单位坐标点
+                    tarMultiLineDraw.Add(target_pt);//绘图坐标点
                 }
                 
                 if (e.Button == MouseButtons.Right)
@@ -1049,8 +1056,42 @@ namespace HUST_1_Demo
                 }
 
             }
-            excel.Cells[dataRec.Rows.Count + 1, 1] = tarLineGe.LineK;//记录一般直线的斜率和截距
-            excel.Cells[dataRec.Rows.Count + 1, 2] = tarLineGe.LineB;
+            string PFID = path_mode.Text;
+            switch (PFID)
+            {
+                case "General line":
+                    {
+                        excel.Cells[dataRec.Rows.Count + 1, 1] = tarLineGe.Start.X.ToString();//记录一般直线,起始点x坐标
+                        excel.Cells[dataRec.Rows.Count + 1, 2] = tarLineGe.Start.Y.ToString();//起始点y坐标
+                        excel.Cells[dataRec.Rows.Count + 2, 1] = tarLineGe.End.X.ToString(); 
+                        excel.Cells[dataRec.Rows.Count + 2, 2] = tarLineGe.End.Y.ToString();
+                        break;
+                    }
+                case "Multi line":
+                    {
+                        for (int i = 0; i < tarMultiLine.Count;i++ )
+                        {
+                            excel.Cells[dataRec.Rows.Count + 1 + i, 1] = tarMultiLine.ElementAt(i).X.ToString();
+                            excel.Cells[dataRec.Rows.Count + 1 + i, 2] = tarMultiLine.ElementAt(i).Y.ToString();
+                        }
+                        break;
+                    }
+                case "Oval path":
+                    {
+                        excel.Cells[dataRec.Rows.Count + 1, 1] = tarOval.Pt1.X.ToString();//记录椭圆
+                        excel.Cells[dataRec.Rows.Count + 2, 1] = tarOval.Pt2.X.ToString();//起始点x坐标
+                        excel.Cells[dataRec.Rows.Count + 3, 1] = tarOval.Pt3.X.ToString();
+                        excel.Cells[dataRec.Rows.Count + 4, 1] = tarOval.Pt4.X.ToString();
+
+                        excel.Cells[dataRec.Rows.Count + 1, 2] = tarOval.Pt1.Y.ToString();//起始点y坐标
+                        excel.Cells[dataRec.Rows.Count + 2, 2] = tarOval.Pt2.Y.ToString();
+                        excel.Cells[dataRec.Rows.Count + 3, 2] = tarOval.Pt3.Y.ToString();
+                        excel.Cells[dataRec.Rows.Count + 4, 2] = tarOval.Pt4.Y.ToString();
+                        break;
+                    }
+            }
+                
+            
 
             excel.Visible = true;
         }
