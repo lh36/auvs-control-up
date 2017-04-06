@@ -75,6 +75,7 @@
             this.boat1_init_Phi = new System.Windows.Forms.Button();
             this.Switch = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.TckAngFter = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.Boat1_K2 = new System.Windows.Forms.TextBox();
@@ -260,7 +261,7 @@
             this.ComPortNum1.Name = "ComPortNum1";
             this.ComPortNum1.Size = new System.Drawing.Size(68, 22);
             this.ComPortNum1.TabIndex = 0;
-            this.ComPortNum1.Text = "COM3";
+            this.ComPortNum1.Text = "COM6";
             // 
             // ComOpen1
             // 
@@ -490,7 +491,7 @@
             // 
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(244, 213);
+            this.button1.Location = new System.Drawing.Point(244, 224);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(110, 42);
             this.button1.TabIndex = 5;
@@ -733,6 +734,7 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.TckAngFter);
             this.groupBox6.Controls.Add(this.tabControl1);
             this.groupBox6.Controls.Add(this.Phi_mode);
             this.groupBox6.Controls.Add(this.groupBox11);
@@ -747,6 +749,17 @@
             this.groupBox6.TabIndex = 13;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Closed Control";
+            // 
+            // TckAngFter
+            // 
+            this.TckAngFter.AutoSize = true;
+            this.TckAngFter.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.TckAngFter.Location = new System.Drawing.Point(249, 147);
+            this.TckAngFter.Name = "TckAngFter";
+            this.TckAngFter.Size = new System.Drawing.Size(60, 16);
+            this.TckAngFter.TabIndex = 18;
+            this.TckAngFter.Text = "Filter";
+            this.TckAngFter.UseVisualStyleBackColor = true;
             // 
             // tabControl1
             // 
@@ -1142,7 +1155,7 @@
             this.Phi_mode.Items.AddRange(new object[] {
             "Heading angle",
             "Track angle"});
-            this.Phi_mode.Location = new System.Drawing.Point(249, 155);
+            this.Phi_mode.Location = new System.Drawing.Point(249, 170);
             this.Phi_mode.Name = "Phi_mode";
             this.Phi_mode.Size = new System.Drawing.Size(100, 20);
             this.Phi_mode.TabIndex = 8;
@@ -1310,7 +1323,7 @@
             "Multi line",
             "Circular path",
             "Oval path"});
-            this.path_mode.Location = new System.Drawing.Point(249, 187);
+            this.path_mode.Location = new System.Drawing.Point(249, 199);
             this.path_mode.Name = "path_mode";
             this.path_mode.Size = new System.Drawing.Size(100, 20);
             this.path_mode.TabIndex = 0;
@@ -2113,6 +2126,7 @@
             this.groupBox3.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -2329,6 +2343,7 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.CheckBox TckAngFter;
     }
 }
 

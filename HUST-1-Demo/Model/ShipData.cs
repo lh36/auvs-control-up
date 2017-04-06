@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace HUST_1_Demo.Model
 {
@@ -14,13 +15,13 @@ namespace HUST_1_Demo.Model
         public byte ShipID { get; set; }//船号
         public double Lat { get; set; }//纬度
         public double Lon { get; set; }//经度
-        public float pos_X { get; set; }//当前X坐标，此为测量坐标系下的坐标，北向为X，东向为Y
-        public float pos_Y { get; set; }//Y坐标
-        public float XError { get; set; }//编队误差，与leader的跟随误差
-        public float last_pos_X { get; set; }//上一坐标值
-        public float last_pos_Y { get; set; }//Y坐标
-        public float X_mm { get; set; }//图上X坐标
-        public float Y_mm { get; set; }//图上Y坐标
+        public double pos_X { get; set; }//当前X坐标，此为测量坐标系下的坐标，北向为X，东向为Y
+        public double pos_Y { get; set; }//Y坐标
+        public double XError { get; set; }//编队误差，与leader的跟随误差
+        public double last_pos_X { get; set; }//上一坐标值
+        public double last_pos_Y { get; set; }//Y坐标
+        public double X_mm { get; set; }//图上X坐标
+        public double Y_mm { get; set; }//图上Y坐标
         public float Control_Phi { get; set; }//当前用于控制采用的状态航向（航迹角或者航向角）
         public float GPS_Phi { get; set; }//原始GPS-Phi航迹角
         public float Fter_GPS_Phi { get; set; }//滤波后的航迹角
@@ -73,6 +74,13 @@ namespace HUST_1_Demo.Model
 	        return average;
         }
         
+        public static double[] GPS2XY(double[] GPSData)
+        {
+            double[] Pt = new double[2] { 0.0d, 0.0d };
+            Pt[0] = ((GPSData[0] - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(GPSData[0] / 180 * 3.1415926), 2)), 3))));
+            Pt[1] = -((GPSData[1] - lon_start) * a * Math.Cos(GPSData[0] / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(GPSData[0] / 180 * 3.1415926), 2))));//Y坐标正向朝西
+            return Pt;
+        }
 
         /// <summary>
         /// 更新船舶状态信息
@@ -93,10 +101,13 @@ namespace HUST_1_Demo.Model
 
             Lat = Filter(FilterLat);
             Lon = Filter(FilterLon);*/
+            double[] tempGPS=new double[2]{Lat,Lon};
+            double[] tempXY = GPS2XY(tempGPS);
+          //  pos_X = (float)((Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)), 3))));
+          //  pos_Y = (float)(-((Lon - lon_start) * a * Math.Cos(Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)))));//Y坐标正向朝西
+            pos_X = tempXY[0];
+            pos_Y = tempXY[1];
 
-            pos_X = (float)((Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)), 3))));
-            pos_Y = (float)(-((Lon - lon_start) * a * Math.Cos(Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)))));//Y坐标正向朝西
-            
             GPS_Phi = (float)(Math.Atan2(pos_Y - last_pos_Y, pos_X - last_pos_X) / Math.PI * 180);//航迹角
 
             //将临时存储区向前移位
@@ -173,7 +184,7 @@ namespace HUST_1_Demo.Model
                 Time.ToString());*/
             dataRec.Rows.Add(new object[] { ShipID.ToString(), Lat.ToString("0.00000000"), Lon.ToString("0.00000000"),
                 pos_X.ToString("0.000"), pos_Y.ToString("0.000"), XError.ToString("0.000"),
-                phi.ToString("0.0"), GPS_Phi.ToString("0.0"),
+                phi.ToString("0.0"), GPS_Phi.ToString("0.0"),Fter_GPS_Phi.ToString("0.0"),
                 speed.ToString("0.00"), gear.ToString(),
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
                 Time.ToString() });

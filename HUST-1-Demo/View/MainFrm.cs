@@ -62,6 +62,7 @@ namespace HUST_1_Demo
             public double B4;//L4截距
         }
         
+        
         public static bool isFlagCtrl = false;//绘画线程标志
         public static bool isFlagDraw = false;//控制线程标志
         public static bool isCirPath = false;//跟随路径选择标志=false：直线，=true：圆
@@ -78,6 +79,8 @@ namespace HUST_1_Demo
         DataTable dataRec = new DataTable();
 
         Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
+        List<double[]> PtPoolGPSBd = new List<double[]>();//泳池边界点经纬度
+        List<double[]> PtPoolXYBd = new List<double[]>();//泳池边界点经纬度
         
         public Point tarPoint;  //目标点
         public TargetLine tarLineGe;//一般直线
@@ -87,6 +90,7 @@ namespace HUST_1_Demo
         public TargetCircle tarCircle; //目标圆
         public TargetOval tarOval;//椭圆
         public float tarLineSp;  //平行于X轴的特殊直线
+
 
         ShipData boat1 = new ShipData();
         ShipData boat2 = new ShipData();
@@ -388,6 +392,41 @@ namespace HUST_1_Demo
                 int paint_x3 = Widthmap - (int)(boat3.Y_mm * paint_scale);//转换为图上的坐标
                 int paint_y3 = Heightmap - (int)(boat3.X_mm * paint_scale);
 
+                #region 绘制泳池边界
+                List<Point> PtPaint = new List<Point>();//绘图
+                double[] Pt1 = new double[2] { 30.51582463, 114.426777 };//定义边界点
+                double[] Pt2 = new double[2] { 30.51584359, 114.4265784 };
+                double[] Pt3 = new double[2] { 30.5162782, 114.42661763 };
+                double[] Pt4 = new double[2] { 30.51626484, 114.4268432 };
+                
+                PtPoolGPSBd.Add(Pt1);
+                PtPoolGPSBd.Add(Pt2);
+                PtPoolGPSBd.Add(Pt3);
+                PtPoolGPSBd.Add(Pt4);
+
+                for (int i = 0; i < 4;i++ )//将经纬度转为平面坐标xy
+                {
+                    double[] tepXY = HUST_1_Demo.Model.ShipData.GPS2XY(PtPoolGPSBd.ElementAt(i));
+                    PtPoolXYBd.Add(tepXY);
+                }
+
+                for (int i = 0; i < 4;i++ )//将xy坐标转为绘图坐标
+                {
+                    Point tepPaint = new Point();
+                    tepPaint.X = Widthmap - (int)(PtPoolXYBd.ElementAt(i).ElementAt(1)*1000 * paint_scale);//转换为图上的坐标
+                    tepPaint.Y = Heightmap - (int)(PtPoolXYBd.ElementAt(i).ElementAt(0) * 1000 * paint_scale);//转换为图上的坐标
+                    PtPaint.Add(tepPaint);
+                }
+
+
+                for (int i = 0; i < PtPaint.Count - 1; i++)//绘制泳池边界
+                {
+                    g.DrawLine(new Pen(Color.Blue, 1), PtPaint.ElementAt(i), PtPaint.ElementAt(i + 1));
+                }
+                g.DrawLine(new Pen(Color.Blue, 1), PtPaint.ElementAt(3), PtPaint.ElementAt(0));
+                
+                #endregion
+
                 #region 画目标直线和圆
                 if (path_mode.Text == "Point")//绘制目标点
                 {
@@ -451,14 +490,6 @@ namespace HUST_1_Demo
                         g.DrawLine(penOval, x2, y2, x3, y3);
                         g.DrawLine(penOval, x3, y3, x4, y4);
                         g.DrawLine(penOval, x4, y4, x1, y1);
-
-                      //  g.DrawRectangle(penOval;
-                        Matrix myMatrix = new Matrix();
-                      //  Single angle = (float)(Math.Atan(tarOval.K2) / Math.PI * 180);
-                        Single angle = 30;
-                        PointF rotatePoint = new PointF((x2+x3)/2, (y2+y3)/2);//定点中心坐标(x,y)
-                        myMatrix.RotateAt(angle, rotatePoint, MatrixOrder.Append);
-                        g.Transform = myMatrix;
 
                     //    g.DrawArc(penOval, x2, y2, 100, 200, 30, 330);
                     }
@@ -661,9 +692,18 @@ namespace HUST_1_Demo
             }
             else
             {
-                boat1.Control_Phi = boat1.Fter_GPS_Phi;
-                boat2.Control_Phi = boat2.Fter_GPS_Phi;
-                boat3.Control_Phi = boat3.Fter_GPS_Phi;
+                if(TckAngFter.Checked)//是否滤波
+                {
+                    boat1.Control_Phi = boat1.Fter_GPS_Phi;
+                    boat2.Control_Phi = boat2.Fter_GPS_Phi;
+                    boat3.Control_Phi = boat3.Fter_GPS_Phi;
+                }
+                else
+                {
+                    boat1.Control_Phi = boat1.GPS_Phi;
+                    boat2.Control_Phi = boat2.GPS_Phi;
+                    boat3.Control_Phi = boat3.GPS_Phi;
+                }
             }
         }
 
@@ -821,6 +861,7 @@ namespace HUST_1_Demo
             dataRec.Columns.Add("X Error", Type.GetType("System.String"));
             dataRec.Columns.Add("Phi", Type.GetType("System.String"));
             dataRec.Columns.Add("GPSPhi", Type.GetType("System.String"));
+            dataRec.Columns.Add("FlterGPSPhi", Type.GetType("System.String"));
             dataRec.Columns.Add("Speed", Type.GetType("System.String"));
             dataRec.Columns.Add("Gear", Type.GetType("System.String"));
             dataRec.Columns.Add("Rud", Type.GetType("System.String"));
@@ -946,8 +987,8 @@ namespace HUST_1_Demo
                                 tarOval.Pt4.Y = (int)((tarOval.K2 * tarOval.Pt4.X + tarOval.B4));
 
                                 //计算下半圆圆心Ori2
-                                tarOval.OriPt2.X = (tarOval.Pt3.X + tarOval.Pt4.X) / 2;
-                                tarOval.OriPt2.Y = (tarOval.Pt3.Y + tarOval.Pt4.Y) / 2;
+                                tarOval.OriPt2.X = (tarOval.Pt1.X + tarOval.Pt4.X) / 2;
+                                tarOval.OriPt2.Y = (tarOval.Pt1.Y + tarOval.Pt4.Y) / 2;
                                 tarOval.R = Math.Abs(R);
 
                                 isOvalSet = true;
@@ -967,8 +1008,8 @@ namespace HUST_1_Demo
                 {
                     int x = (int)((Heightmap - target_pt.Y) * scale);
                     int y = (int)((Widthmap - target_pt.X) * scale);
-                    tarMultiLine.Add(new Point(x, y));
-                    tarMultiLineDraw.Add(target_pt);
+                    tarMultiLine.Add(new Point(x, y));//毫米单位坐标点
+                    tarMultiLineDraw.Add(target_pt);//绘图坐标点
                 }
                 
                 if (e.Button == MouseButtons.Right)
@@ -1009,8 +1050,42 @@ namespace HUST_1_Demo
                 }
 
             }
-            excel.Cells[dataRec.Rows.Count + 1, 1] = tarLineGe.LineK;//记录一般直线的斜率和截距
-            excel.Cells[dataRec.Rows.Count + 1, 2] = tarLineGe.LineB;
+            string PFID = path_mode.Text;
+            switch (PFID)
+            {
+                case "General line":
+                    {
+                        excel.Cells[dataRec.Rows.Count + 1, 1] = tarLineGe.Start.X.ToString();//记录一般直线,起始点x坐标
+                        excel.Cells[dataRec.Rows.Count + 1, 2] = tarLineGe.Start.Y.ToString();//起始点y坐标
+                        excel.Cells[dataRec.Rows.Count + 2, 1] = tarLineGe.End.X.ToString(); 
+                        excel.Cells[dataRec.Rows.Count + 2, 2] = tarLineGe.End.Y.ToString();
+                        break;
+                    }
+                case "Multi line":
+                    {
+                        for (int i = 0; i < tarMultiLine.Count;i++ )
+                        {
+                            excel.Cells[dataRec.Rows.Count + 1 + i, 1] = tarMultiLine.ElementAt(i).X.ToString();
+                            excel.Cells[dataRec.Rows.Count + 1 + i, 2] = tarMultiLine.ElementAt(i).Y.ToString();
+                        }
+                        break;
+                    }
+                case "Oval path":
+                    {
+                        excel.Cells[dataRec.Rows.Count + 1, 1] = tarOval.Pt1.X.ToString();//记录椭圆
+                        excel.Cells[dataRec.Rows.Count + 2, 1] = tarOval.Pt2.X.ToString();//起始点x坐标
+                        excel.Cells[dataRec.Rows.Count + 3, 1] = tarOval.Pt3.X.ToString();
+                        excel.Cells[dataRec.Rows.Count + 4, 1] = tarOval.Pt4.X.ToString();
+
+                        excel.Cells[dataRec.Rows.Count + 1, 2] = tarOval.Pt1.Y.ToString();//起始点y坐标
+                        excel.Cells[dataRec.Rows.Count + 2, 2] = tarOval.Pt2.Y.ToString();
+                        excel.Cells[dataRec.Rows.Count + 3, 2] = tarOval.Pt3.Y.ToString();
+                        excel.Cells[dataRec.Rows.Count + 4, 2] = tarOval.Pt4.Y.ToString();
+                        break;
+                    }
+            }
+                
+            
 
             excel.Visible = true;
         }
