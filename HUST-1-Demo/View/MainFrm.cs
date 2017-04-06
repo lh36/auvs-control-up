@@ -394,10 +394,10 @@ namespace HUST_1_Demo
 
                 #region 绘制泳池边界
                 List<Point> PtPaint = new List<Point>();//绘图
-                double[] Pt1 = new double[2] { 30.51582550, 114.42678 };//定义边界点
-                double[] Pt2 = new double[2] { 30.51582550, 114.42656 };
-                double[] Pt3 = new double[2] { 30.51625550, 114.42656 };
-                double[] Pt4 = new double[2] { 30.51625550, 114.42678 };
+                double[] Pt1 = new double[2] { 30.51582463, 114.426777 };//定义边界点
+                double[] Pt2 = new double[2] { 30.51584359, 114.4265784 };
+                double[] Pt3 = new double[2] { 30.5162782, 114.42661763 };
+                double[] Pt4 = new double[2] { 30.51626484, 114.4268432 };
                 
                 PtPoolGPSBd.Add(Pt1);
                 PtPoolGPSBd.Add(Pt2);
@@ -423,6 +423,7 @@ namespace HUST_1_Demo
                 {
                     g.DrawLine(new Pen(Color.Blue, 1), PtPaint.ElementAt(i), PtPaint.ElementAt(i + 1));
                 }
+                g.DrawLine(new Pen(Color.Blue, 1), PtPaint.ElementAt(3), PtPaint.ElementAt(0));
                 
                 #endregion
 
@@ -489,14 +490,6 @@ namespace HUST_1_Demo
                         g.DrawLine(penOval, x2, y2, x3, y3);
                         g.DrawLine(penOval, x3, y3, x4, y4);
                         g.DrawLine(penOval, x4, y4, x1, y1);
-
-                      //  g.DrawRectangle(penOval;
-                        Matrix myMatrix = new Matrix();
-                      //  Single angle = (float)(Math.Atan(tarOval.K2) / Math.PI * 180);
-                        Single angle = 30;
-                        PointF rotatePoint = new PointF((x2+x3)/2, (y2+y3)/2);//定点中心坐标(x,y)
-                        myMatrix.RotateAt(angle, rotatePoint, MatrixOrder.Append);
-                        g.Transform = myMatrix;
 
                     //    g.DrawArc(penOval, x2, y2, 100, 200, 30, 330);
                     }
@@ -868,6 +861,7 @@ namespace HUST_1_Demo
             dataRec.Columns.Add("X Error", Type.GetType("System.String"));
             dataRec.Columns.Add("Phi", Type.GetType("System.String"));
             dataRec.Columns.Add("GPSPhi", Type.GetType("System.String"));
+            dataRec.Columns.Add("FlterGPSPhi", Type.GetType("System.String"));
             dataRec.Columns.Add("Speed", Type.GetType("System.String"));
             dataRec.Columns.Add("Gear", Type.GetType("System.String"));
             dataRec.Columns.Add("Rud", Type.GetType("System.String"));
@@ -993,8 +987,8 @@ namespace HUST_1_Demo
                                 tarOval.Pt4.Y = (int)((tarOval.K2 * tarOval.Pt4.X + tarOval.B4));
 
                                 //计算下半圆圆心Ori2
-                                tarOval.OriPt2.X = (tarOval.Pt3.X + tarOval.Pt4.X) / 2;
-                                tarOval.OriPt2.Y = (tarOval.Pt3.Y + tarOval.Pt4.Y) / 2;
+                                tarOval.OriPt2.X = (tarOval.Pt1.X + tarOval.Pt4.X) / 2;
+                                tarOval.OriPt2.Y = (tarOval.Pt1.Y + tarOval.Pt4.Y) / 2;
                                 tarOval.R = Math.Abs(R);
 
                                 isOvalSet = true;

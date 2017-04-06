@@ -75,6 +75,7 @@
             this.boat1_init_Phi = new System.Windows.Forms.Button();
             this.Switch = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.TckAngFter = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.Boat1_K2 = new System.Windows.Forms.TextBox();
@@ -208,7 +209,6 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PathMap = new System.Windows.Forms.PictureBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.TckAngFter = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -261,7 +261,7 @@
             this.ComPortNum1.Name = "ComPortNum1";
             this.ComPortNum1.Size = new System.Drawing.Size(68, 22);
             this.ComPortNum1.TabIndex = 0;
-            this.ComPortNum1.Text = "COM3";
+            this.ComPortNum1.Text = "COM6";
             // 
             // ComOpen1
             // 
@@ -749,6 +749,17 @@
             this.groupBox6.TabIndex = 13;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Closed Control";
+            // 
+            // TckAngFter
+            // 
+            this.TckAngFter.AutoSize = true;
+            this.TckAngFter.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.TckAngFter.Location = new System.Drawing.Point(249, 147);
+            this.TckAngFter.Name = "TckAngFter";
+            this.TckAngFter.Size = new System.Drawing.Size(60, 16);
+            this.TckAngFter.TabIndex = 18;
+            this.TckAngFter.Text = "Filter";
+            this.TckAngFter.UseVisualStyleBackColor = true;
             // 
             // tabControl1
             // 
@@ -2088,17 +2099,6 @@
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Map display";
             this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // TckAngFter
-            // 
-            this.TckAngFter.AutoSize = true;
-            this.TckAngFter.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TckAngFter.Location = new System.Drawing.Point(249, 147);
-            this.TckAngFter.Name = "TckAngFter";
-            this.TckAngFter.Size = new System.Drawing.Size(60, 16);
-            this.TckAngFter.TabIndex = 18;
-            this.TckAngFter.Text = "Filter";
-            this.TckAngFter.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
