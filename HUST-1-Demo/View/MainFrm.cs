@@ -753,11 +753,11 @@ namespace HUST_1_Demo
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
             ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-           /* if (AutoSpeed.Checked) 
-                ship2Control.command[4] = ship2Control.Closed_Control_Speed(boat2, boat2.pos_X);
+            if (AutoSpeed.Checked)
+                ship2Control.command[4] = ship2Control.Closed_Control_LineSpeed(boat2, boat2, isCirPath, isFlagDir);
             else 
-                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  */
-            ship2Control.command[4] = 100;
+                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
+         //   ship2Control.command[4] = 100;
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             boat2.XError = boat1.pos_X - boat3.pos_X;
@@ -867,6 +867,7 @@ namespace HUST_1_Demo
             dataRec.Columns.Add("Rud", Type.GetType("System.String"));
             dataRec.Columns.Add("CtrlRudOut", Type.GetType("System.String"));
             dataRec.Columns.Add("CtrlSpeedOut", Type.GetType("System.String"));
+            dataRec.Columns.Add("LineID", Type.GetType("System.String"));
             dataRec.Columns.Add("Time", Type.GetType("System.String"));
         }
         private void Form1_Load(object sender, EventArgs e)

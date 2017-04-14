@@ -115,7 +115,7 @@ namespace HUST_1_Demo.Model
             {
                 tempFterGPSPhi[i] = tempFterGPSPhi[i + 1];
             }
-            tempFterGPSPhi[4] = GPS_Phi;//存入最新值
+            tempFterGPSPhi[4] = GPS_Phi;//存入最新值  
 
             Fter_GPS_Phi = Filter(tempFterGPSPhi);//滤波后的航迹角
 
@@ -139,7 +139,7 @@ namespace HUST_1_Demo.Model
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;
           //  rud = response_data[21];//大船没有舵角信息
-            rud = (response_data[21] - 30) * 1.8f;//小船舵角信息
+            rud = response_data[21] - 25;//小船舵角信息
             if (response_data[22] == 0) gear = response_data[22];
             else gear = response_data[22]-12;
         }
@@ -187,6 +187,7 @@ namespace HUST_1_Demo.Model
                 phi.ToString("0.0"), GPS_Phi.ToString("0.0"),Fter_GPS_Phi.ToString("0.0"),
                 speed.ToString("0.00"), gear.ToString(),
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
+                HUST_1_Demo.Form1.followLineID.ToString(),//多段直线ID戳
                 Time.ToString() });
         }
 

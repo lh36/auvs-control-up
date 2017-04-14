@@ -153,7 +153,7 @@ namespace HUST_1_Demo.Controller
                 Err_phi = Err_phi + 360;
             }
 
-            if (Math.Abs(Ye) < 0.2)
+            if (Math.Abs(Ye) < 0.5)
             {
                 boat.Err_phi_In += Err_phi;
             }
