@@ -33,6 +33,7 @@ namespace HUST_1_Demo.Model
         public float speed { get; set; }//船速
         public string Time { get; set; }//时间
         public int gear { get; set; }//速度档
+        public int MotorSpd { get; set; }//电机转速
         public int CtrlRudOut { get; set; }//舵角控制输出量
         public int CtrlSpeedOut { get; set; }//速度控制输出量
         public double Err_phi_In { get; set; }//积分控制中的积分量
@@ -142,6 +143,7 @@ namespace HUST_1_Demo.Model
             rud = response_data[21] - 25;//小船舵角信息
             if (response_data[22] == 0) gear = response_data[22];
             else gear = response_data[22]-12;
+            MotorSpd = response_data[23];
         }
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace HUST_1_Demo.Model
                 pos_X.ToString("0.000"), pos_Y.ToString("0.000"), XError.ToString("0.000"),
                 phi.ToString("0.0"), GPS_Phi.ToString("0.0"),Fter_GPS_Phi.ToString("0.0"),
                 speed.ToString("0.00"), gear.ToString(),
-                rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
+                rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),MotorSpd.ToString(),
                 HUST_1_Demo.Form1.followLineID.ToString(),//多段直线ID戳
                 Time.ToString() });
         }
