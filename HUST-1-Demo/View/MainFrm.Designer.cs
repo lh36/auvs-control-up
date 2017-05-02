@@ -41,6 +41,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.BTNStoreData = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.OpnCtrTst = new System.Windows.Forms.Button();
             this.groupBox18 = new System.Windows.Forms.GroupBox();
             this.asv3 = new System.Windows.Forms.RadioButton();
             this.asv1 = new System.Windows.Forms.RadioButton();
@@ -209,6 +210,13 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PathMap = new System.Windows.Forms.PictureBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label75 = new System.Windows.Forms.Label();
+            this.Boat3_MotorSpd = new System.Windows.Forms.TextBox();
+            this.label73 = new System.Windows.Forms.Label();
+            this.Boat2_MotorSpd = new System.Windows.Forms.TextBox();
+            this.label44 = new System.Windows.Forms.Label();
+            this.Boat1_MotorSpd = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -234,6 +242,7 @@
             this.tabControl2.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PathMap)).BeginInit();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // serialPort1
@@ -366,6 +375,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.OpnCtrTst);
             this.groupBox2.Controls.Add(this.groupBox18);
             this.groupBox2.Controls.Add(this.Backoff);
             this.groupBox2.Controls.Add(this.rightdown);
@@ -382,6 +392,16 @@
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Open Control";
+            // 
+            // OpnCtrTst
+            // 
+            this.OpnCtrTst.Location = new System.Drawing.Point(258, 151);
+            this.OpnCtrTst.Name = "OpnCtrTst";
+            this.OpnCtrTst.Size = new System.Drawing.Size(95, 39);
+            this.OpnCtrTst.TabIndex = 6;
+            this.OpnCtrTst.Text = "Open Test";
+            this.OpnCtrTst.UseVisualStyleBackColor = true;
+            this.OpnCtrTst.Click += new System.EventHandler(this.OpnCtrTst_Click);
             // 
             // groupBox18
             // 
@@ -431,7 +451,7 @@
             // 
             this.Backoff.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.Backoff.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Backoff.Location = new System.Drawing.Point(178, 151);
+            this.Backoff.Location = new System.Drawing.Point(107, 151);
             this.Backoff.Name = "Backoff";
             this.Backoff.Size = new System.Drawing.Size(103, 39);
             this.Backoff.TabIndex = 4;
@@ -754,7 +774,7 @@
             // 
             this.TckAngFter.AutoSize = true;
             this.TckAngFter.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TckAngFter.Location = new System.Drawing.Point(249, 147);
+            this.TckAngFter.Location = new System.Drawing.Point(266, 148);
             this.TckAngFter.Name = "TckAngFter";
             this.TckAngFter.Size = new System.Drawing.Size(60, 16);
             this.TckAngFter.TabIndex = 18;
@@ -2100,12 +2120,76 @@
             this.tabPage5.Text = "Map display";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label75);
+            this.groupBox4.Controls.Add(this.Boat3_MotorSpd);
+            this.groupBox4.Controls.Add(this.label73);
+            this.groupBox4.Controls.Add(this.Boat2_MotorSpd);
+            this.groupBox4.Controls.Add(this.label44);
+            this.groupBox4.Controls.Add(this.Boat1_MotorSpd);
+            this.groupBox4.Location = new System.Drawing.Point(13, 779);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(560, 47);
+            this.groupBox4.TabIndex = 18;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Motor speed";
+            // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Location = new System.Drawing.Point(305, 23);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(41, 12);
+            this.label75.TabIndex = 1;
+            this.label75.Text = "ASV 3#";
+            // 
+            // Boat3_MotorSpd
+            // 
+            this.Boat3_MotorSpd.Location = new System.Drawing.Point(352, 20);
+            this.Boat3_MotorSpd.Name = "Boat3_MotorSpd";
+            this.Boat3_MotorSpd.Size = new System.Drawing.Size(67, 21);
+            this.Boat3_MotorSpd.TabIndex = 0;
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Location = new System.Drawing.Point(166, 23);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(41, 12);
+            this.label73.TabIndex = 1;
+            this.label73.Text = "ASV 2#";
+            // 
+            // Boat2_MotorSpd
+            // 
+            this.Boat2_MotorSpd.Location = new System.Drawing.Point(213, 20);
+            this.Boat2_MotorSpd.Name = "Boat2_MotorSpd";
+            this.Boat2_MotorSpd.Size = new System.Drawing.Size(67, 21);
+            this.Boat2_MotorSpd.TabIndex = 0;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(27, 23);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(41, 12);
+            this.label44.TabIndex = 1;
+            this.label44.Text = "ASV 1#";
+            // 
+            // Boat1_MotorSpd
+            // 
+            this.Boat1_MotorSpd.Location = new System.Drawing.Point(74, 20);
+            this.Boat1_MotorSpd.Name = "Boat1_MotorSpd";
+            this.Boat1_MotorSpd.Size = new System.Drawing.Size(67, 21);
+            this.Boat1_MotorSpd.TabIndex = 0;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
-            this.ClientSize = new System.Drawing.Size(853, 780);
+            this.ClientSize = new System.Drawing.Size(853, 838);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.tabControl2);
             this.Controls.Add(this.groupBox19);
             this.Controls.Add(this.groupBox15);
@@ -2158,6 +2242,8 @@
             this.tabControl2.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.PathMap)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2344,6 +2430,14 @@
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label label68;
         private System.Windows.Forms.CheckBox TckAngFter;
+        private System.Windows.Forms.Button OpnCtrTst;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.TextBox Boat3_MotorSpd;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.TextBox Boat2_MotorSpd;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.TextBox Boat1_MotorSpd;
     }
 }
 

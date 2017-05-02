@@ -193,6 +193,7 @@ namespace HUST_1_Demo
                 MessageBox.Show("请先打开串口！\r\n");
             }
             {
+                isFlagCtrl = false;
                 ship1Control.Stop_Robot(serialPort1);
                 ship2Control.Stop_Robot(serialPort1);
                 ship3Control.Stop_Robot(serialPort1);
@@ -230,6 +231,7 @@ namespace HUST_1_Demo
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
             Boat1_time.Text = boat1.Time;
+            Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
 
             Boat2_X.Text = boat2.pos_X.ToString("0.00");
             Boat2_Y.Text = boat2.pos_Y.ToString("0.00");
@@ -238,6 +240,7 @@ namespace HUST_1_Demo
             Boat2_speed.Text = boat2.speed.ToString("0.000");
             Boat2_grade.Text = boat2.gear.ToString();
             Boat2_time.Text = boat2.Time;
+            Boat2_MotorSpd.Text = boat2.MotorSpd.ToString();
 
             Boat3_X.Text = boat3.pos_X.ToString("0.00");
             Boat3_Y.Text = boat3.pos_Y.ToString("0.00");
@@ -246,6 +249,7 @@ namespace HUST_1_Demo
             Boat3_speed.Text = boat3.speed.ToString("0.000");
             Boat3_grade.Text = boat3.gear.ToString();
             Boat3_time.Text = boat3.Time;
+            Boat3_MotorSpd.Text = boat3.MotorSpd.ToString();
         }
 
         private void leftup_Click(object sender, EventArgs e)
@@ -753,11 +757,11 @@ namespace HUST_1_Demo
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
             ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-           /* if (AutoSpeed.Checked) 
-                ship2Control.command[4] = ship2Control.Closed_Control_Speed(boat2, boat2.pos_X);
+            if (AutoSpeed.Checked)
+                ship2Control.command[4] = ship2Control.Closed_Control_LineSpeed(boat2, boat2, isCirPath, isFlagDir);
             else 
-                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  */
-            ship2Control.command[4] = 100;
+                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));  
+         //   ship2Control.command[4] = 100;
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             boat2.XError = boat1.pos_X - boat3.pos_X;
@@ -867,6 +871,8 @@ namespace HUST_1_Demo
             dataRec.Columns.Add("Rud", Type.GetType("System.String"));
             dataRec.Columns.Add("CtrlRudOut", Type.GetType("System.String"));
             dataRec.Columns.Add("CtrlSpeedOut", Type.GetType("System.String"));
+            dataRec.Columns.Add("MotorSpd", Type.GetType("System.String"));
+            dataRec.Columns.Add("LineID", Type.GetType("System.String"));
             dataRec.Columns.Add("Time", Type.GetType("System.String"));
         }
         private void Form1_Load(object sender, EventArgs e)
@@ -1088,6 +1094,23 @@ namespace HUST_1_Demo
             
 
             excel.Visible = true;
+        }
+
+
+        static byte[] commandOpen = new byte[6] { 0xa1, 0x1a, 0x06, 32, 90, 0xaa };
+        private void OpnTstFun()
+        {
+            serialPort1.Write(commandOpen, 0, 6);
+            Thread.Sleep(10000);
+            commandOpen[3] = 64;
+            serialPort1.Write(commandOpen, 0, 6);
+        }
+        private void OpnCtrTst_Click(object sender, EventArgs e)
+        {
+            Thread OpenCtrTst = new Thread(OpnTstFun);
+            OpenCtrTst.IsBackground = true;
+            OpenCtrTst.Start();
+            isFlagCtrl = true;
         }
 
     }
