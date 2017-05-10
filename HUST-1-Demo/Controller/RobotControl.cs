@@ -238,7 +238,7 @@ namespace HUST_1_Demo.Controller
         //圆轨迹跟随
         public byte FollowCircle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
-            float Err_phi = 0.0f;
+            double Err_phi = 0.0d;
            // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
             double k = 3.5d;
 
@@ -250,7 +250,7 @@ namespace HUST_1_Demo.Controller
             double Ye = (Math.Sqrt((boat.pos_X - Center_X) * (boat.pos_X - Center_X) + (boat.pos_Y - Center_Y) * (boat.pos_Y - Center_Y)) - Radius);
 
             float Robot_xy = (float)(Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180);//航行器相对于原点的极坐标点
-            float Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
+            double Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
 
             if (Dir_R > 180) Dir_R = Dir_R - 360;
             else if (Dir_R < -180) Dir_R = Dir_R + 360;
@@ -367,6 +367,115 @@ namespace HUST_1_Demo.Controller
             }
 
             return R;
+        }
+
+        public static long timeTickCnt = 0;
+        public static double[] yawd = new double[3] { 0.0d, 0.0d, 0.0d };
+        public static double[] UpdateYawd()
+        {
+            if (timeTickCnt < 50)
+            {
+                yawd[0] = 0;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else if (50 <= timeTickCnt && timeTickCnt < 150)
+            {
+                yawd[0] = Math.PI / 2;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else if (150 <= timeTickCnt && timeTickCnt < 200)
+            {
+                yawd[0] = 0;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else if (200 <= timeTickCnt && timeTickCnt < 300)
+            {
+                yawd[0] = -Math.PI / 2;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else
+            {
+                yawd[0] = 0;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            return yawd;
+        }
+
+        public static double d2r = Math.PI / 180;
+        public static double r2d = 1 / d2r;
+        public static float Alf1 = 5.0f;
+        public static float Alf2 = 0.001f;
+        public static float Ks = 4.0f;
+        public static float Bet = 0.001f;
+        public static float G = 10.0f;
+        public static double e20 = 0.0f;
+        public byte RISE_Test(ShipData boat)
+        {
+            UpdateYawd();
+
+            double dControl_Phi = (boat.Control_Phi - boat.L_Control_Phi) / 0.2 * d2r;//航迹角导数
+
+            boat.e1 = yawd[0] - boat.Control_Phi * d2r;
+            boat.e2 = (yawd[1] - dControl_Phi) + Alf1 * boat.e1;
+            if (timeTickCnt == 0)
+            {
+                e20 = boat.e2;
+            }
+            boat.L_Control_Phi = boat.Control_Phi;
+
+            double dVf = (Ks + 1) * Alf2 * boat.e2 + Bet * Math.Tanh(G * boat.e2);//积分量
+            boat.Vf += dVf;
+
+            boat.F2 = (Ks + 1) * boat.e2 - (Ks + 1) * e20 + boat.Vf;
+
+            int R = (int)boat.F2;
+            if (R > 32)
+            {
+                R = 32;
+            }
+            else if (R < -32)
+            {
+                R = -32;
+            }
+            R = R + 32;
+
+            return (byte)R;
+        }
+
+        public static double Kp = 1.0d;
+        public static double Kd = 1.0d;
+
+        public static double m2bar = 2.0078d;
+        public static double I33bar = 1.3d;
+        public static double d33bar = 11.0289d;
+        public byte NSFC_Test(ShipData boat)
+        {
+            UpdateYawd();
+            double uBoat = 0.74d;
+            double vBoat = 0.0d;
+            double dControl_Phi = (boat.Control_Phi - boat.L_Control_Phi) / 0.2 * d2r;//航迹角导数
+            boat.L_Control_Phi = boat.Control_Phi;
+
+            boat.F2 = I33bar * (yawd[2] + Kp * (yawd[0] - boat.Control_Phi * d2r) + Kd * (yawd[1] - dControl_Phi))
+                + m2bar * uBoat * vBoat + d33bar * dControl_Phi;
+
+            int R = (int)boat.F2;
+            if (R > 32)
+            {
+                R = 32;
+            }
+            else if (R < -32)
+            {
+                R = -32;
+            }
+            R = R + 32;
+
+            return (byte)R;
         }
         #endregion
 
