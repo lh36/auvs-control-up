@@ -871,6 +871,10 @@ namespace HUST_1_Demo
             dataRec.Columns.Add("Rud", Type.GetType("System.String"));
             dataRec.Columns.Add("CtrlRudOut", Type.GetType("System.String"));
             dataRec.Columns.Add("CtrlSpeedOut", Type.GetType("System.String"));
+            dataRec.Columns.Add("e1", Type.GetType("System.String"));
+            dataRec.Columns.Add("e2", Type.GetType("System.String"));
+            dataRec.Columns.Add("Vf", Type.GetType("System.String"));
+            dataRec.Columns.Add("F2", Type.GetType("System.String"));
             dataRec.Columns.Add("MotorSpd", Type.GetType("System.String"));
             dataRec.Columns.Add("LineID", Type.GetType("System.String"));
             dataRec.Columns.Add("Time", Type.GetType("System.String"));

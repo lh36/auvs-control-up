@@ -210,13 +210,13 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PathMap = new System.Windows.Forms.PictureBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label75 = new System.Windows.Forms.Label();
             this.Boat3_MotorSpd = new System.Windows.Forms.TextBox();
             this.label73 = new System.Windows.Forms.Label();
             this.Boat2_MotorSpd = new System.Windows.Forms.TextBox();
             this.label44 = new System.Windows.Forms.Label();
             this.Boat1_MotorSpd = new System.Windows.Forms.TextBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -2120,25 +2120,10 @@
             this.tabPage5.Text = "Map display";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.label75);
-            this.groupBox4.Controls.Add(this.Boat3_MotorSpd);
-            this.groupBox4.Controls.Add(this.label73);
-            this.groupBox4.Controls.Add(this.Boat2_MotorSpd);
-            this.groupBox4.Controls.Add(this.label44);
-            this.groupBox4.Controls.Add(this.Boat1_MotorSpd);
-            this.groupBox4.Location = new System.Drawing.Point(13, 779);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(560, 47);
-            this.groupBox4.TabIndex = 18;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Motor speed";
-            // 
             // label75
             // 
             this.label75.AutoSize = true;
-            this.label75.Location = new System.Drawing.Point(305, 23);
+            this.label75.Location = new System.Drawing.Point(5, 86);
             this.label75.Name = "label75";
             this.label75.Size = new System.Drawing.Size(41, 12);
             this.label75.TabIndex = 1;
@@ -2146,7 +2131,7 @@
             // 
             // Boat3_MotorSpd
             // 
-            this.Boat3_MotorSpd.Location = new System.Drawing.Point(352, 20);
+            this.Boat3_MotorSpd.Location = new System.Drawing.Point(52, 83);
             this.Boat3_MotorSpd.Name = "Boat3_MotorSpd";
             this.Boat3_MotorSpd.Size = new System.Drawing.Size(67, 21);
             this.Boat3_MotorSpd.TabIndex = 0;
@@ -2154,7 +2139,7 @@
             // label73
             // 
             this.label73.AutoSize = true;
-            this.label73.Location = new System.Drawing.Point(166, 23);
+            this.label73.Location = new System.Drawing.Point(5, 52);
             this.label73.Name = "label73";
             this.label73.Size = new System.Drawing.Size(41, 12);
             this.label73.TabIndex = 1;
@@ -2162,7 +2147,7 @@
             // 
             // Boat2_MotorSpd
             // 
-            this.Boat2_MotorSpd.Location = new System.Drawing.Point(213, 20);
+            this.Boat2_MotorSpd.Location = new System.Drawing.Point(52, 49);
             this.Boat2_MotorSpd.Name = "Boat2_MotorSpd";
             this.Boat2_MotorSpd.Size = new System.Drawing.Size(67, 21);
             this.Boat2_MotorSpd.TabIndex = 0;
@@ -2170,7 +2155,7 @@
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(27, 23);
+            this.label44.Location = new System.Drawing.Point(5, 25);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(41, 12);
             this.label44.TabIndex = 1;
@@ -2178,17 +2163,32 @@
             // 
             // Boat1_MotorSpd
             // 
-            this.Boat1_MotorSpd.Location = new System.Drawing.Point(74, 20);
+            this.Boat1_MotorSpd.Location = new System.Drawing.Point(52, 22);
             this.Boat1_MotorSpd.Name = "Boat1_MotorSpd";
             this.Boat1_MotorSpd.Size = new System.Drawing.Size(67, 21);
             this.Boat1_MotorSpd.TabIndex = 0;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.Boat1_MotorSpd);
+            this.groupBox4.Controls.Add(this.label75);
+            this.groupBox4.Controls.Add(this.label44);
+            this.groupBox4.Controls.Add(this.Boat3_MotorSpd);
+            this.groupBox4.Controls.Add(this.Boat2_MotorSpd);
+            this.groupBox4.Controls.Add(this.label73);
+            this.groupBox4.Location = new System.Drawing.Point(857, 5);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(130, 196);
+            this.groupBox4.TabIndex = 18;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Motor speed";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
-            this.ClientSize = new System.Drawing.Size(853, 838);
+            this.ClientSize = new System.Drawing.Size(999, 781);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.tabControl2);
             this.Controls.Add(this.groupBox19);
@@ -2431,13 +2431,13 @@
         private System.Windows.Forms.Label label68;
         private System.Windows.Forms.CheckBox TckAngFter;
         private System.Windows.Forms.Button OpnCtrTst;
-        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label label75;
         private System.Windows.Forms.TextBox Boat3_MotorSpd;
         private System.Windows.Forms.Label label73;
         private System.Windows.Forms.TextBox Boat2_MotorSpd;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.TextBox Boat1_MotorSpd;
+        private System.Windows.Forms.GroupBox groupBox4;
     }
 }
 

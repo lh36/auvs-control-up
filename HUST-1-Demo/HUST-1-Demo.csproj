@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JsonFx.Json">
-      <HintPath>..\..\..\..\..\..\..\编程\C#\HTTP请求&amp;JSON\动态链接库\JsonFx.Json.dll</HintPath>
+      <HintPath>D:\Tools\DLL合集\JsonFx.Json.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -54,7 +54,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>D:\Program Files\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport\Managed\UnityEngine.dll</HintPath>
+      <HintPath>D:\Tools\DLL合集\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

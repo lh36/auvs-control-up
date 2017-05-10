@@ -22,7 +22,8 @@ namespace HUST_1_Demo.Model
         public double last_pos_Y { get; set; }//Y坐标
         public double X_mm { get; set; }//图上X坐标
         public double Y_mm { get; set; }//图上Y坐标
-        public float Control_Phi { get; set; }//当前用于控制采用的状态航向（航迹角或者航向角）
+        public double Control_Phi { get; set; }//当前用于控制采用的状态航向（航迹角或者航向角）
+        public double L_Control_Phi { get; set; }//上一次航迹角/航向角
         public float GPS_Phi { get; set; }//原始GPS-Phi航迹角
         public float Fter_GPS_Phi { get; set; }//滤波后的航迹角
         public float phi { get; set; }//航向角惯导
@@ -36,6 +37,10 @@ namespace HUST_1_Demo.Model
         public int MotorSpd { get; set; }//电机转速
         public int CtrlRudOut { get; set; }//舵角控制输出量
         public int CtrlSpeedOut { get; set; }//速度控制输出量
+        public double e1 { get; set; }//Rise 控制中间量
+        public double e2 { get; set; }//Rise 控制中间量
+        public double Vf { get; set; }//Rise 控制积分项
+        public double F2 { get; set; }
         public double Err_phi_In { get; set; }//积分控制中的积分量
 
         //控制参数
@@ -49,32 +54,32 @@ namespace HUST_1_Demo.Model
 
         public static double a = 6378137.0;//定义地球长半轴长度  
         public static double earth_e = 0.003352810664; //定义椭球的第一偏心律
-     //   public static double lat_start = 30.51584003;//定义原点位置
-     //   public static double lon_start = 114.42665029;
+        //   public static double lat_start = 30.51584003;//定义原点位置
+        //   public static double lon_start = 114.42665029;
 
         public static double lat_start = 30.51582550;//定义原点位置
         public static double lon_start = 114.426780000;
 
         public double[] FilterLat = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public double[] FilterLon = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public float[] tempFterGPSPhi = new float[5] { 0, 0, 0, 0, 0 }; 
+        public float[] tempFterGPSPhi = new float[5] { 0, 0, 0, 0, 0 };
         public float Filter(float[] Lvbobuf)
         {
-	        float average,max,min,sum=0.0f;
-	        max=Lvbobuf[0];
-	        min=Lvbobuf[0];
+            float average, max, min, sum = 0.0f;
+            max = Lvbobuf[0];
+            min = Lvbobuf[0];
             for (int i = 0; i < Lvbobuf.Length; i++)
-	        {
-		        if(max<Lvbobuf[i])
-			        max=Lvbobuf[i];
-		        if(min>Lvbobuf[i])
-			        min=Lvbobuf[i];
-		        sum=sum+Lvbobuf[i];
-	        }
-	        average=(sum-max-min)/(Lvbobuf.Length-2);
-	        return average;
+            {
+                if (max < Lvbobuf[i])
+                    max = Lvbobuf[i];
+                if (min > Lvbobuf[i])
+                    min = Lvbobuf[i];
+                sum = sum + Lvbobuf[i];
+            }
+            average = (sum - max - min) / (Lvbobuf.Length - 2);
+            return average;
         }
-        
+
         public static double[] GPS2XY(double[] GPSData)
         {
             double[] Pt = new double[2] { 0.0d, 0.0d };
@@ -102,10 +107,10 @@ namespace HUST_1_Demo.Model
 
             Lat = Filter(FilterLat);
             Lon = Filter(FilterLon);*/
-            double[] tempGPS=new double[2]{Lat,Lon};
+            double[] tempGPS = new double[2] { Lat, Lon };
             double[] tempXY = GPS2XY(tempGPS);
-          //  pos_X = (float)((Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)), 3))));
-          //  pos_Y = (float)(-((Lon - lon_start) * a * Math.Cos(Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)))));//Y坐标正向朝西
+            //  pos_X = (float)((Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)), 3))));
+            //  pos_Y = (float)(-((Lon - lon_start) * a * Math.Cos(Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)))));//Y坐标正向朝西
             pos_X = tempXY[0];
             pos_Y = tempXY[1];
 
@@ -139,10 +144,10 @@ namespace HUST_1_Demo.Model
             phi = Init_Phi + Phi_buchang;
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;
-          //  rud = response_data[21];//大船没有舵角信息
+            //  rud = response_data[21];//大船没有舵角信息
             rud = response_data[21] - 25;//小船舵角信息
             if (response_data[22] == 0) gear = response_data[22];
-            else gear = response_data[22]-12;
+            else gear = response_data[22] - 12;
             MotorSpd = response_data[23];
         }
 
@@ -188,7 +193,9 @@ namespace HUST_1_Demo.Model
                 pos_X.ToString("0.000"), pos_Y.ToString("0.000"), XError.ToString("0.000"),
                 phi.ToString("0.0"), GPS_Phi.ToString("0.0"),Fter_GPS_Phi.ToString("0.0"),
                 speed.ToString("0.00"), gear.ToString(),
-                rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),MotorSpd.ToString(),
+                rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
+                e1.ToString(),e2.ToString(),Vf.ToString(),F2.ToString(),
+                MotorSpd.ToString(),
                 HUST_1_Demo.Form1.followLineID.ToString(),//多段直线ID戳
                 Time.ToString() });
         }
