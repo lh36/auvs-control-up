@@ -543,7 +543,7 @@ namespace HUST_1_Demo
             listPoint_Boat1.Clear();
             listPoint_Boat2.Clear();
             listPoint_Boat3.Clear();
-            
+            webBrowser1.Document.InvokeScript("clear_line");
             //多段直线数据清除
             tarMultiLine.Clear();
             tarMultiLineDraw.Clear();//画图数据清除
@@ -1064,8 +1064,6 @@ namespace HUST_1_Demo
 
         private void boat1_init_Phi_Click(object sender, EventArgs e)
         {
-            object[] obj = { 30.51582550, 114.426780000, 30.51632550, 114.426780000 };
-            
             boat1.Phi_buchang = -boat1.Init_Phi;
         }
 
