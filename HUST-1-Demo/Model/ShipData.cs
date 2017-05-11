@@ -15,6 +15,8 @@ namespace HUST_1_Demo.Model
         public byte ShipID { get; set; }//船号
         public double Lat { get; set; }//纬度
         public double Lon { get; set; }//经度
+        public double LLat { get; set; }//纬度
+        public double LLon { get; set; }//经度
         public double pos_X { get; set; }//当前X坐标，此为测量坐标系下的坐标，北向为X，东向为Y
         public double pos_Y { get; set; }//Y坐标
         public double XError { get; set; }//编队误差，与leader的跟随误差
