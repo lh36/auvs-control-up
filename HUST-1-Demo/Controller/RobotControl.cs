@@ -67,7 +67,7 @@ namespace HUST_1_Demo.Controller
 
         #region 闭环控制区-航向控制
         //点跟随
-        public byte Closed_Control_Point(ShipData boat, Point targetPoint)
+        public byte FollowPoint(ShipData boat, Point targetPoint)
         {
             double current_c = boat.Control_Phi;//实际航向
 
@@ -117,18 +117,31 @@ namespace HUST_1_Demo.Controller
               //  Get_ShipData(port);//获取最新船状态信息
             }
         }
+        
         //一般直线跟随
-        public byte Closed_Control_Line(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
+        public byte FollowLine(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
             float k = 3.5f;//制导角参数
             double Err_phi = 0.0f;
 
-            float targetY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
+            double targetY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
             double refDir = Math.Atan(line.LineK)/Math.PI*180; //参考方向，与目标直线平行
-            float deltaY = boat.pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
+            double deltaY = boat.pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
             double Ye=deltaY*Math.Cos(refDir/180*Math.PI);//航行器到目标线的垂向距离
             float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
-            
+           
+            if (line.isReverse == true)//如果为逆向直线，则需要对制导角进行Y轴对称变换
+            {
+                if (Ref_phi < 0)
+                {
+                    Ref_phi = -180 - Ref_phi;
+                }
+                else
+                {
+                    Ref_phi = 180 - Ref_phi;
+                }
+            }
+              
             Err_phi = Ref_phi - (boat.Control_Phi - refDir);
 
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
@@ -140,7 +153,7 @@ namespace HUST_1_Demo.Controller
                 Err_phi = Err_phi + 360;
             }
 
-            if (Math.Abs(Ye) < 0.2)
+            if (Math.Abs(Ye) < 0.5)
             {
                 boat.Err_phi_In += Err_phi;
             }
@@ -159,8 +172,9 @@ namespace HUST_1_Demo.Controller
 
             return (byte)R;
         }
+        
         //特殊直线跟随
-        public byte Closed_Control_Line(ShipData boat, double line)
+        public byte FollowLine(ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
             double Err_phi = 0.0d;
@@ -197,10 +211,34 @@ namespace HUST_1_Demo.Controller
             // Send_Command(port);
             // Get_ShipData(port);//获取最新船状态信息
         }
-        //圆轨迹跟随
-        public byte Closed_Control_Circle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
+
+        //多段直线跟踪
+        public byte FollowMulLine(ShipData boat)
         {
-            float Err_phi = 0.0f;
+            byte R = 0;
+            HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+            line.Start = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID);//线段起始点
+            line.End = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID+1);//线端终点
+            line.LineK = (double)(line.Start.Y - line.End.Y) / (double)(line.Start.X - line.End.X);
+            line.LineB = (line.Start.Y - line.LineK * line.Start.X) / 1000.0f;
+            if (line.End.X < line.Start.X)//判断是否为逆向直线
+                line.isReverse = true;
+
+            R = FollowLine(boat, line);
+            if (Math.Sqrt((boat.X_mm - line.End.X) * (boat.X_mm - line.End.X) + (boat.Y_mm - line.End.Y) * (boat.Y_mm - line.End.Y)) < 4000)
+                HUST_1_Demo.Form1.followLineID++;
+            if (HUST_1_Demo.Form1.followLineID == HUST_1_Demo.Form1.tarMultiLine.Count - 1)
+            {
+                HUST_1_Demo.Form1.followLineID = 0;
+            }
+                
+            return R;
+        }
+        
+        //圆轨迹跟随
+        public byte FollowCircle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
+        {
+            double Err_phi = 0.0d;
            // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
             double k = 3.5d;
 
@@ -212,7 +250,7 @@ namespace HUST_1_Demo.Controller
             double Ye = (Math.Sqrt((boat.pos_X - Center_X) * (boat.pos_X - Center_X) + (boat.pos_Y - Center_Y) * (boat.pos_Y - Center_Y)) - Radius);
 
             float Robot_xy = (float)(Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180);//航行器相对于原点的极坐标点
-            float Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
+            double Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
 
             if (Dir_R > 180) Dir_R = Dir_R - 360;
             else if (Dir_R < -180) Dir_R = Dir_R + 360;
@@ -267,6 +305,177 @@ namespace HUST_1_Demo.Controller
             return (byte)R;
           //  Send_Command(port);
           //  Get_ShipData(port);//获取最新船状态信息
+        }
+
+        //椭圆轨迹跟随
+        public byte FollowOval(ShipData boat, HUST_1_Demo.Form1.TargetOval oval)
+        {
+            byte R = 0 ;
+            switch (HUST_1_Demo.Form1.SetOvalPathID)
+            {
+                case 0:
+                    {
+                        HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+                        line.Start = oval.Pt1;
+                        line.End = oval.Pt2;
+                        line.LineK = oval.K1;
+                        line.LineB = oval.B1/1000d;
+                        R = FollowLine(boat, line);
+
+                        if (Math.Sqrt((boat.X_mm - oval.Pt2.X) * (boat.X_mm - oval.Pt2.X) + (boat.Y_mm - oval.Pt2.Y) * (boat.Y_mm - oval.Pt2.Y)) < 2000)
+                            HUST_1_Demo.Form1.SetOvalPathID = 1;
+                        break;
+                    }
+                case 1:
+                    {
+                        HUST_1_Demo.Form1.TargetCircle circle = new Form1.TargetCircle();
+                        circle.x = oval.OriPt1.X / 1000d;
+                        circle.y = oval.OriPt1.Y / 1000d;
+                        circle.Radius = oval.R / 1000d;
+
+                        R = FollowCircle(boat, circle);
+                        if (Math.Sqrt((boat.X_mm - oval.Pt3.X) * (boat.X_mm - oval.Pt3.X) + (boat.Y_mm - oval.Pt3.Y) * (boat.Y_mm - oval.Pt3.Y)) < 2000)
+                            HUST_1_Demo.Form1.SetOvalPathID = 2;
+                        break;
+                    }
+                case 2:
+                    {
+                        HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+                        line.Start = oval.Pt3;
+                        line.End = oval.Pt4;
+                        line.LineK = oval.K1;
+                        line.LineB = oval.B3 / 1000d;
+                        line.isReverse = true;
+                        R = FollowLine(boat, line);
+
+                        if (Math.Sqrt((boat.X_mm - oval.Pt4.X) * (boat.X_mm - oval.Pt4.X) + (boat.Y_mm - oval.Pt4.Y) * (boat.Y_mm - oval.Pt4.Y)) < 2000)
+                            HUST_1_Demo.Form1.SetOvalPathID = 3;
+                        break;
+                    }
+                case 3:
+                    {
+                        HUST_1_Demo.Form1.TargetCircle circle = new Form1.TargetCircle();
+                        circle.x = oval.OriPt2.X / 1000d;
+                        circle.y = oval.OriPt2.Y / 1000d;
+                        circle.Radius = oval.R / 1000d;
+
+                        R = FollowCircle(boat, circle);
+                        if (Math.Sqrt((boat.X_mm - oval.Pt1.X) * (boat.X_mm - oval.Pt1.X) + (boat.Y_mm - oval.Pt1.Y) * (boat.Y_mm - oval.Pt1.Y)) < 2000)
+                            HUST_1_Demo.Form1.SetOvalPathID = 0;
+                        break;
+                    }
+            }
+
+            return R;
+        }
+
+        public static long timeTickCnt = 0;
+        public static double[] yawd = new double[3] { 0.0d, 0.0d, 0.0d };
+        public static double[] UpdateYawd()
+        {
+            if (timeTickCnt < 50)
+            {
+                yawd[0] = 0;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else if (50 <= timeTickCnt && timeTickCnt < 150)
+            {
+                yawd[0] = Math.PI / 2;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else if (150 <= timeTickCnt && timeTickCnt < 200)
+            {
+                yawd[0] = 0;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else if (200 <= timeTickCnt && timeTickCnt < 300)
+            {
+                yawd[0] = -Math.PI / 2;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            else
+            {
+                yawd[0] = 0;
+                yawd[1] = 0;
+                yawd[2] = 0;
+            }
+            return yawd;
+        }
+
+        public static double d2r = Math.PI / 180;
+        public static double r2d = 1 / d2r;
+        public static float Alf1 = 5.0f;
+        public static float Alf2 = 0.001f;
+        public static float Ks = 4.0f;
+        public static float Bet = 0.001f;
+        public static float G = 10.0f;
+        public static double e20 = 0.0f;
+        public byte RISE_Test(ShipData boat)
+        {
+            UpdateYawd();
+
+            double dControl_Phi = (boat.Control_Phi - boat.L_Control_Phi) / 0.2 * d2r;//航迹角导数
+
+            boat.e1 = yawd[0] - boat.Control_Phi * d2r;
+            boat.e2 = (yawd[1] - dControl_Phi) + Alf1 * boat.e1;
+            if (timeTickCnt == 0)
+            {
+                e20 = boat.e2;
+            }
+            boat.L_Control_Phi = boat.Control_Phi;
+
+            double dVf = (Ks + 1) * Alf2 * boat.e2 + Bet * Math.Tanh(G * boat.e2);//积分量
+            boat.Vf += dVf;
+
+            boat.F2 = (Ks + 1) * boat.e2 - (Ks + 1) * e20 + boat.Vf;
+
+            int R = (int)boat.F2;
+            if (R > 32)
+            {
+                R = 32;
+            }
+            else if (R < -32)
+            {
+                R = -32;
+            }
+            R = R + 32;
+
+            return (byte)R;
+        }
+
+        public static double Kp = 1.0d;
+        public static double Kd = 1.0d;
+
+        public static double m2bar = 2.0078d;
+        public static double I33bar = 1.3d;
+        public static double d33bar = 11.0289d;
+        public byte NSFC_Test(ShipData boat)
+        {
+            UpdateYawd();
+            double uBoat = 0.74d;
+            double vBoat = 0.0d;
+            double dControl_Phi = (boat.Control_Phi - boat.L_Control_Phi) / 0.2 * d2r;//航迹角导数
+            boat.L_Control_Phi = boat.Control_Phi;
+
+            boat.F2 = I33bar * (yawd[2] + Kp * (yawd[0] - boat.Control_Phi * d2r) + Kd * (yawd[1] - dControl_Phi))
+                + m2bar * uBoat * vBoat + d33bar * dControl_Phi;
+
+            int R = (int)boat.F2;
+            if (R > 32)
+            {
+                R = 32;
+            }
+            else if (R < -32)
+            {
+                R = -32;
+            }
+            R = R + 32;
+
+            return (byte)R;
         }
         #endregion
 
