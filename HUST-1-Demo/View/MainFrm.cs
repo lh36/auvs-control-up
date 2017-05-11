@@ -14,10 +14,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security.Permissions;
 
 
 namespace HUST_1_Demo
 {
+    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+    [System.Runtime.InteropServices.ComVisible(true)]
+  //  [ComVisible(true)]
     public partial class Form1 : Form
     {
         public Form1()
@@ -523,7 +527,6 @@ namespace HUST_1_Demo
 
         }
 
-        
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -603,6 +606,7 @@ namespace HUST_1_Demo
                     threadDraw.Start();
 
                     timer1.Enabled = true;//默认是开环控制，则启动获取三船位姿线程
+                    timer2.Enabled = true;//地图轨迹
                     this.Start.Text = "Stop";
 
                 }
@@ -611,6 +615,7 @@ namespace HUST_1_Demo
                     isFlagDraw = false;
                     isFlagCtrl = false;//控制线程标志
                     timer1.Enabled = false;//坐标跟新
+                    timer2.Enabled = false;//地图轨迹
                     this.Start.Text = "Start";
                 }
 
@@ -879,13 +884,38 @@ namespace HUST_1_Demo
             dataRec.Columns.Add("LineID", Type.GetType("System.String"));
             dataRec.Columns.Add("Time", Type.GetType("System.String"));
         }
+        private void Init_Map()
+        {
+            string url = Application.StartupPath + "/map_type.html";
+            webBrowser1.Url = new Uri(url);//指定url  
+            webBrowser1.ObjectForScripting = this; 
+           // webBrowser1.Navigate(new Uri("E:\\LAB\\ASV\\02 源代码\\auvs-control-up\\HUST-1-Demo\\bin\\Debug\\map_type.html"));
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             InitRecTable();
+            Init_Map();
             Control.CheckForIllegalCrossThreadCalls = false;
             
         }
         
+        private object[] GetRdPt(ShipData boat)
+        {
+            object[] boatPt = { boat.LLat, boat.LLon, boat.Lat, boat.Lon };
+            boat.LLat = boat.Lat;
+            boat.LLon = boat.Lon;
+            return boatPt;
+        }
+        private void Draw_Map_Road(int boatID, object[] obj)
+        {
+            switch(boatID)
+            {
+                case 1: webBrowser1.Document.InvokeScript("poly_line_route1", obj); break;
+                case 2: webBrowser1.Document.InvokeScript("poly_line_route2", obj); break;
+                case 3: webBrowser1.Document.InvokeScript("poly_line_route3", obj); break;
+            }
+            
+        }
         private void PathMap_MouseDown(object sender, MouseEventArgs e)
         {
             target_pt = new Point(e.X, e.Y);
@@ -1034,6 +1064,8 @@ namespace HUST_1_Demo
 
         private void boat1_init_Phi_Click(object sender, EventArgs e)
         {
+            object[] obj = { 30.51582550, 114.426780000, 30.51632550, 114.426780000 };
+            
             boat1.Phi_buchang = -boat1.Init_Phi;
         }
 
@@ -1115,6 +1147,13 @@ namespace HUST_1_Demo
             OpenCtrTst.IsBackground = true;
             OpenCtrTst.Start();
             isFlagCtrl = true;
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            Draw_Map_Road(1, GetRdPt(boat1));
+            Draw_Map_Road(2, GetRdPt(boat2));
+            Draw_Map_Road(3, GetRdPt(boat3));
         }
 
     }

@@ -210,6 +210,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PathMap = new System.Windows.Forms.PictureBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.label75 = new System.Windows.Forms.Label();
             this.Boat3_MotorSpd = new System.Windows.Forms.TextBox();
             this.label73 = new System.Windows.Forms.Label();
@@ -217,6 +218,7 @@
             this.label44 = new System.Windows.Forms.Label();
             this.Boat1_MotorSpd = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -242,6 +244,7 @@
             this.tabControl2.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PathMap)).BeginInit();
+            this.tabPage5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -2112,6 +2115,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.webBrowser1);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -2119,6 +2123,16 @@
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Map display";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // webBrowser1
+            // 
+            this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webBrowser1.Location = new System.Drawing.Point(3, 3);
+            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowser1.Name = "webBrowser1";
+            this.webBrowser1.Size = new System.Drawing.Size(446, 451);
+            this.webBrowser1.TabIndex = 0;
+            this.webBrowser1.Url = new System.Uri("", System.UriKind.Relative);
             // 
             // label75
             // 
@@ -2183,6 +2197,11 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Motor speed";
             // 
+            // timer2
+            // 
+            this.timer2.Interval = 200;
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -2242,6 +2261,7 @@
             this.tabControl2.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.PathMap)).EndInit();
+            this.tabPage5.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
@@ -2438,6 +2458,8 @@
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.TextBox Boat1_MotorSpd;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.WebBrowser webBrowser1;
+        private System.Windows.Forms.Timer timer2;
     }
 }
 
