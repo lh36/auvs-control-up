@@ -215,9 +215,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data); if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); Draw_Map_Road(1, GetRdPt(boat1)); if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); Draw_Map_Road(2, GetRdPt(boat2)); if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); Draw_Map_Road(3, GetRdPt(boat3)); if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -606,7 +606,6 @@ namespace HUST_1_Demo
                     threadDraw.Start();
 
                     timer1.Enabled = true;//默认是开环控制，则启动获取三船位姿线程
-                    timer2.Enabled = true;//地图轨迹
                     this.Start.Text = "Stop";
 
                 }
@@ -615,7 +614,6 @@ namespace HUST_1_Demo
                     isFlagDraw = false;
                     isFlagCtrl = false;//控制线程标志
                     timer1.Enabled = false;//坐标跟新
-                    timer2.Enabled = false;//地图轨迹
                     this.Start.Text = "Start";
                 }
 
@@ -1145,13 +1143,6 @@ namespace HUST_1_Demo
             OpenCtrTst.IsBackground = true;
             OpenCtrTst.Start();
             isFlagCtrl = true;
-        }
-
-        private void timer2_Tick(object sender, EventArgs e)
-        {
-            Draw_Map_Road(1, GetRdPt(boat1));
-            Draw_Map_Road(2, GetRdPt(boat2));
-            Draw_Map_Road(3, GetRdPt(boat3));
         }
 
     }

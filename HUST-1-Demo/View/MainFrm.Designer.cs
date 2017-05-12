@@ -218,7 +218,6 @@
             this.label44 = new System.Windows.Forms.Label();
             this.Boat1_MotorSpd = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -2145,7 +2144,7 @@
             // 
             // Boat3_MotorSpd
             // 
-            this.Boat3_MotorSpd.Location = new System.Drawing.Point(52, 83);
+            this.Boat3_MotorSpd.Location = new System.Drawing.Point(52, 82);
             this.Boat3_MotorSpd.Name = "Boat3_MotorSpd";
             this.Boat3_MotorSpd.Size = new System.Drawing.Size(67, 21);
             this.Boat3_MotorSpd.TabIndex = 0;
@@ -2153,7 +2152,7 @@
             // label73
             // 
             this.label73.AutoSize = true;
-            this.label73.Location = new System.Drawing.Point(5, 52);
+            this.label73.Location = new System.Drawing.Point(5, 56);
             this.label73.Name = "label73";
             this.label73.Size = new System.Drawing.Size(41, 12);
             this.label73.TabIndex = 1;
@@ -2161,7 +2160,7 @@
             // 
             // Boat2_MotorSpd
             // 
-            this.Boat2_MotorSpd.Location = new System.Drawing.Point(52, 49);
+            this.Boat2_MotorSpd.Location = new System.Drawing.Point(52, 52);
             this.Boat2_MotorSpd.Name = "Boat2_MotorSpd";
             this.Boat2_MotorSpd.Size = new System.Drawing.Size(67, 21);
             this.Boat2_MotorSpd.TabIndex = 0;
@@ -2169,7 +2168,7 @@
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(5, 25);
+            this.label44.Location = new System.Drawing.Point(5, 26);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(41, 12);
             this.label44.TabIndex = 1;
@@ -2192,15 +2191,10 @@
             this.groupBox4.Controls.Add(this.label73);
             this.groupBox4.Location = new System.Drawing.Point(857, 5);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(130, 196);
+            this.groupBox4.Size = new System.Drawing.Size(130, 115);
             this.groupBox4.TabIndex = 18;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Motor speed";
-            // 
-            // timer2
-            // 
-            this.timer2.Interval = 200;
-            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
             // Form1
             // 
@@ -2459,7 +2453,6 @@
         private System.Windows.Forms.TextBox Boat1_MotorSpd;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.WebBrowser webBrowser1;
-        private System.Windows.Forms.Timer timer2;
     }
 }
 
