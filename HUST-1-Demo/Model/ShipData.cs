@@ -26,8 +26,8 @@ namespace HUST_1_Demo.Model
         public double Y_mm { get; set; }//图上Y坐标
         public double Control_Phi { get; set; }//当前用于控制采用的状态航向（航迹角或者航向角）
         public double L_Control_Phi { get; set; }//上一次航迹角/航向角
-        public float GPS_Phi { get; set; }//原始GPS-Phi航迹角
-        public float Fter_GPS_Phi { get; set; }//滤波后的航迹角
+        public double GPS_Phi { get; set; }//原始GPS-Phi航迹角
+        public double Fter_GPS_Phi { get; set; }//滤波后的航迹角
         public float phi { get; set; }//航向角惯导
         public float Init_Phi { get; set; }//惯导原始数据，由于进行惯导0°初始化时需要获取当前惯导原始数据，所以这里需要保存惯导原始数据
         public float Phi_buchang { get; set; }//惯导补偿值
@@ -41,6 +41,7 @@ namespace HUST_1_Demo.Model
         public int CtrlSpeedOut { get; set; }//速度控制输出量
         public double e1 { get; set; }//Rise 控制中间量
         public double e2 { get; set; }//Rise 控制中间量
+        public double e20 { get; set; }//Rise 控制中间量
         public double Vf { get; set; }//Rise 控制积分项
         public double F2 { get; set; }
         public double Err_phi_In { get; set; }//积分控制中的积分量
@@ -64,10 +65,10 @@ namespace HUST_1_Demo.Model
 
         public double[] FilterLat = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public double[] FilterLon = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public float[] tempFterGPSPhi = new float[5] { 0, 0, 0, 0, 0 };
-        public float Filter(float[] Lvbobuf)
+        public double[] tempFterGPSPhi = new double[5] { 0, 0, 0, 0, 0 };
+        public double Filter(double[] Lvbobuf)
         {
-            float average, max, min, sum = 0.0f;
+            double average, max, min, sum = 0.0d;
             max = Lvbobuf[0];
             min = Lvbobuf[0];
             for (int i = 0; i < Lvbobuf.Length; i++)
@@ -116,7 +117,7 @@ namespace HUST_1_Demo.Model
             pos_X = tempXY[0];
             pos_Y = tempXY[1];
 
-            GPS_Phi = (float)(Math.Atan2(pos_Y - last_pos_Y, pos_X - last_pos_X) / Math.PI * 180);//航迹角
+            GPS_Phi = Math.Atan2(pos_Y - last_pos_Y, pos_X - last_pos_X) / Math.PI * 180;//航迹角
 
             //将临时存储区向前移位
             for (int i = 0; i < 4; i++)
