@@ -33,7 +33,8 @@ namespace HUST_1_Demo.Model
         public float Pos_Phi { get; set; }//位置坐标角（极坐标，范围[-180, 180])
         public float rud { get; set; }//舵角
         public float speed { get; set; }//船速
-        public long Time { get; set; }//时间
+        public long lTime { get; set; }//long类型时间戳
+        public string sTime { get; set; }//string类型时间戳
         public int gear { get; set; }//速度档
         public int MotorSpd { get; set; }//电机转速
         public int CtrlRudOut { get; set; }//舵角控制输出量
@@ -56,8 +57,9 @@ namespace HUST_1_Demo.Model
 
         public static double a = 6378137.0;//定义地球长半轴长度  
         public static double earth_e = 0.003352810664; //定义椭球的第一偏心律
-        //   public static double lat_start = 30.51584003;//定义原点位置
-        //   public static double lon_start = 114.42665029;
+        
+     //   public static double lat_start = 0;//定义原点位置
+     //  public static double lon_start = 0;
 
         public static double lat_start = 30.51582550;//定义原点位置
         public static double lon_start = 114.426780000;
@@ -134,7 +136,14 @@ namespace HUST_1_Demo.Model
             Y_mm = pos_Y * 1000;
 
            // Time = response_data[12].ToString() + ":" + response_data[13].ToString() + ":" + response_data[14].ToString();
-            Time = HUST_1_Demo.Form1.GetTimeStamp();
+            this.lTime = HUST_1_Demo.Form1.GetTimeStamp();
+            
+            DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            long lTime = long.Parse(this.lTime.ToString() + "0000000");
+            TimeSpan toNow = new TimeSpan(lTime);
+            this.sTime = dtStart.Add(toNow).ToString();
+
+
             speed = ((response_data[15] << 8) + (response_data[16])) / 1000.0f;
 
             byte[] Euler_Z = new byte[4];
@@ -154,7 +163,7 @@ namespace HUST_1_Demo.Model
             MotorSpd = response_data[23];
 
         }
-
+        
         public void SubmitParamToServer()
         {
             var oShipParam = new MonitorNet.SShipParam();
@@ -170,7 +179,7 @@ namespace HUST_1_Demo.Model
             oShipParam.rud = this.rud;
             oShipParam.speed = this.speed;
             oShipParam.gear = this.gear;
-            oShipParam.time = this.Time;
+            oShipParam.time = this.lTime;
 
             oShipParam.Kp = this.Kp;
             oShipParam.Ki = this.Ki;
@@ -227,7 +236,7 @@ namespace HUST_1_Demo.Model
                 e1.ToString(),e2.ToString(),Vf.ToString(),F2.ToString(),
                 MotorSpd.ToString(),
                 HUST_1_Demo.Form1.followLineID.ToString(),//多段直线ID戳
-                Time.ToString() });
+                sTime.ToString() });
         }
 
     }

@@ -29,16 +29,6 @@ namespace HUST_1_Demo
         {
             InitializeComponent();
         }
-        
-        private void ControlFromServer(object oControlDara)
-        {
-            var sControlData = oControlDara.ToString();
-            string[] sArr = sControlData.Split('-');
-            var sControl_1 = sArr[0].Substring(1);
-            var sControl_2 = sArr[1].Substring(0, sArr[1].Length - 2);
-
-             
-        }
 
         /// <summary>
         /// 定义全局变量
@@ -245,7 +235,7 @@ namespace HUST_1_Demo
             Boat1_Ru.Text = boat1.rud.ToString("0.0");
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
-            Boat1_time.Text = boat1.Time.ToString();
+            Boat1_time.Text = boat1.lTime.ToString();
             Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
 
             Boat2_X.Text = boat2.pos_X.ToString("0.00");
@@ -254,7 +244,7 @@ namespace HUST_1_Demo
             Boat2_Ru.Text = boat2.rud.ToString("0.0");
             Boat2_speed.Text = boat2.speed.ToString("0.000");
             Boat2_grade.Text = boat2.gear.ToString();
-            Boat2_time.Text = boat2.Time.ToString();
+            Boat2_time.Text = boat2.sTime;
             Boat2_MotorSpd.Text = boat2.MotorSpd.ToString();
 
             Boat3_X.Text = boat3.pos_X.ToString("0.00");
@@ -263,7 +253,7 @@ namespace HUST_1_Demo
             Boat3_Ru.Text = boat3.rud.ToString("0.0");
             Boat3_speed.Text = boat3.speed.ToString("0.000");
             Boat3_grade.Text = boat3.gear.ToString();
-            Boat3_time.Text = boat3.Time.ToString();
+            Boat3_time.Text = boat3.lTime.ToString();
             Boat3_MotorSpd.Text = boat3.MotorSpd.ToString();
         }
 
@@ -1208,8 +1198,8 @@ namespace HUST_1_Demo
                 var oInstanceData = new MonitorNet.InstanceData();
                 oInstanceData.Name = "Local test";                              //  实验名称
                 oInstanceData.Desp = "LH";                                      //  实验描述
-                oInstanceData.Amount = 2;                                       //  此次实验参与船的数量
-                oInstanceData.Shape = "AB";                                     //  船的类型
+                oInstanceData.Amount = 3;                                   //  此次实验参与船的数量
+                oInstanceData.Shape = "ABC";                                     //  船的类型
                 oInstanceData.Time = GetTimeStamp();
 
                 NetManager.Instance.NetCreateNewInstance(oInstanceData);        //  创建上传数据实例
@@ -1220,10 +1210,19 @@ namespace HUST_1_Demo
             }
             else
             {
+                NetManager.Instance.FinishControlRequest();
                 NetManager.Instance.NetFinishInstance(GetTimeStamp(), null);
                 bSerInit.Text = "Create Instance";
             }
 
+        }
+
+        private void ControlFromServer(object oControlDara)
+        {
+            var sControlData = oControlDara.ToString();
+            string[] sArr = sControlData.Split('-');
+            var sControl_1 = sArr[0].Substring(1);
+            var sControl_2 = sArr[1].Substring(0, sArr[1].Length - 2);
         }
 
     }

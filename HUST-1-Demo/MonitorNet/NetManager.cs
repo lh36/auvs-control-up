@@ -10,6 +10,8 @@ namespace MonitorNet
 
 		private int m_iSubmitLimit = 0;
 
+        private GetControlApi m_GetControlApi;
+
 		public NetManager ()
 		{
 		}
@@ -21,6 +23,7 @@ namespace MonitorNet
 		public void NetCreateNewInstance(InstanceData oData)
 		{
 			var oApi = new CreateInstanceApi (oData, this.SetInstanceID);
+            oApi.Request ();
 		}
 
 		private void SetInstanceID(object oSender)
@@ -36,6 +39,7 @@ namespace MonitorNet
 		public void NetFinishInstance(long lTime, Callback _callback)
 		{
 			var oApi = new FinishInstanceApi (this.m_iInstanceID, lTime, _callback);
+            oApi.Request ();
 		}
 
         /// <summary>
@@ -61,6 +65,7 @@ namespace MonitorNet
 		{
 			CSubmitData oApiData = oData as CSubmitData;
 			SubmitParamApi oApi = new SubmitParamApi (oApiData, this.ApiDone);
+            oApi.Request ();
 		}
 
 		private void ApiDone(object oSender)
@@ -80,8 +85,14 @@ namespace MonitorNet
 
 		private void GetControlThread(object _callback)
 		{
-			GetControlApi oApi = new GetControlApi (this.m_iInstanceID, _callback as Callback);
+			this.m_GetControlApi = new GetControlApi (this.m_iInstanceID, _callback as Callback);
+            this.m_GetControlApi.Request ();
 		}
+
+        public void FinishControlRequest()
+        {
+            this.m_GetControlApi.SetRunningStatus (false);
+        }
 
 		/// <summary>
         /// 获取实例id
