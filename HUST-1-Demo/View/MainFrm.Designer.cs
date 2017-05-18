@@ -170,11 +170,11 @@
             this.xError2 = new System.Windows.Forms.TextBox();
             this.Boat2_grade = new System.Windows.Forms.TextBox();
             this.Boat2_speed = new System.Windows.Forms.TextBox();
-            this.Boat2_time = new System.Windows.Forms.TextBox();
             this.label30 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
+            this.Boat2_time = new System.Windows.Forms.TextBox();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.label33 = new System.Windows.Forms.Label();
@@ -233,6 +233,8 @@
             this.label87 = new System.Windows.Forms.Label();
             this.NSFC_Kd = new System.Windows.Forms.TextBox();
             this.NSFC_Kp = new System.Windows.Forms.TextBox();
+            this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.bSerInit = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -262,6 +264,7 @@
             this.groupBox4.SuspendLayout();
             this.groupBox20.SuspendLayout();
             this.groupBox22.SuspendLayout();
+            this.groupBox21.SuspendLayout();
             this.SuspendLayout();
             // 
             // serialPort1
@@ -374,9 +377,9 @@
             this.groupBox1.Controls.Add(this.BaudRate1);
             this.groupBox1.Controls.Add(this.ComOpen1);
             this.groupBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox1.Location = new System.Drawing.Point(857, 319);
+            this.groupBox1.Location = new System.Drawing.Point(855, 478);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(268, 86);
+            this.groupBox1.Size = new System.Drawing.Size(268, 89);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Port config";
@@ -1679,7 +1682,6 @@
             this.groupBox14.Controls.Add(this.xError2);
             this.groupBox14.Controls.Add(this.Boat2_grade);
             this.groupBox14.Controls.Add(this.Boat2_speed);
-            this.groupBox14.Controls.Add(this.Boat2_time);
             this.groupBox14.Controls.Add(this.label30);
             this.groupBox14.Controls.Add(this.label29);
             this.groupBox14.Controls.Add(this.label10);
@@ -1736,19 +1738,11 @@
             this.Boat2_speed.TabIndex = 3;
             this.Boat2_speed.Text = "0";
             // 
-            // Boat2_time
-            // 
-            this.Boat2_time.Location = new System.Drawing.Point(46, 36);
-            this.Boat2_time.Name = "Boat2_time";
-            this.Boat2_time.Size = new System.Drawing.Size(80, 23);
-            this.Boat2_time.TabIndex = 3;
-            this.Boat2_time.Text = "0";
-            // 
             // label30
             // 
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label30.Location = new System.Drawing.Point(3, 42);
+            this.label30.Location = new System.Drawing.Point(3, 43);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(33, 12);
             this.label30.TabIndex = 4;
@@ -1781,6 +1775,14 @@
             this.label28.Size = new System.Drawing.Size(43, 19);
             this.label28.TabIndex = 4;
             this.label28.Text = "Error";
+            // 
+            // Boat2_time
+            // 
+            this.Boat2_time.Location = new System.Drawing.Point(28, 70);
+            this.Boat2_time.Name = "Boat2_time";
+            this.Boat2_time.Size = new System.Drawing.Size(208, 21);
+            this.Boat2_time.TabIndex = 3;
+            this.Boat2_time.Text = "0";
             // 
             // groupBox15
             // 
@@ -2230,7 +2232,7 @@
             this.groupBox20.Controls.Add(this.RiseKs);
             this.groupBox20.Controls.Add(this.Alfa2);
             this.groupBox20.Controls.Add(this.Alfa1);
-            this.groupBox20.Location = new System.Drawing.Point(857, 417);
+            this.groupBox20.Location = new System.Drawing.Point(857, 326);
             this.groupBox20.Name = "groupBox20";
             this.groupBox20.Size = new System.Drawing.Size(120, 141);
             this.groupBox20.TabIndex = 19;
@@ -2311,7 +2313,7 @@
             this.groupBox22.Controls.Add(this.label87);
             this.groupBox22.Controls.Add(this.NSFC_Kd);
             this.groupBox22.Controls.Add(this.NSFC_Kp);
-            this.groupBox22.Location = new System.Drawing.Point(1005, 417);
+            this.groupBox22.Location = new System.Drawing.Point(1005, 326);
             this.groupBox22.Name = "groupBox22";
             this.groupBox22.Size = new System.Drawing.Size(120, 141);
             this.groupBox22.TabIndex = 19;
@@ -2352,12 +2354,35 @@
             this.NSFC_Kp.TabIndex = 0;
             this.NSFC_Kp.Text = "1";
             // 
+            // groupBox21
+            // 
+            this.groupBox21.Controls.Add(this.bSerInit);
+            this.groupBox21.Controls.Add(this.Boat2_time);
+            this.groupBox21.Location = new System.Drawing.Point(858, 575);
+            this.groupBox21.Name = "groupBox21";
+            this.groupBox21.Size = new System.Drawing.Size(265, 107);
+            this.groupBox21.TabIndex = 20;
+            this.groupBox21.TabStop = false;
+            this.groupBox21.Text = "Server config";
+            // 
+            // bSerInit
+            // 
+            this.bSerInit.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.bSerInit.Location = new System.Drawing.Point(71, 16);
+            this.bSerInit.Name = "bSerInit";
+            this.bSerInit.Size = new System.Drawing.Size(104, 48);
+            this.bSerInit.TabIndex = 0;
+            this.bSerInit.Text = "Create Instance";
+            this.bSerInit.UseVisualStyleBackColor = true;
+            this.bSerInit.Click += new System.EventHandler(this.bSerInit_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
             this.ClientSize = new System.Drawing.Size(1128, 687);
+            this.Controls.Add(this.groupBox21);
             this.Controls.Add(this.groupBox22);
             this.Controls.Add(this.groupBox20);
             this.Controls.Add(this.groupBox4);
@@ -2420,6 +2445,8 @@
             this.groupBox20.PerformLayout();
             this.groupBox22.ResumeLayout(false);
             this.groupBox22.PerformLayout();
+            this.groupBox21.ResumeLayout(false);
+            this.groupBox21.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2630,6 +2657,8 @@
         private System.Windows.Forms.Label label87;
         private System.Windows.Forms.TextBox NSFC_Kd;
         private System.Windows.Forms.TextBox NSFC_Kp;
+        private System.Windows.Forms.GroupBox groupBox21;
+        private System.Windows.Forms.Button bSerInit;
     }
 }
 

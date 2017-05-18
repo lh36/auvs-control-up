@@ -69,7 +69,7 @@ namespace HUST_1_Demo.Controller
         //点跟随
         public byte FollowPoint(ShipData boat, Point targetPoint)
         {
-            double current_c = boat.Control_Phi;//实际航向
+            double current_c = boat.Ctrl_Phi;//实际航向
 
             double distance = Math.Sqrt((boat.X_mm - targetPoint.X) * (boat.X_mm - targetPoint.X) + (boat.Y_mm - targetPoint.Y) * (boat.Y_mm - targetPoint.Y));//毫米单位的距离
 
@@ -142,7 +142,7 @@ namespace HUST_1_Demo.Controller
                 }
             }
               
-            Err_phi = Ref_phi - (boat.Control_Phi - refDir);
+            Err_phi = Ref_phi - (boat.Ctrl_Phi - refDir);
 
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
             {
@@ -183,7 +183,7 @@ namespace HUST_1_Demo.Controller
             double Ye = boat.pos_Y - y_d;//实际坐标减参考坐标
             double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
 
-            Err_phi = Ref_phi - boat.Control_Phi;
+            Err_phi = Ref_phi - boat.Ctrl_Phi;
 
 
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
@@ -255,7 +255,7 @@ namespace HUST_1_Demo.Controller
             if (Dir_R > 180) Dir_R = Dir_R - 360;
             else if (Dir_R < -180) Dir_R = Dir_R + 360;
 
-            double errorRobot_Pos = boat.Control_Phi - Robot_xy;
+            double errorRobot_Pos = boat.Ctrl_Phi - Robot_xy;
 
             #region 获取当前制导角
             float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
@@ -273,7 +273,7 @@ namespace HUST_1_Demo.Controller
             }
             #endregion
 
-            Err_phi = Ref_phi-(boat.Control_Phi - Dir_R);//实际航向减去制导角的偏差
+            Err_phi = Ref_phi-(boat.Ctrl_Phi - Dir_R);//实际航向减去制导角的偏差
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
             {
                 Err_phi = Err_phi - 360;
@@ -423,14 +423,14 @@ namespace HUST_1_Demo.Controller
         {
             UpdateYawd();
 
-            double dControl_Phi = (boat.Control_Phi - boat.L_Control_Phi) / 0.2 * d2r;//航迹角导数
+            double dControl_Phi = (boat.Ctrl_Phi - boat.L_Ctrl_Phi) / 0.2 * d2r;//航迹角导数
             
             if (timeTickCnt == 0) 
             {
                 dControl_Phi = 0; // 第一次导数为0
             }
 
-            boat.e1 = yawd[0] - boat.Control_Phi * d2r;
+            boat.e1 = yawd[0] - boat.Ctrl_Phi * d2r;
             boat.e2 = (yawd[1] - dControl_Phi) + Alf1 * boat.e1;
             
             if (timeTickCnt == 0) // 首次控制计算e20
@@ -438,7 +438,7 @@ namespace HUST_1_Demo.Controller
                 boat.e20 = boat.e2;
             }
 
-            boat.L_Control_Phi = boat.Control_Phi;  // 更新上次控制角（航迹角/航向角）
+            boat.L_Ctrl_Phi = boat.Ctrl_Phi;  // 更新上次控制角（航迹角/航向角）
 
             double dVf = (Ks + 1) * Alf2 * boat.e2 + Bet * Math.Tanh(G * boat.e2); // 积分量
             boat.Vf += dVf;
@@ -476,17 +476,24 @@ namespace HUST_1_Demo.Controller
             double uBoat = 0.74d;
             double vBoat = 0.0d;
 
-            double dControl_Phi = (boat.Control_Phi - boat.L_Control_Phi) / 0.2 * d2r;  // 航迹角的导数
+            double dControl_Phi = (boat.Ctrl_Phi - boat.L_Ctrl_Phi) / 0.2 * d2r;  // 航迹角的导数
             
             if (timeTickCnt == 0)
             {
                 dControl_Phi = 0; // 第一次导数为0
             }
 
-            boat.L_Control_Phi = boat.Control_Phi;
+            boat.L_Ctrl_Phi = boat.Ctrl_Phi;
 
-            boat.F2 = I33bar * (yawd[2] + Kp * (yawd[0] - boat.Control_Phi * d2r) + Kd * (yawd[1] - dControl_Phi))
+            boat.F2 = I33bar * (yawd[2] + Kp * (yawd[0] - boat.Ctrl_Phi * d2r) + Kd * (yawd[1] - dControl_Phi))
                 + m2bar * uBoat * vBoat + d33bar * dControl_Phi * d2r;
+
+            if (boat.F2 > 3.6)
+                boat.F2 = 3.6;
+            if (boat.F2 < -3.6)
+                boat.F2 = -3.6;
+
+            int Rud = (int)Math.Asin(boat.F2 / 3.6);
 
             int R = (int)boat.F2;
             if (R > 32)
