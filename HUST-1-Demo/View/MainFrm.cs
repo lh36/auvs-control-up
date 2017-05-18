@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Permissions;
+using MonitorNet;
 
 
 namespace HUST_1_Demo
@@ -27,6 +28,16 @@ namespace HUST_1_Demo
         public Form1()
         {
             InitializeComponent();
+        }
+        
+        private void ControlFromServer(object oControlDara)
+        {
+            var sControlData = oControlDara.ToString();
+            string[] sArr = sControlData.Split('-');
+            var sControl_1 = sArr[0].Substring(1);
+            var sControl_2 = sArr[1].Substring(0, sArr[1].Length - 2);
+
+             
         }
 
         /// <summary>
@@ -215,9 +226,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data);  if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data);  if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
-                    case 0x03: boat3.UpdataStatusData(response_data);  if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); boat1.SubmitParamToServer(); if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); boat2.SubmitParamToServer(); if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); boat3.SubmitParamToServer(); if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -234,7 +245,7 @@ namespace HUST_1_Demo
             Boat1_Ru.Text = boat1.rud.ToString("0.0");
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
-            Boat1_time.Text = boat1.Time;
+            Boat1_time.Text = boat1.Time.ToString();
             Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
 
             Boat2_X.Text = boat2.pos_X.ToString("0.00");
@@ -243,7 +254,7 @@ namespace HUST_1_Demo
             Boat2_Ru.Text = boat2.rud.ToString("0.0");
             Boat2_speed.Text = boat2.speed.ToString("0.000");
             Boat2_grade.Text = boat2.gear.ToString();
-            Boat2_time.Text = boat2.Time;
+            Boat2_time.Text = boat2.Time.ToString();
             Boat2_MotorSpd.Text = boat2.MotorSpd.ToString();
 
             Boat3_X.Text = boat3.pos_X.ToString("0.00");
@@ -252,7 +263,7 @@ namespace HUST_1_Demo
             Boat3_Ru.Text = boat3.rud.ToString("0.0");
             Boat3_speed.Text = boat3.speed.ToString("0.000");
             Boat3_grade.Text = boat3.gear.ToString();
-            Boat3_time.Text = boat3.Time;
+            Boat3_time.Text = boat3.Time.ToString();
             Boat3_MotorSpd.Text = boat3.MotorSpd.ToString();
         }
 
@@ -695,23 +706,23 @@ namespace HUST_1_Demo
         {
             if (Phi_mode.Text == "Heading angle")
             {
-                boat1.Control_Phi = boat1.phi;
-                boat2.Control_Phi = boat2.phi;
-                boat3.Control_Phi = boat3.phi;
+                boat1.Ctrl_Phi = boat1.phi;
+                boat2.Ctrl_Phi = boat2.phi;
+                boat3.Ctrl_Phi = boat3.phi;
             }
             else
             {
                 if (TckAngFter.Checked)//是否滤波
                 {
-                    boat1.Control_Phi = boat1.Fter_GPS_Phi;
-                    boat2.Control_Phi = boat2.Fter_GPS_Phi;
-                    boat3.Control_Phi = boat3.Fter_GPS_Phi;
+                    boat1.Ctrl_Phi = boat1.Fter_GPS_Phi;
+                    boat2.Ctrl_Phi = boat2.Fter_GPS_Phi;
+                    boat3.Ctrl_Phi = boat3.Fter_GPS_Phi;
                 }
                 else
                 {
-                    boat1.Control_Phi = boat1.GPS_Phi;
-                    boat2.Control_Phi = boat2.GPS_Phi;
-                    boat3.Control_Phi = boat3.GPS_Phi;
+                    boat1.Ctrl_Phi = boat1.GPS_Phi;
+                    boat2.Ctrl_Phi = boat2.GPS_Phi;
+                    boat3.Ctrl_Phi = boat3.GPS_Phi;
                 }
             }
         }
@@ -1176,6 +1187,43 @@ namespace HUST_1_Demo
             Draw_Map_Road(1, GetRdPt(boat1));
             Draw_Map_Road(2, GetRdPt(boat2));
             Draw_Map_Road(3, GetRdPt(boat3));
+        }
+
+        public static long GetTimeStamp()
+        {
+            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds);
+        }
+
+        public static long GetMillTimeStamp()
+        {
+            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalMilliseconds);
+        }
+
+        private void bSerInit_Click(object sender, EventArgs e)
+        {
+            if (bSerInit.Text == "Create Instance")
+            {
+                var oInstanceData = new MonitorNet.InstanceData();
+                oInstanceData.Name = "Local test";                              //  实验名称
+                oInstanceData.Desp = "LH";                                      //  实验描述
+                oInstanceData.Amount = 2;                                       //  此次实验参与船的数量
+                oInstanceData.Shape = "AB";                                     //  船的类型
+                oInstanceData.Time = GetTimeStamp();
+
+                NetManager.Instance.NetCreateNewInstance(oInstanceData);        //  创建上传数据实例
+
+                // 如何关闭获取控制连接
+                NetManager.Instance.NetGetControlData(this.ControlFromServer);  //  创建监听远程控制命令实例
+                bSerInit.Text = "Close Instance";
+            }
+            else
+            {
+                NetManager.Instance.NetFinishInstance(GetTimeStamp(), null);
+                bSerInit.Text = "Create Instance";
+            }
+
         }
 
     }

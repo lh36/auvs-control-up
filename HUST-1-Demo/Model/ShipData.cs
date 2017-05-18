@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
-
 namespace HUST_1_Demo.Model
 {
     public class ShipData
@@ -24,8 +23,8 @@ namespace HUST_1_Demo.Model
         public double last_pos_Y { get; set; }//Y坐标
         public double X_mm { get; set; }//图上X坐标
         public double Y_mm { get; set; }//图上Y坐标
-        public double Control_Phi { get; set; }//当前用于控制采用的状态航向（航迹角或者航向角）
-        public double L_Control_Phi { get; set; }//上一次航迹角/航向角
+        public double Ctrl_Phi { get; set; }//当前用于控制采用的状态航向（航迹角或者航向角）
+        public double L_Ctrl_Phi { get; set; }//上一次航迹角/航向角
         public double GPS_Phi { get; set; }//原始GPS-Phi航迹角
         public double Fter_GPS_Phi { get; set; }//滤波后的航迹角
         public float phi { get; set; }//航向角惯导
@@ -34,7 +33,7 @@ namespace HUST_1_Demo.Model
         public float Pos_Phi { get; set; }//位置坐标角（极坐标，范围[-180, 180])
         public float rud { get; set; }//舵角
         public float speed { get; set; }//船速
-        public string Time { get; set; }//时间
+        public long Time { get; set; }//时间
         public int gear { get; set; }//速度档
         public int MotorSpd { get; set; }//电机转速
         public int CtrlRudOut { get; set; }//舵角控制输出量
@@ -134,7 +133,8 @@ namespace HUST_1_Demo.Model
             X_mm = pos_X * 1000;
             Y_mm = pos_Y * 1000;
 
-            Time = response_data[12].ToString() + ":" + response_data[13].ToString() + ":" + response_data[14].ToString();
+           // Time = response_data[12].ToString() + ":" + response_data[13].ToString() + ":" + response_data[14].ToString();
+            Time = HUST_1_Demo.Form1.GetTimeStamp();
             speed = ((response_data[15] << 8) + (response_data[16])) / 1000.0f;
 
             byte[] Euler_Z = new byte[4];
@@ -152,6 +152,33 @@ namespace HUST_1_Demo.Model
             if (response_data[22] == 0) gear = response_data[22];
             else gear = response_data[22] - 12;
             MotorSpd = response_data[23];
+
+        }
+
+        public void SubmitParamToServer()
+        {
+            var oShipParam = new MonitorNet.SShipParam();
+            
+            oShipParam.lat = this.Lat;
+            oShipParam.lon = this.Lon;
+            oShipParam.posX = this.pos_X;
+            oShipParam.posY = this.pos_Y;
+
+            oShipParam.phi = this.phi;
+            oShipParam.GPS_Phi = this.GPS_Phi;
+
+            oShipParam.rud = this.rud;
+            oShipParam.speed = this.speed;
+            oShipParam.gear = this.gear;
+            oShipParam.time = this.Time;
+
+            oShipParam.Kp = this.Kp;
+            oShipParam.Ki = this.Ki;
+            oShipParam.Kd = this.Kd;
+            oShipParam.K1 = this.K1;
+            oShipParam.K2 = this.K2;
+            
+            MonitorNet.NetManager.Instance.NetSubmitParam((int)this.ShipID, oShipParam);
         }
 
         /// <summary>

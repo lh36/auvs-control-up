@@ -63,6 +63,17 @@
     <Compile Include="Model\HttpWebModel.cs" />
     <Compile Include="Model\RecvSeriData.cs" />
     <Compile Include="Model\ShipData.cs" />
+    <Compile Include="MonitorNet\Api\CreateInstanceApi.cs" />
+    <Compile Include="MonitorNet\Api\FinishInstanceApi.cs" />
+    <Compile Include="MonitorNet\Api\GetControlApi.cs" />
+    <Compile Include="MonitorNet\Api\SubmitParamApi.cs" />
+    <Compile Include="MonitorNet\Bean\InstanceData.cs" />
+    <Compile Include="MonitorNet\Bean\SShipParam.cs" />
+    <Compile Include="MonitorNet\NetManager.cs" />
+    <Compile Include="MonitorNet\Tool\Constant.cs" />
+    <Compile Include="MonitorNet\Tool\HttpHelper.cs" />
+    <Compile Include="MonitorNet\Tool\JsonTool.cs" />
+    <Compile Include="MonitorNet\Tool\Singloton.cs" />
     <Compile Include="View\MainFrm.cs">
       <SubType>Form</SubType>
     </Compile>
