@@ -22,8 +22,9 @@ namespace MonitorNet
 			{
 				string sControlData = HttpHelper.HttpGet (Constant.BaseUrl + this.url + this.m_iInstanceID.ToString());
 				Console.WriteLine (sControlData);
+				var json = JsonTool.JsonToClass<ControlJson> (sControlData);
 
-				_callback (sControlData);
+				_callback (json.resp);
 			}
 			catch
 			{
@@ -42,6 +43,13 @@ namespace MonitorNet
         {
             this.m_bIsRunning = bStatus;
         }
+	}
+
+	//JSON解析类
+	public class ControlJson
+	{
+		public bool status = false;
+		public string resp = "";
 	}
 }
 

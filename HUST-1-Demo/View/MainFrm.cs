@@ -1219,10 +1219,33 @@ namespace HUST_1_Demo
 
         private void ControlFromServer(object oControlDara)
         {
-            var sControlData = oControlDara.ToString();
+            var sControlData = oControlDara.ToString();//这里是json格式数据，需要通过json解析
             string[] sArr = sControlData.Split('-');
-            var sControl_1 = sArr[0].Substring(1);
-            var sControl_2 = sArr[1].Substring(0, sArr[1].Length - 2);
+
+            serialPort1.Write(OpnCmd(sArr), 0, 6);
+        }
+
+        private byte[] OpnCmd(string[] sArr)    //  开环命令解析
+        {
+            byte[] command = new byte[6] { 0x00, 0x00, 0x06, 0x00, 0x00, 0xaa };
+
+            switch (sArr[0])    //  命令解析
+            {
+                case "w": { command[3] = 0x49; break; }
+                case "a": { command[3] = 0x51; break; }
+                case "d": { command[3] = 0x52; break; }
+                case "s": { command[3] = 0x53; break; }
+            }
+            switch (sArr[1])    //  船号解析
+            {
+                case "1": { command[0] = 0xa1; command[1] = 0x1a; break; }
+                case "2": { command[0] = 0xa2; command[1] = 0x2a; break; }
+                case "3": { command[0] = 0xa3; command[1] = 0x3a; break; }
+            }
+            //  var sControl_1 = sArr[0].Substring(1);
+            //  var sControl_2 = sArr[1].Substring(0, sArr[1].Length - 2);
+            //  serialPort1.Write(command, 0, 6);
+            return command;
         }
 
     }
