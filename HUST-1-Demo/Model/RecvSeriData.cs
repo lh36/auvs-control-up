@@ -49,23 +49,13 @@ namespace HUST_1_Demo.Model
                             {
                                 response_data[i] = rxdata[head_pos + i];
                             }
-
-                            int last_tail_pos = Array.LastIndexOf(rxdata, tail);//找到数组中最后一个包尾位置，之前数据全部除去
-                            rx_counter = rx_counter - (last_tail_pos + 1);//除去最后一个包尾后剩余的数据的个数
-
-                            for (int i = 0; i < rx_counter; i++)//保留缓存区包尾后的数据
-                            {
-                                rxdata[i] = rxdata[last_tail_pos + i + 1];
-                            }
-                            Array.Clear(rxdata, rx_counter, 100);//清除遗留的尾数
+                            rx_counter = 0;
+                            Array.Clear(rxdata, 0, rxdata.Length);//清除二级缓存
                         }
                         else
                         {
-                            rx_counter = rx_counter - head_pos;
-                            for (int i = 0; i < rx_counter; i++)
-                            {
-                                rxdata[i] = rxdata[head_pos + i];
-                            }
+                            Array.Clear(rxdata, 0, rxdata.Length);//没有找到包尾，直接清除二级缓存
+                            rx_counter = 0;
                         }
                     }
                 }
