@@ -13,7 +13,7 @@ namespace HUST_1_Demo.Model
         byte[] Euler_Z = new byte[4];//Yaw角度
         static byte[] rxdata = new byte[200];//数据接收二级缓存，用来存储寻找包含包头包尾的数据
         static byte[] response_data = new byte[26];//下位机回复报文
-        static byte[] rxbuffer = new byte[200];//这里定义的是临时局部变量，所以每次进来都会重新更新，所以不用清空
+      //  static byte[] rxbuffer = new byte[200];//这里定义的是临时局部变量，所以每次进来都会重新更新，所以不用清空
         static int rx_counter = 0;
         static byte head1 = 0xA5;
         static byte head2 = 0x5A;
@@ -24,6 +24,7 @@ namespace HUST_1_Demo.Model
         public static byte[] ReceData(SerialPort serialPort1)
         {
             int rxdatalen = serialPort1.BytesToRead;
+            byte[] rxbuffer = new byte[rxdatalen];
             serialPort1.Read(rxbuffer, 0, rxdatalen);
             
             if (rxdatalen != 0)//只要有数据过来就进行接收并存储
@@ -33,7 +34,6 @@ namespace HUST_1_Demo.Model
                     rxdata[rx_counter] = rxbuffer[i];//接收数据二级缓存，用来进行包头包尾寻找
                     rx_counter++;
                 }
-                Array.Clear(rxbuffer, 0, rxbuffer.Length);
                 
                 #region 接收数据大于26字节进入处理
                 if (rx_counter >= 26)
