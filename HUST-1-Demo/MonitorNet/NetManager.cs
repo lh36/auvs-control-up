@@ -57,11 +57,11 @@ namespace MonitorNet
 			CSubmitData oData = new CSubmitData ();
 			oData.iShipID = iShipID;
 			oData.oParam = oParam;
-			Thread oThread = new Thread (SubmitThread);
+			Thread oThread = new Thread (SubmitParamThread);
 			oThread.Start (oData);
 		}
 
-		private void SubmitThread(object oData)
+		private void SubmitParamThread(object oData)
 		{
 			CSubmitData oApiData = oData as CSubmitData;
 			SubmitParamApi oApi = new SubmitParamApi (oApiData, this.ApiDone);
@@ -71,6 +71,27 @@ namespace MonitorNet
 		private void ApiDone(object oSender)
 		{
 			this.m_iSubmitLimit -= 1;
+		}
+
+		/// <summary>
+		/// 发送参考线数据
+		/// </summary>
+		/// <param name="iShipID">船舶id.</param>
+		/// <param name="oParam">数据</param>
+		public void NetSubmitRefLine(int iShipID, RefLineData oParam)
+		{
+			CSubmitData oData = new CSubmitData ();
+			oData.iShipID = iShipID;
+			oData.oParam = oParam;
+			Thread oThread = new Thread (SubmitRefLineThread);
+			oThread.Start (oData);
+		}
+
+		private void SubmitRefLineThread(object oData)
+		{
+			CSubmitData oApiData = oData as CSubmitData;
+			SubmitRefLineApi oApi = new SubmitRefLineApi (oApiData);
+			oApi.Request ();
 		}
 
         /// <summary>
@@ -106,8 +127,9 @@ namespace MonitorNet
 	public class CSubmitData
 	{
 		public int iShipID;
-		public SShipParam oParam;
+		public object oParam;
 	}
+
 
 	public delegate void Callback(object oSender);
 }

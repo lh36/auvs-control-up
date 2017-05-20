@@ -31,7 +31,7 @@ namespace MonitorNet
             }
             catch
             {
-                Console.WriteLine ("error");
+				Console.WriteLine ("error: FinishInstanceApi");
             }
         }
 	}

@@ -17,7 +17,7 @@ namespace MonitorNet
 
         public void Request()
         {
-            SShipParam oParam = this.m_Data.oParam;
+			SShipParam oParam = this.m_Data.oParam as SShipParam;
             string sPostData = "lat=" + oParam.lat.ToString () +
                 "&lon=" + oParam.lon.ToString () +
                 "&posX=" + oParam.posX.ToString () +
@@ -42,7 +42,7 @@ namespace MonitorNet
             }
             catch
             {
-                Console.WriteLine ("error");
+				Console.WriteLine ("error: SubmitParamApi");
             }
             _callback (null);
         }
