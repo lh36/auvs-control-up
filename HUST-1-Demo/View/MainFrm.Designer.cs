@@ -234,6 +234,7 @@
             this.NSFC_Kd = new System.Windows.Forms.TextBox();
             this.NSFC_Kp = new System.Windows.Forms.TextBox();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.RmtCtrl = new System.Windows.Forms.Button();
             this.bSerInit = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -1778,7 +1779,7 @@
             // 
             // Boat2_time
             // 
-            this.Boat2_time.Location = new System.Drawing.Point(28, 70);
+            this.Boat2_time.Location = new System.Drawing.Point(26, 72);
             this.Boat2_time.Name = "Boat2_time";
             this.Boat2_time.Size = new System.Drawing.Size(208, 21);
             this.Boat2_time.TabIndex = 3;
@@ -2356,6 +2357,7 @@
             // 
             // groupBox21
             // 
+            this.groupBox21.Controls.Add(this.RmtCtrl);
             this.groupBox21.Controls.Add(this.bSerInit);
             this.groupBox21.Controls.Add(this.Boat2_time);
             this.groupBox21.Location = new System.Drawing.Point(858, 575);
@@ -2365,10 +2367,21 @@
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "Server config";
             // 
+            // RmtCtrl
+            // 
+            this.RmtCtrl.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.RmtCtrl.Location = new System.Drawing.Point(143, 16);
+            this.RmtCtrl.Name = "RmtCtrl";
+            this.RmtCtrl.Size = new System.Drawing.Size(104, 48);
+            this.RmtCtrl.TabIndex = 4;
+            this.RmtCtrl.Text = "Local control mode";
+            this.RmtCtrl.UseVisualStyleBackColor = true;
+            this.RmtCtrl.Click += new System.EventHandler(this.RmtCtrl_Click);
+            // 
             // bSerInit
             // 
             this.bSerInit.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.bSerInit.Location = new System.Drawing.Point(71, 16);
+            this.bSerInit.Location = new System.Drawing.Point(20, 16);
             this.bSerInit.Name = "bSerInit";
             this.bSerInit.Size = new System.Drawing.Size(104, 48);
             this.bSerInit.TabIndex = 0;
@@ -2659,6 +2672,7 @@
         private System.Windows.Forms.TextBox NSFC_Kp;
         private System.Windows.Forms.GroupBox groupBox21;
         private System.Windows.Forms.Button bSerInit;
+        private System.Windows.Forms.Button RmtCtrl;
     }
 }
 
