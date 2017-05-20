@@ -357,9 +357,9 @@
             // 
             // Boat1_time
             // 
-            this.Boat1_time.Location = new System.Drawing.Point(46, 36);
+            this.Boat1_time.Location = new System.Drawing.Point(45, 688);
             this.Boat1_time.Name = "Boat1_time";
-            this.Boat1_time.Size = new System.Drawing.Size(80, 23);
+            this.Boat1_time.Size = new System.Drawing.Size(221, 21);
             this.Boat1_time.TabIndex = 3;
             this.Boat1_time.Text = "0";
             // 
@@ -548,7 +548,6 @@
             this.groupBox3.Controls.Add(this.xError1);
             this.groupBox3.Controls.Add(this.Boat1_grade);
             this.groupBox3.Controls.Add(this.Boat1_speed);
-            this.groupBox3.Controls.Add(this.Boat1_time);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.label71);
@@ -1395,7 +1394,7 @@
             this.line_Y1.Name = "line_Y1";
             this.line_Y1.Size = new System.Drawing.Size(38, 23);
             this.line_Y1.TabIndex = 1;
-            this.line_Y1.Text = "5";
+            this.line_Y1.Text = "0";
             // 
             // label64
             // 
@@ -1412,7 +1411,7 @@
             this.line_Y3.Name = "line_Y3";
             this.line_Y3.Size = new System.Drawing.Size(38, 23);
             this.line_Y3.TabIndex = 1;
-            this.line_Y3.Text = "12";
+            this.line_Y3.Text = "0";
             // 
             // label65
             // 
@@ -2394,11 +2393,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
-            this.ClientSize = new System.Drawing.Size(1128, 687);
+            this.ClientSize = new System.Drawing.Size(1128, 722);
             this.Controls.Add(this.groupBox21);
             this.Controls.Add(this.groupBox22);
             this.Controls.Add(this.groupBox20);
             this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.Boat1_time);
             this.Controls.Add(this.tabControl2);
             this.Controls.Add(this.groupBox19);
             this.Controls.Add(this.groupBox15);
@@ -2461,6 +2461,7 @@
             this.groupBox21.ResumeLayout(false);
             this.groupBox21.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 

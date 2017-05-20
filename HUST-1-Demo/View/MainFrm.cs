@@ -80,6 +80,7 @@ namespace HUST_1_Demo
         public static bool isMulLineEnd = false;//多段直线设定结束
         public static bool isRmtCtrl = false;//是否接受远程控制
         public static bool isRmtClsFlag = false;//可直接循环执行当跟随目标轨迹
+        public static bool bRecdData = false;//是否保存数据
 
 
         string name = "";//保存数据txt
@@ -218,9 +219,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); boat1.SubmitParamToServer(); if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data); boat2.SubmitParamToServer(); if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); boat3.SubmitParamToServer(); if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); boat1.SubmitParamToServer(); if (bRecdData == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); boat2.SubmitParamToServer(); if (bRecdData == true) boat2.StoreShipData(name, dataRec); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); boat3.SubmitParamToServer(); if (bRecdData == true) boat3.StoreShipData(name, dataRec); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -237,7 +238,7 @@ namespace HUST_1_Demo
             Boat1_Ru.Text = boat1.rud.ToString("0.0");
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
-            Boat1_time.Text = boat1.lTime.ToString();
+            Boat1_time.Text = boat1.sTime; 
             Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
 
             Boat2_X.Text = boat2.pos_X.ToString("0.00");
@@ -674,6 +675,7 @@ namespace HUST_1_Demo
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 timer1.Enabled = false;//首先关闭开环定时器获取当前状态信息的定时器
                 isFlagCtrl = true;
+                bRecdData = true;//开始记录数据
                 Thread threadControl = new Thread(Control_PF);
                 threadControl.IsBackground = true;
                 threadControl.Start();
@@ -753,7 +755,7 @@ namespace HUST_1_Demo
 
         private void UpdateCtrlOutput()
         {
-            /* tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
+             tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
              tarCircle.Radius = float.Parse(circle_R1.Text);
              tarCircle.x = float.Parse(circle_X.Text);
              tarCircle.y = float.Parse(circle_Y.Text);
@@ -768,7 +770,7 @@ namespace HUST_1_Demo
              boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
              boat1.XError = boat2.pos_X - boat1.pos_X;
              ship1Control.Send_Command(serialPort1);
-             ship1Control.Get_ShipData(serialPort1);*/
+             ship1Control.Get_ShipData(serialPort1);
 
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
@@ -784,7 +786,7 @@ namespace HUST_1_Demo
             ship2Control.Send_Command(serialPort1);
             ship2Control.Get_ShipData(serialPort1);
 
-            /* tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
+             tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
              tarCircle.Radius = float.Parse(circle_R3.Text);
              ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
              if (AutoSpeed.Checked)
@@ -796,7 +798,7 @@ namespace HUST_1_Demo
              boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
              boat3.XError = boat2.pos_X - boat3.pos_X;
              ship3Control.Send_Command(serialPort1);
-             ship3Control.Get_ShipData(serialPort1);*/
+             ship3Control.Get_ShipData(serialPort1);
 
             xError1.Text = boat1.XError.ToString("0.000");//领队减1号
             xError2.Text = boat2.XError.ToString("0.000");//1号减2号
@@ -1200,8 +1202,8 @@ namespace HUST_1_Demo
                 var oInstanceData = new MonitorNet.InstanceData();
                 oInstanceData.Name = "Local test";                              //  实验名称
                 oInstanceData.Desp = "LH";                                      //  实验描述
-                oInstanceData.Amount = 3;                                   //  此次实验参与船的数量
-                oInstanceData.Shape = "ABC";                                     //  船的类型
+                oInstanceData.Amount = 1;                                   //  此次实验参与船的数量
+                oInstanceData.Shape = "A";                                     //  船的类型
                 oInstanceData.Time = GetTimeStamp();
 
                 NetManager.Instance.NetCreateNewInstance(oInstanceData);        //  创建上传数据实例
@@ -1260,6 +1262,8 @@ namespace HUST_1_Demo
                     if (sArr[0] == "c")                   //  闭环控制命令解析
                     {
                         isRmtClsFlag = true;
+                        bRecdData = true;//开始记录数据
+                        timer1.Enabled = false;
                         Thread t = new Thread(this.RmtClsCtrl);
                         t.IsBackground = true;
                         t.Start(sArr);
@@ -1267,6 +1271,7 @@ namespace HUST_1_Demo
                     if (sArr[0] == "s") 
                     {
                         isRmtClsFlag = false;
+                        bRecdData = false;//停止记录数据
                         ship1Control.Stop_Robot(serialPort1);
                         ship2Control.Stop_Robot(serialPort1);
                         ship3Control.Stop_Robot(serialPort1);
@@ -1309,6 +1314,8 @@ namespace HUST_1_Demo
 
         private bool ClsCmd(string[] sArr)
         {
+            UpdateCtrlPhi();
+            UpdateCtrlPara();
             if (sArr[2] == "l")
             {
                 tarLineSp = float.Parse(sArr[3]);//目标直线
@@ -1330,6 +1337,8 @@ namespace HUST_1_Demo
                     line_Y1.Text = sArr[3];
                 else
                     circle_R1.Text = sArr[5];
+
+                
 
                 ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
                 if (AutoSpeed.Checked)

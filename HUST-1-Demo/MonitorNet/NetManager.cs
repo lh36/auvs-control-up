@@ -101,6 +101,7 @@ namespace MonitorNet
 		public void NetGetControlData(Callback _callback)
 		{
 			Thread oThread = new Thread (GetControlThread);
+            oThread.IsBackground = true;
 			oThread.Start (_callback);
 		}
 

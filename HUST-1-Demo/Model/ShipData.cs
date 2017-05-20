@@ -173,7 +173,7 @@ namespace HUST_1_Demo.Model
             oShipParam.posX = this.pos_X;
             oShipParam.posY = this.pos_Y;
 
-            oShipParam.phi = this.phi;
+            oShipParam.phi = this.GPS_Phi;
             oShipParam.GPS_Phi = this.GPS_Phi;
 
             oShipParam.rud = this.rud;
