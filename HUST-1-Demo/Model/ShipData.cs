@@ -58,8 +58,8 @@ namespace HUST_1_Demo.Model
         public static double a = 6378137.0;//定义地球长半轴长度  
         public static double earth_e = 0.003352810664; //定义椭球的第一偏心律
         
-     //   public static double lat_start = 0;//定义原点位置
-     //  public static double lon_start = 0;
+    //    public static double lat_start = 30.5137956667;//定义原点位置
+    //    public static double lon_start = 114.4096393333;
 
         public static double lat_start = 30.51582550;//定义原点位置
         public static double lon_start = 114.426780000;

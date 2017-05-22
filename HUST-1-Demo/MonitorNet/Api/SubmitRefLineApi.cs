@@ -6,9 +6,9 @@ namespace MonitorNet
 	{
 		private string url = "update_refline";
 
-		private CSubmitData m_Data;
+		private CSubmitData m_Data;//（船号，参数）
 
-		public SubmitRefLineApi (CSubmitData oData)
+		public SubmitRefLineApi (CSubmitData oData)//构造函数
 		{
 			this.m_Data = oData;
 		}
