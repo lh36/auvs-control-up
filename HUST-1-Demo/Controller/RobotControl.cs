@@ -11,63 +11,54 @@ namespace HUST_1_Demo.Controller
 {
     public class RobotControl
     {
-        
+
+        public byte[] command = new byte[6] { 0x00, 0x00, 0x06, 0x20, 0x00, 0xaa };
 
         public RobotControl() { } //默认构造函数
-        public RobotControl(byte[] ship) //带参构造函数
+        public RobotControl(byte head1, byte head2) //带参构造函数
         {
-            this.command[0] = ship[0];
-            this.command[1] = ship[1];
+            this.command[0] = head1;
+            this.command[1] = head2;
         }
-
-        public byte[] command = new byte[6] { 0x00, 0x00, 0x06, 0x00, 0x00, 0xaa };
-
         public void Send_Command(SerialPort port)
         {
-            port.Write(command, 0, 6);
-        }
-
-        public void Get_ShipData(SerialPort port)
-        {
-            command[3] = 0x47;
-            Send_Command(port);
+            port.Write(this.command, 0, 6);
         }
 
         #region 开环控制区
-        public void Speed_Up(SerialPort port)
+        public void Speed_Up()
         {
-            command[3] = 0x49;
-            Send_Command(port);
+            this.command[4] += 10;
         }
 
-        public void Speed_Down(SerialPort port)
+        public void Speed_Down()
         {
-            command[3] = 0x44;
-            Send_Command(port);
+            if (this.command[4] == 0)
+                return;
+            else
+                this.command[4] -= 10;
         }
 
-        public void Turn_Left(SerialPort port)
+        public void Turn_Left()
         {
-            command[3] = 0x51;
-            Send_Command(port);
+            this.command[3] ++;
         }
 
-        public void Turn_Right(SerialPort port)
+        public void Turn_Right()
         {
-            command[3] = 0x52;
-            Send_Command(port);
+            this.command[3] --;
         }
 
-        public void Stop_Robot(SerialPort port)
+        public void Stop_Robot()
         {
-            command[3] = 0x53;
-            Send_Command(port);
+            this.command[3] = 0x20;//舵角归零
+            this.command[4] = 0;//速度归零
         }
         #endregion
 
         #region 闭环控制区-航向控制
         //点跟随
-        public byte FollowPoint(ShipData boat, Point targetPoint)
+        public void FollowPoint(ShipData boat, Point targetPoint)
         {
             double current_c = boat.Ctrl_Phi;//实际航向
 
@@ -75,10 +66,8 @@ namespace HUST_1_Demo.Controller
 
             if (distance <= 800.0d)
             {
-              //  Stop_Robot(port);
                 HUST_1_Demo.Form1.isFlagCtrl = false;
-
-                return 0x53;
+                this.command[3] = 0x53;
             }
 
             else//距离目标点很远 需要控制
@@ -112,14 +101,12 @@ namespace HUST_1_Demo.Controller
                     R = -32;
                 }
                 R = R + 32;
-                return (byte)R;
-              //  Send_Command(port);
-              //  Get_ShipData(port);//获取最新船状态信息
+                this.command[3] = (byte)R;
             }
         }
         
         //一般直线跟随
-        public byte FollowLine(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
+        public void FollowLine(ShipData boat, HUST_1_Demo.Form1.TargetLine line)
         {
             float k = 3.5f;//制导角参数
             double Err_phi = 0.0f;
@@ -169,12 +156,11 @@ namespace HUST_1_Demo.Controller
                 R = -32;
             }
             R = R + 32;
-
-            return (byte)R;
+            this.command[3] = (byte)R;
         }
         
         //特殊直线跟随
-        public byte FollowLine(ShipData boat, double line)
+        public void FollowLine(ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
             double Err_phi = 0.0d;
@@ -206,16 +192,12 @@ namespace HUST_1_Demo.Controller
                 R = -32;
             }
             R = R + 32;
-
-            return (byte)R;
-            // Send_Command(port);
-            // Get_ShipData(port);//获取最新船状态信息
+            this.command[3] = (byte)R;
         }
 
         //多段直线跟踪
-        public byte FollowMulLine(ShipData boat)
+        public void FollowMulLine(ShipData boat)
         {
-            byte R = 0;
             HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
             line.Start = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID);//线段起始点
             line.End = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID+1);//线端终点
@@ -224,19 +206,18 @@ namespace HUST_1_Demo.Controller
             if (line.End.X < line.Start.X)//判断是否为逆向直线
                 line.isReverse = true;
 
-            R = FollowLine(boat, line);
+            FollowLine(boat, line);
+
             if (Math.Sqrt((boat.X_mm - line.End.X) * (boat.X_mm - line.End.X) + (boat.Y_mm - line.End.Y) * (boat.Y_mm - line.End.Y)) < 4000)
                 HUST_1_Demo.Form1.followLineID++;
             if (HUST_1_Demo.Form1.followLineID == HUST_1_Demo.Form1.tarMultiLine.Count - 1)
             {
                 HUST_1_Demo.Form1.followLineID = 0;
             }
-                
-            return R;
         }
         
         //圆轨迹跟随
-        public byte FollowCircle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
+        public void FollowCircle(ShipData boat, HUST_1_Demo.Form1.TargetCircle circle)
         {
             double Err_phi = 0.0d;
            // double ROBOTphi_r = 0.0d;//相对参考向的航向角或航迹角
@@ -301,16 +282,12 @@ namespace HUST_1_Demo.Controller
                 R = -32;
             }
             R = R + 32;
-
-            return (byte)R;
-          //  Send_Command(port);
-          //  Get_ShipData(port);//获取最新船状态信息
+            this.command[3] = (byte)R;
         }
 
         //椭圆轨迹跟随
-        public byte FollowOval(ShipData boat, HUST_1_Demo.Form1.TargetOval oval)
+        public void FollowOval(ShipData boat, HUST_1_Demo.Form1.TargetOval oval)
         {
-            byte R = 0 ;
             switch (HUST_1_Demo.Form1.SetOvalPathID)
             {
                 case 0:
@@ -320,7 +297,7 @@ namespace HUST_1_Demo.Controller
                         line.End = oval.Pt2;
                         line.LineK = oval.K1;
                         line.LineB = oval.B1/1000d;
-                        R = FollowLine(boat, line);
+                        FollowLine(boat, line);
 
                         if (Math.Sqrt((boat.X_mm - oval.Pt2.X) * (boat.X_mm - oval.Pt2.X) + (boat.Y_mm - oval.Pt2.Y) * (boat.Y_mm - oval.Pt2.Y)) < 2000)
                             HUST_1_Demo.Form1.SetOvalPathID = 1;
@@ -333,7 +310,7 @@ namespace HUST_1_Demo.Controller
                         circle.y = oval.OriPt1.Y / 1000d;
                         circle.Radius = oval.R / 1000d;
 
-                        R = FollowCircle(boat, circle);
+                        FollowCircle(boat, circle);
                         if (Math.Sqrt((boat.X_mm - oval.Pt3.X) * (boat.X_mm - oval.Pt3.X) + (boat.Y_mm - oval.Pt3.Y) * (boat.Y_mm - oval.Pt3.Y)) < 2000)
                             HUST_1_Demo.Form1.SetOvalPathID = 2;
                         break;
@@ -346,7 +323,7 @@ namespace HUST_1_Demo.Controller
                         line.LineK = oval.K1;
                         line.LineB = oval.B3 / 1000d;
                         line.isReverse = true;
-                        R = FollowLine(boat, line);
+                        FollowLine(boat, line);
 
                         if (Math.Sqrt((boat.X_mm - oval.Pt4.X) * (boat.X_mm - oval.Pt4.X) + (boat.Y_mm - oval.Pt4.Y) * (boat.Y_mm - oval.Pt4.Y)) < 2000)
                             HUST_1_Demo.Form1.SetOvalPathID = 3;
@@ -359,14 +336,12 @@ namespace HUST_1_Demo.Controller
                         circle.y = oval.OriPt2.Y / 1000d;
                         circle.Radius = oval.R / 1000d;
 
-                        R = FollowCircle(boat, circle);
+                        FollowCircle(boat, circle);
                         if (Math.Sqrt((boat.X_mm - oval.Pt1.X) * (boat.X_mm - oval.Pt1.X) + (boat.Y_mm - oval.Pt1.Y) * (boat.Y_mm - oval.Pt1.Y)) < 2000)
                             HUST_1_Demo.Form1.SetOvalPathID = 0;
                         break;
                     }
             }
-
-            return R;
         }
 
         public static long timeTickCnt = 0;
@@ -419,7 +394,7 @@ namespace HUST_1_Demo.Controller
 
         public static float G = 10.0f;
       //  public static double e20 = 0.0d;// 3条船有各自的e20，因此不能作为静态变量
-        public byte RISE_Test(ShipData boat)
+        public void RISE_Test(ShipData boat)
         {
             UpdateYawd();
 
@@ -456,8 +431,7 @@ namespace HUST_1_Demo.Controller
                 R = -32;
             }
             R = R + 32;
-
-            return (byte)R;
+            this.command[3] = (byte)R;
         }
 
         /*******************************
@@ -469,7 +443,7 @@ namespace HUST_1_Demo.Controller
         public static double m2bar = 2.0078d;
         public static double I33bar = 2.3d;
         public static double d33bar = 11.0289d;
-        public byte NSFC_Test(ShipData boat)
+        public void NSFC_Test(ShipData boat)
         {
             UpdateYawd();
 
@@ -505,13 +479,12 @@ namespace HUST_1_Demo.Controller
                 R = -32;
             }
             R = R + 32;
-
-            return (byte)R;
+            this.command[3] = (byte)R;
         }
         #endregion
 
         #region 闭环控制区-速度控制
-        public byte Closed_Control_LineSpeed(ShipData boat, ShipData leaderboat, bool flagPathSelect, bool flagFollowDir)
+        public void Closed_Control_LineSpeed(ShipData boat, ShipData leaderboat, bool flagPathSelect, bool flagFollowDir)
         {
             double tempLeader = 0.0d;
             double tempFollow = 0.0d;//跟随者变量
@@ -550,7 +523,7 @@ namespace HUST_1_Demo.Controller
             {
                 U = 50;
             }
-            return (byte)U;
+            this.command[4] = (byte)U;
         }
 
         #endregion

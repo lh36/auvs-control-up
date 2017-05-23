@@ -47,8 +47,6 @@
             this.asv1 = new System.Windows.Forms.RadioButton();
             this.asv2 = new System.Windows.Forms.RadioButton();
             this.Backoff = new System.Windows.Forms.Button();
-            this.rightdown = new System.Windows.Forms.Button();
-            this.leftdown = new System.Windows.Forms.Button();
             this.rightup = new System.Windows.Forms.Button();
             this.leftup = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -357,9 +355,9 @@
             // 
             // Boat1_time
             // 
-            this.Boat1_time.Location = new System.Drawing.Point(46, 36);
+            this.Boat1_time.Location = new System.Drawing.Point(45, 688);
             this.Boat1_time.Name = "Boat1_time";
-            this.Boat1_time.Size = new System.Drawing.Size(80, 23);
+            this.Boat1_time.Size = new System.Drawing.Size(221, 21);
             this.Boat1_time.TabIndex = 3;
             this.Boat1_time.Text = "0";
             // 
@@ -401,8 +399,6 @@
             this.groupBox2.Controls.Add(this.OpnCtrTst);
             this.groupBox2.Controls.Add(this.groupBox18);
             this.groupBox2.Controls.Add(this.Backoff);
-            this.groupBox2.Controls.Add(this.rightdown);
-            this.groupBox2.Controls.Add(this.leftdown);
             this.groupBox2.Controls.Add(this.rightup);
             this.groupBox2.Controls.Add(this.leftup);
             this.groupBox2.Controls.Add(this.Advance);
@@ -482,35 +478,11 @@
             this.Backoff.UseVisualStyleBackColor = false;
             this.Backoff.Click += new System.EventHandler(this.Backoff_Click);
             // 
-            // rightdown
-            // 
-            this.rightdown.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.rightdown.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.rightdown.Location = new System.Drawing.Point(279, 91);
-            this.rightdown.Name = "rightdown";
-            this.rightdown.Size = new System.Drawing.Size(75, 39);
-            this.rightdown.TabIndex = 3;
-            this.rightdown.Text = "Right -";
-            this.rightdown.UseVisualStyleBackColor = false;
-            this.rightdown.Click += new System.EventHandler(this.rightdown_Click);
-            // 
-            // leftdown
-            // 
-            this.leftdown.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.leftdown.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.leftdown.Location = new System.Drawing.Point(107, 91);
-            this.leftdown.Name = "leftdown";
-            this.leftdown.Size = new System.Drawing.Size(75, 39);
-            this.leftdown.TabIndex = 3;
-            this.leftdown.Text = "Left -";
-            this.leftdown.UseVisualStyleBackColor = false;
-            this.leftdown.Click += new System.EventHandler(this.leftdown_Click);
-            // 
             // rightup
             // 
             this.rightup.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.rightup.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.rightup.Location = new System.Drawing.Point(279, 34);
+            this.rightup.Location = new System.Drawing.Point(279, 64);
             this.rightup.Name = "rightup";
             this.rightup.Size = new System.Drawing.Size(75, 39);
             this.rightup.TabIndex = 3;
@@ -522,7 +494,7 @@
             // 
             this.leftup.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.leftup.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.leftup.Location = new System.Drawing.Point(107, 34);
+            this.leftup.Location = new System.Drawing.Point(103, 65);
             this.leftup.Name = "leftup";
             this.leftup.Size = new System.Drawing.Size(75, 39);
             this.leftup.TabIndex = 3;
@@ -548,7 +520,6 @@
             this.groupBox3.Controls.Add(this.xError1);
             this.groupBox3.Controls.Add(this.Boat1_grade);
             this.groupBox3.Controls.Add(this.Boat1_speed);
-            this.groupBox3.Controls.Add(this.Boat1_time);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.label71);
@@ -692,7 +663,7 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 200;
+            this.timer1.Interval = 2000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Reset
@@ -773,7 +744,6 @@
             this.Switch.TabIndex = 12;
             this.Switch.Text = "Aotu";
             this.Switch.UseVisualStyleBackColor = false;
-            this.Switch.Click += new System.EventHandler(this.Switch_Click);
             // 
             // groupBox6
             // 
@@ -1395,7 +1365,7 @@
             this.line_Y1.Name = "line_Y1";
             this.line_Y1.Size = new System.Drawing.Size(38, 23);
             this.line_Y1.TabIndex = 1;
-            this.line_Y1.Text = "5";
+            this.line_Y1.Text = "0";
             // 
             // label64
             // 
@@ -1412,7 +1382,7 @@
             this.line_Y3.Name = "line_Y3";
             this.line_Y3.Size = new System.Drawing.Size(38, 23);
             this.line_Y3.TabIndex = 1;
-            this.line_Y3.Text = "12";
+            this.line_Y3.Text = "0";
             // 
             // label65
             // 
@@ -2385,7 +2355,7 @@
             this.bSerInit.Name = "bSerInit";
             this.bSerInit.Size = new System.Drawing.Size(104, 48);
             this.bSerInit.TabIndex = 0;
-            this.bSerInit.Text = "Create Instance";
+            this.bSerInit.Text = "Start Server";
             this.bSerInit.UseVisualStyleBackColor = true;
             this.bSerInit.Click += new System.EventHandler(this.bSerInit_Click);
             // 
@@ -2394,11 +2364,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SkyBlue;
-            this.ClientSize = new System.Drawing.Size(1128, 687);
+            this.ClientSize = new System.Drawing.Size(1128, 722);
             this.Controls.Add(this.groupBox21);
             this.Controls.Add(this.groupBox22);
             this.Controls.Add(this.groupBox20);
             this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.Boat1_time);
             this.Controls.Add(this.tabControl2);
             this.Controls.Add(this.groupBox19);
             this.Controls.Add(this.groupBox15);
@@ -2461,6 +2432,7 @@
             this.groupBox21.ResumeLayout(false);
             this.groupBox21.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -2488,8 +2460,6 @@
         private System.Windows.Forms.TextBox Boat1_phi;
         private System.Windows.Forms.TextBox Boat1_X;
         private System.Windows.Forms.TextBox Boat1_speed;
-        private System.Windows.Forms.Button rightdown;
-        private System.Windows.Forms.Button leftdown;
         private System.Windows.Forms.Button rightup;
         private System.Windows.Forms.Button leftup;
         private System.Windows.Forms.Timer timer1;

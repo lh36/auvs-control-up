@@ -80,6 +80,7 @@ namespace HUST_1_Demo
         public static bool isMulLineEnd = false;//多段直线设定结束
         public static bool isRmtCtrl = false;//是否接受远程控制
         public static bool isRmtClsFlag = false;//可直接循环执行当跟随目标轨迹
+        public static bool bRecdData = false;//是否保存数据
 
 
         string name = "";//保存数据txt
@@ -96,23 +97,16 @@ namespace HUST_1_Demo
         public static int followLineID = 0;//跟随多段直线分段标志
         public TargetCircle tarCircle; //目标圆
         public TargetOval tarOval;//椭圆
-        public float tarLineSp;  //平行于X轴的特殊直线
+        public double tarLineSp;  //平行于X轴的特殊直线
 
-
-        ShipData boat1 = new ShipData();
+        ShipData boat1 = new ShipData();//状态参数对象
         ShipData boat2 = new ShipData();
         ShipData boat3 = new ShipData();
 
+        RobotControl ship1Control = new RobotControl(0xa1, 0x1a);//控制参数对象
+        RobotControl ship2Control = new RobotControl(0xa2, 0x2a);
+        RobotControl ship3Control = new RobotControl(0xa3, 0x3a);
 
-        static byte[] ship1 = new byte[2] { 0xa1, 0x1a };
-        static byte[] ship2 = new byte[2] { 0xa2, 0x2a };
-        static byte[] ship3 = new byte[2] { 0xa3, 0x3a };
-
-        RobotControl ship1Control = new RobotControl(ship1);
-        RobotControl ship2Control = new RobotControl(ship2);
-        RobotControl ship3Control = new RobotControl(ship3);
-
-        static byte[] command = new byte[6] { 0xa1, 0x1a, 0x06, 0x00, 0x00, 0xaa };
         /// <summary>
         /// 打开串口
         /// </summary>
@@ -156,15 +150,15 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    ship1Control.Speed_Up(serialPort1);
+                    ship1Control.Speed_Up();
                 }
                 else if (asv2.Checked)
                 {
-                    ship2Control.Speed_Up(serialPort1);
+                    ship2Control.Speed_Up();
                 }
                 else
                 {
-                    ship3Control.Speed_Up(serialPort1);
+                    ship3Control.Speed_Up();
                 }
             }
         }
@@ -179,15 +173,15 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    ship1Control.Speed_Down(serialPort1);
+                    ship1Control.Speed_Down();
                 }
                 else if (asv2.Checked)
                 {
-                    ship2Control.Speed_Down(serialPort1);
+                    ship2Control.Speed_Down();
                 }
                 else
                 {
-                    ship3Control.Speed_Down(serialPort1);
+                    ship3Control.Speed_Down();
                 }
             }
 
@@ -201,9 +195,9 @@ namespace HUST_1_Demo
             }
             {
                 isFlagCtrl = false;
-                ship1Control.Stop_Robot(serialPort1);
-                ship2Control.Stop_Robot(serialPort1);
-                ship3Control.Stop_Robot(serialPort1);
+                ship1Control.Stop_Robot();
+                ship2Control.Stop_Robot();
+                ship3Control.Stop_Robot();
             }
 
         }
@@ -218,9 +212,9 @@ namespace HUST_1_Demo
                 byte ID_Temp = response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); boat1.SubmitParamToServer(); if (isFlagCtrl == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data); boat2.SubmitParamToServer(); if (isFlagCtrl == true) boat2.StoreShipData(name, dataRec); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); boat3.SubmitParamToServer(); if (isFlagCtrl == true) boat3.StoreShipData(name, dataRec); break;
+                    case 0x01: boat1.UpdataStatusData(response_data); boat1.SubmitParamToServer(); if (bRecdData == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(response_data); boat2.SubmitParamToServer(); if (bRecdData == true) boat2.StoreShipData(name, dataRec); break;
+                    case 0x03: boat3.UpdataStatusData(response_data); boat3.SubmitParamToServer(); if (bRecdData == true) boat3.StoreShipData(name, dataRec); break;
                     default: break;
                 }
                 Array.Clear(response_data, 0, response_data.Length);
@@ -237,7 +231,7 @@ namespace HUST_1_Demo
             Boat1_Ru.Text = boat1.rud.ToString("0.0");
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
-            Boat1_time.Text = boat1.lTime.ToString();
+            Boat1_time.Text = boat1.sTime; 
             Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
 
             Boat2_X.Text = boat2.pos_X.ToString("0.00");
@@ -270,50 +264,19 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    ship1Control.Turn_Left(serialPort1);
+                    ship1Control.Turn_Left();
                 }
                 else if (asv2.Checked)
                 {
-                    ship2Control.Turn_Left(serialPort1);
+                    ship2Control.Turn_Left();
                 }
                 else
                 {
-                    ship3Control.Turn_Left(serialPort1);
+                    ship3Control.Turn_Left();
                 }
             }
 
         }
-
-        private void leftdown_Click(object sender, EventArgs e)
-        {
-            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-            {
-                MessageBox.Show("请先打开串口！\r\n");
-            }
-            else
-            {
-                if (asv1.Checked)
-                {
-                    command[0] = 0xa1;
-                    command[1] = 0x1a;
-                }
-                else if (asv2.Checked)
-                {
-                    command[0] = 0xa2;
-                    command[1] = 0x2a;
-                }
-                else
-                {
-                    command[0] = 0xa3;
-                    command[1] = 0x3a;
-                }
-                command[3] = 0x4C;
-                serialPort1.Write(command, 0, 6);
-                //   serialPort1.Write("L");
-            }
-
-        }
-
         private void rightup_Click(object sender, EventArgs e)
         {
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
@@ -324,49 +287,21 @@ namespace HUST_1_Demo
             {
                 if (asv1.Checked)
                 {
-                    ship1Control.Turn_Right(serialPort1);
+                    ship1Control.Turn_Right();
                 }
                 else if (asv2.Checked)
                 {
-                    ship2Control.Turn_Right(serialPort1);
+                    ship2Control.Turn_Right();
                 }
                 else
                 {
-                    ship3Control.Turn_Right(serialPort1);
+                    ship3Control.Turn_Right();
                 }
             }
 
         }
 
-        private void rightdown_Click(object sender, EventArgs e)
-        {
-            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
-            {
-                MessageBox.Show("请先打开串口！\r\n");
-            }
-            else
-            {
-                if (asv1.Checked)
-                {
-                    command[0] = 0xa1;
-                    command[1] = 0x1a;
-                }
-                else if (asv2.Checked)
-                {
-                    command[0] = 0xa2;
-                    command[1] = 0x2a;
-                }
-                else
-                {
-                    command[0] = 0xa3;
-                    command[1] = 0x3a;
-                }
-                command[3] = 0x56;
-                serialPort1.Write(command, 0, 6);
-                //  serialPort1.Write("V");
-            }
-
-        }
+       
 
         static int halfHeight_mm = 55000;//地图一半长55米
         static List<Point> listPoint_Boat1 = new List<Point>();
@@ -408,7 +343,7 @@ namespace HUST_1_Demo
                 double[] Pt1 = new double[2] { 30.51582463, 114.426777 };//定义边界点
                 double[] Pt2 = new double[2] { 30.51584359, 114.4265784 };
                 double[] Pt3 = new double[2] { 30.5162782, 114.42661763 };
-                double[] Pt4 = new double[2] { 30.51626484, 114.4268432 };
+                double[] Pt4 = new double[2] { 30.51626484, 114.426825 };
 
                 PtPoolGPSBd.Add(Pt1);
                 PtPoolGPSBd.Add(Pt2);
@@ -533,11 +468,11 @@ namespace HUST_1_Demo
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            ship1Control.Get_ShipData(serialPort1);
+            ship1Control.Send_Command(serialPort1);
+          /*  Thread.Sleep(40);
+            ship2Control.Send_Command(serialPort1);
             Thread.Sleep(40);
-            ship2Control.Get_ShipData(serialPort1);
-            Thread.Sleep(40);
-            ship3Control.Get_ShipData(serialPort1);
+            ship3Control.Send_Command(serialPort1);*/
         }
 
         private void Reset_Click(object sender, EventArgs e)
@@ -559,39 +494,15 @@ namespace HUST_1_Demo
             }
             else
             {
-                command[0] = 0xa1;
-                command[1] = 0x1a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 5);//复位先停船
-                command[0] = 0xa2;
-                command[1] = 0x2a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 5);//复位先停船
-                command[0] = 0xa3;
-                command[1] = 0x3a;
-                command[3] = 0x53;
-                serialPort1.Write(command, 0, 5);//复位先停船
+                ship1Control.Stop_Robot();
+                ship2Control.Stop_Robot();
+                ship3Control.Stop_Robot();
 
                 boat1.Err_phi_In = 0;
                 boat2.Err_phi_In = 0;
                 boat3.Err_phi_In = 0;
             }
-
-            /*   MethodInvoker invoker1 = () => Boat1_speed.Text = "0";//面板显示速度置0
-               Boat1_speed.BeginInvoke(invoker1);
-               MethodInvoker invoker2 = () => Boat1_X.Text = "0";//坐标置0
-               Boat1_X.BeginInvoke(invoker2);
-               MethodInvoker invoker3 = () => Boat1_Y.Text = "0";
-               Boat1_Y.BeginInvoke(invoker3);
-
-               boat1.lat_start = boat1.Lat;//将当前船的位置点设为坐标坐标原点
-               boat1.lon_start = boat1.Lon;
-               boat2.lat_start = boat2.Lat;
-               boat2.lon_start = boat2.Lon;
-               boat3.lat_start = boat3.Lat;
-               boat3.lon_start = boat3.Lon;*/
         }
-
 
         private void Start_Click(object sender, EventArgs e)
         {
@@ -624,30 +535,7 @@ namespace HUST_1_Demo
 
             }
         }
-        static bool swich_flag = false;
-        private void Switch_Click(object sender, EventArgs e)
-        {
-            if (swich_flag == false)
-            {
-                command[0] = 0xa1;
-                command[1] = 0x1a;
-                command[3] = 0x59;
-                serialPort1.Write(command, 0, 6);//引脚拉高
-                swich_flag = true;
-                this.Switch.Text = "Manual";
-            }
-            else
-            {
-                command[0] = 0xa1;
-                command[1] = 0x1a;
-                command[3] = 0x5A;
-                serialPort1.Write(command, 0, 6);
-                // serialPort1.Write("Z");//引脚拉低
-                swich_flag = false;
-                this.Switch.Text = "Auto";
-            }
-        }
-
+       
         private void Backoff_Click(object sender, EventArgs e)
         {
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
@@ -656,11 +544,7 @@ namespace HUST_1_Demo
             }
             else
             {
-                command[0] = 0xa1;
-                command[1] = 0x1a;
-                command[3] = 0x42;
-                serialPort1.Write(command, 0, 6);
-                //  serialPort1.Write("B");
+                ship1Control.command[3] = 0x42;
             }
 
         }
@@ -674,6 +558,7 @@ namespace HUST_1_Demo
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 timer1.Enabled = false;//首先关闭开环定时器获取当前状态信息的定时器
                 isFlagCtrl = true;
+                bRecdData = true;//开始记录数据
                 Thread threadControl = new Thread(Control_PF);
                 threadControl.IsBackground = true;
                 threadControl.Start();
@@ -684,11 +569,11 @@ namespace HUST_1_Demo
             {
                 timer1.Enabled = true;//关闭闭环控制后，重新开启开环获取船位姿状态信息
                 isFlagCtrl = false;
-                ship1Control.Stop_Robot(serialPort1);
+                ship1Control.Stop_Robot();
                 Thread.Sleep(40);
-                ship2Control.Stop_Robot(serialPort1);
+                ship2Control.Stop_Robot();
                 Thread.Sleep(40);
-                ship3Control.Stop_Robot(serialPort1);
+                ship3Control.Stop_Robot();
                 button1.Text = "Start following";
             }
 
@@ -753,50 +638,44 @@ namespace HUST_1_Demo
 
         private void UpdateCtrlOutput()
         {
-            /* tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
+             tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
              tarCircle.Radius = float.Parse(circle_R1.Text);
              tarCircle.x = float.Parse(circle_X.Text);
              tarCircle.y = float.Parse(circle_Y.Text);
 
-             ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
+             Control_fun(ship1Control, boat1);//1号小船控制
              if (AutoSpeed.Checked)
-                 ship1Control.command[4] = ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
+                 ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
              else
                  ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
              boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
              boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
              boat1.XError = boat2.pos_X - boat1.pos_X;
-             ship1Control.Send_Command(serialPort1);
-             ship1Control.Get_ShipData(serialPort1);*/
 
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
-            ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+            Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
             if (AutoSpeed.Checked)
-                ship2Control.command[4] = ship2Control.Closed_Control_LineSpeed(boat2, boat2, isCirPath, isFlagDir);
+                ship2Control.Closed_Control_LineSpeed(boat2, boat2, isCirPath, isFlagDir);
             else
                 ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
             //   ship2Control.command[4] = 100;
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             boat2.XError = boat1.pos_X - boat3.pos_X;
-            ship2Control.Send_Command(serialPort1);
-            ship2Control.Get_ShipData(serialPort1);
 
-            /* tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
+             tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
              tarCircle.Radius = float.Parse(circle_R3.Text);
-             ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
+             Control_fun(ship3Control, boat3);//3号小船控制
              if (AutoSpeed.Checked)
-                 ship3Control.command[4] = ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
+                 ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
              else
                  ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
              // ship3Control.command[4] = 110;
              boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
              boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
              boat3.XError = boat2.pos_X - boat3.pos_X;
-             ship3Control.Send_Command(serialPort1);
-             ship3Control.Get_ShipData(serialPort1);*/
 
             xError1.Text = boat1.XError.ToString("0.000");//领队减1号
             xError2.Text = boat2.XError.ToString("0.000");//1号减2号
@@ -818,20 +697,19 @@ namespace HUST_1_Demo
             }
         }
 
-        private byte Control_fun(RobotControl shipControl, ShipData shipData)
+        private void Control_fun(RobotControl shipControl, ShipData shipData)
         {
-            byte rudder = 0;
             #region 跟踪目标点
             if (path_mode.Text == "Point")
             {
-                rudder = shipControl.FollowPoint(shipData, tarPoint);
+                shipControl.FollowPoint(shipData, tarPoint);
             }
             #endregion
 
             #region 跟随一般直线
             if (path_mode.Text == "General line")
             {
-                rudder = shipControl.FollowLine(shipData, tarLineGe);
+                shipControl.FollowLine(shipData, tarLineGe);
                 isCirPath = false;//直线
             }
             #endregion
@@ -839,7 +717,7 @@ namespace HUST_1_Demo
             #region 跟随特殊直线
             if (path_mode.Text == "Special line")
             {
-                rudder = shipControl.FollowLine(shipData, tarLineSp);
+                shipControl.FollowLine(shipData, tarLineSp);
                 isCirPath = false;
             }
             #endregion
@@ -847,7 +725,7 @@ namespace HUST_1_Demo
             #region 跟随多段直线
             if (path_mode.Text == "Multi line")
             {
-                rudder = shipControl.FollowMulLine(shipData);
+                shipControl.FollowMulLine(shipData);
                 isCirPath = false;
             }
             #endregion
@@ -855,7 +733,7 @@ namespace HUST_1_Demo
             #region 跟随圆轨迹
             if (path_mode.Text == "Circular path")
             {
-                rudder = shipControl.FollowCircle(shipData, tarCircle);
+                shipControl.FollowCircle(shipData, tarCircle);
                 isCirPath = true;
             }
             #endregion
@@ -863,7 +741,7 @@ namespace HUST_1_Demo
             #region 跟随椭圆
             if (path_mode.Text == "Oval path")
             {
-                rudder = shipControl.FollowOval(shipData, tarOval);
+                shipControl.FollowOval(shipData, tarOval);
                 isCirPath = false;
             }
             #endregion
@@ -871,7 +749,7 @@ namespace HUST_1_Demo
             #region RISE Test
             if (path_mode.Text == "RISE test")
             {
-                rudder = shipControl.RISE_Test(shipData);
+                shipControl.RISE_Test(shipData);
                 isCirPath = false;
             }
             #endregion
@@ -879,12 +757,10 @@ namespace HUST_1_Demo
             #region RISE Test
             if (path_mode.Text == "NSFC test")
             {
-                rudder = shipControl.NSFC_Test(shipData);
+                shipControl.NSFC_Test(shipData);
                 isCirPath = false;
             }
             #endregion
-
-            return rudder;
         }
 
         //初始化表格表头
@@ -1195,26 +1071,26 @@ namespace HUST_1_Demo
 
         private void bSerInit_Click(object sender, EventArgs e)
         {
-            if (bSerInit.Text == "Create Instance")
+            if (bSerInit.Text == "Start Server")
             {
                 var oInstanceData = new MonitorNet.InstanceData();
                 oInstanceData.Name = "Local test";                              //  实验名称
                 oInstanceData.Desp = "LH";                                      //  实验描述
-                oInstanceData.Amount = 3;                                   //  此次实验参与船的数量
-                oInstanceData.Shape = "ABC";                                     //  船的类型
+                oInstanceData.Amount = 1;                                   //  此次实验参与船的数量
+                oInstanceData.Shape = "A";                                     //  船的类型
                 oInstanceData.Time = GetTimeStamp();
 
                 NetManager.Instance.NetCreateNewInstance(oInstanceData);        //  创建上传数据实例
 
                 // 如何关闭获取控制连接
                 NetManager.Instance.NetGetControlData(this.ControlFromServer);  //  创建监听远程控制命令实例
-                bSerInit.Text = "Close Instance";
+                bSerInit.Text = "Close Server";
             }
             else
             {
                 NetManager.Instance.FinishControlRequest();
                 NetManager.Instance.NetFinishInstance(GetTimeStamp(), null);
-                bSerInit.Text = "Create Instance";
+                bSerInit.Text = "Start Server";
 
                 isRmtCtrl = false;//关闭远程模式-切换到本地模式
                 isRmtClsFlag = false;//关闭闭环循环模式
@@ -1259,7 +1135,12 @@ namespace HUST_1_Demo
                     }
                     if (sArr[0] == "c")                   //  闭环控制命令解析
                     {
+                        //接到闭环命令，立即向云端服务器反馈接收到的跟随目标
+                        //本地闭环控制时，跟随目标更新后，也应该立即反馈给云端服务器反馈
+                        UpdtRmtLocalTask(sArr);//更新本地和远程闭环控制目标（直线/圆）
                         isRmtClsFlag = true;
+                        bRecdData = true;//开始记录数据
+                        timer1.Enabled = false;
                         Thread t = new Thread(this.RmtClsCtrl);
                         t.IsBackground = true;
                         t.Start(sArr);
@@ -1267,13 +1148,15 @@ namespace HUST_1_Demo
                     if (sArr[0] == "s") 
                     {
                         isRmtClsFlag = false;
-                        ship1Control.Stop_Robot(serialPort1);
-                        ship2Control.Stop_Robot(serialPort1);
-                        ship3Control.Stop_Robot(serialPort1);
+                        bRecdData = false;//停止记录数据
+                        ship1Control.Stop_Robot();
+                        ship2Control.Stop_Robot();
+                        ship3Control.Stop_Robot();
                     }
                 }
             }
         }
+
         private void RmtClsCtrl(object s)
         {
             string[] sArr = (string[])s;
@@ -1283,47 +1166,38 @@ namespace HUST_1_Demo
                 Thread.Sleep(195);//控制周期
             }
         }
-        private bool OpnCmd(string[] sArr)    //  开环命令解析
+
+        private void UpdtRmtLocalTask(string[] sArr)
         {
-            byte[] command = new byte[6] { 0x00, 0x00, 0x06, 0x00, 0x00, 0xaa };
+            var oRefParam = new RefLineData();//参看轨迹参数
 
-            switch (sArr[1])    //  船号解析
-            {
-                case "1": { command[0] = 0xa1; command[1] = 0x1a; break; }
-                case "2": { command[0] = 0xa2; command[1] = 0x2a; break; }
-                case "3": { command[0] = 0xa3; command[1] = 0x3a; break; }
-            }
-            switch (sArr[2])    //  命令解析
-            {
-                case "w": { command[3] = 0x49; break; }
-                case "a": { command[3] = 0x51; break; }
-                case "d": { command[3] = 0x52; break; }
-                case "s": { command[3] = 0x53; break; }
-            }
-            //  var sControl_1 = sArr[0].Substring(1);
-            //  var sControl_2 = sArr[1].Substring(0, sArr[1].Length - 2);
-            serialPort1.Write(command, 0, 6);
-
-            return true;
-        }
-
-        private bool ClsCmd(string[] sArr)
-        {
             if (sArr[2] == "l")
             {
-                tarLineSp = float.Parse(sArr[3]);//目标直线
+                tarLineSp = double.Parse(sArr[3]);       //目标直线
                 path_mode.Text = "Special line";
+
+                oRefParam.flag = 1;
+                oRefParam.posY = tarLineSp;
             }
             if (sArr[2] == "r")
             {
-                tarCircle.x = float.Parse(sArr[3]);//目标圆
-                tarCircle.y = float.Parse(sArr[4]);
-                tarCircle.Radius = float.Parse(sArr[5]);
+                tarCircle.x = double.Parse(sArr[3]);     //目标圆
+                tarCircle.y = double.Parse(sArr[4]);
+                tarCircle.Radius = double.Parse(sArr[5]);
                 path_mode.Text = "Circular path";
                 circle_X.Text = sArr[3];
                 circle_Y.Text = sArr[4];
-            }
 
+                oRefParam.flag = 2;
+                oRefParam.posX = tarCircle.x;
+                oRefParam.posY = tarCircle.y;
+                oRefParam.radius = tarCircle.Radius;
+            }
+            NetManager.Instance.NetSubmitRefLine(int.Parse(sArr[1]),oRefParam);//向云端服务器发送参考轨迹
+        }
+
+        private void UpdtRmtCtrlOt(string[] sArr)
+        {
             if (sArr[1] == "1")
             {
                 if (sArr[2] == "l")
@@ -1331,17 +1205,17 @@ namespace HUST_1_Demo
                 else
                     circle_R1.Text = sArr[5];
 
-                ship1Control.command[3] = Control_fun(ship1Control, boat1);//1号小船控制
+
+
+                Control_fun(ship1Control, boat1);//1号小船控制
                 if (AutoSpeed.Checked)
-                    ship1Control.command[4] = ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
+                    ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
                 else
                     ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
                 boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
                 boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
                 boat1.XError = boat2.pos_X - boat1.pos_X;
-                ship1Control.Send_Command(serialPort1);
-                ship1Control.Get_ShipData(serialPort1);
             }
             else if (sArr[1] == "2")
             {
@@ -1350,17 +1224,15 @@ namespace HUST_1_Demo
                 else
                     circle_R2.Text = sArr[5];
 
-                ship2Control.command[3] = Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+                Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
                 if (AutoSpeed.Checked)
-                    ship2Control.command[4] = ship2Control.Closed_Control_LineSpeed(boat2, boat2, isCirPath, isFlagDir);
+                    ship2Control.Closed_Control_LineSpeed(boat2, boat2, isCirPath, isFlagDir);
                 else
                     ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
                 //   ship2Control.command[4] = 100;
                 boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
                 boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
                 boat2.XError = boat1.pos_X - boat3.pos_X;
-                ship2Control.Send_Command(serialPort1);
-                ship2Control.Get_ShipData(serialPort1);
             }
             else
             {
@@ -1369,22 +1241,75 @@ namespace HUST_1_Demo
                 else
                     circle_R3.Text = sArr[5];
 
-                ship3Control.command[3] = Control_fun(ship3Control, boat3);//3号小船控制
+                Control_fun(ship3Control, boat3);//3号小船控制
                 if (AutoSpeed.Checked)
-                    ship3Control.command[4] = ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
+                    ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
                 else
                     ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
                 // ship3Control.command[4] = 110;
                 boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
                 boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
                 boat3.XError = boat2.pos_X - boat3.pos_X;
-                ship3Control.Send_Command(serialPort1);
-                ship3Control.Get_ShipData(serialPort1);
+            }
+        }
+
+        private bool ClsCmd(string[] sArr)
+        {
+            UpdateCtrlPhi();          //航迹角/航向角选择
+            UpdateCtrlPara();         //控制参数由本地确定
+            UpdtRmtCtrlOt(sArr);      //更新控制输出
+            return true;
+        }
+
+        private bool OpnCmd(string[] sArr)    //  开环命令解析
+        {
+            switch (sArr[2])    //  命令解析
+            {
+                case "w": 
+                    {
+                        if (sArr[1] == "1")
+                            ship1Control.Speed_Up();
+                        else if (sArr[1] == "2")
+                            ship2Control.Speed_Up();
+                        else
+                            ship3Control.Speed_Up();
+                        break;
+                    }
+                case "a": 
+                    {
+                        if (sArr[1] == "1")
+                            ship1Control.Turn_Left();
+                        else if (sArr[1] == "2")
+                            ship2Control.Turn_Left();
+                        else
+                            ship3Control.Turn_Left();
+                        break; 
+                    }
+                case "d": 
+                    {
+                        if (sArr[1] == "1")
+                            ship1Control.Turn_Right();
+                        else if (sArr[1] == "2")
+                            ship2Control.Turn_Right();
+                        else
+                            ship3Control.Turn_Right(); 
+                        break; 
+                    }
+                case "s": 
+                    {
+                        if (sArr[1] == "1")
+                            ship1Control.Stop_Robot();
+                        else if (sArr[1] == "2")
+                            ship2Control.Stop_Robot();
+                        else
+                            ship3Control.Stop_Robot();
+                        break; 
+                    }
             }
             return true;
         }
 
-        private void RmtCtrl_Click(object sender, EventArgs e)//本地具有最高权限，可随时切换
+        private void RmtCtrl_Click(object sender, EventArgs e)//权限切换（本地具有最高权限，可随时切换）
         {
             if (RmtCtrl.Text == "Local control mode")
             {
@@ -1399,10 +1324,5 @@ namespace HUST_1_Demo
                 RmtCtrl.Text = "Local control mode";
             }
         }
-    }
-
-    public class ThreadWork
-    {
-        
     }
 }
