@@ -47,7 +47,7 @@ namespace MonitorNet
         /// </summary>
         /// <param name="iShipID">船舶id.</param>
         /// <param name="oParam">数据</param>
-		public void NetSubmitParam(int iShipID, SShipParam oParam)
+		public void NetSubmitParam(int iShipID, SShipParam oParam)//上传状态参数
 		{
 			if (this.m_iSubmitLimit >= 10)
 			{
