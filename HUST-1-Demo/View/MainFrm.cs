@@ -231,7 +231,7 @@ namespace HUST_1_Demo
             Boat1_Ru.Text = boat1.rud.ToString("0.0");
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
-            Boat1_time.Text = boat1.sTime; 
+            Boat1_time.Text = boat1.sTime;
             Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
 
             Boat2_X.Text = boat2.pos_X.ToString("0.00");
@@ -301,7 +301,7 @@ namespace HUST_1_Demo
 
         }
 
-       
+
 
         static int halfHeight_mm = 55000;//地图一半长55米
         static List<Point> listPoint_Boat1 = new List<Point>();
@@ -383,10 +383,10 @@ namespace HUST_1_Demo
                 {
                     if (isTarLineSet)
                     {
-                        int x1 = Widthmap - (int)(tarLineGe.Start.Y * paint_scale);
-                        int y1 = Heightmap - (int)(tarLineGe.Start.X * paint_scale);
-                        int x2 = Widthmap - (int)(tarLineGe.End.Y * paint_scale);
-                        int y2 = Heightmap - (int)(tarLineGe.End.X * paint_scale);
+                        int x1 = Widthmap - (int)(tarLineGe.Start.Y * 1000 * paint_scale);
+                        int y1 = Heightmap - (int)(tarLineGe.Start.X * 1000 * paint_scale);
+                        int x2 = Widthmap - (int)(tarLineGe.End.Y * 1000 * paint_scale);
+                        int y2 = Heightmap - (int)(tarLineGe.End.X * 1000 * paint_scale);
 
                         g.DrawLine(new Pen(Color.Blue, 1), x1, y1, x2, y2);
                     }
@@ -469,10 +469,10 @@ namespace HUST_1_Demo
         private void timer1_Tick(object sender, EventArgs e)
         {
             ship1Control.Send_Command(serialPort1);
-          /*  Thread.Sleep(40);
+            Thread.Sleep(40);
             ship2Control.Send_Command(serialPort1);
             Thread.Sleep(40);
-            ship3Control.Send_Command(serialPort1);*/
+            ship3Control.Send_Command(serialPort1);
         }
 
         private void Reset_Click(object sender, EventArgs e)
@@ -535,7 +535,7 @@ namespace HUST_1_Demo
 
             }
         }
-       
+
         private void Backoff_Click(object sender, EventArgs e)
         {
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
@@ -638,20 +638,20 @@ namespace HUST_1_Demo
 
         private void UpdateCtrlOutput()
         {
-             tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
-             tarCircle.Radius = float.Parse(circle_R1.Text);
-             tarCircle.x = float.Parse(circle_X.Text);
-             tarCircle.y = float.Parse(circle_Y.Text);
+            tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
+            tarCircle.Radius = float.Parse(circle_R1.Text);
+            tarCircle.x = float.Parse(circle_X.Text);
+            tarCircle.y = float.Parse(circle_Y.Text);
 
-             Control_fun(ship1Control, boat1);//1号小船控制
-             if (AutoSpeed.Checked)
-                 ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
-             else
-                 ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+            Control_fun(ship1Control, boat1);//1号小船控制
+            if (AutoSpeed.Checked)
+                ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
+            else
+                ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
-             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
-             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
-             boat1.XError = boat2.pos_X - boat1.pos_X;
+            boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+            boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+            boat1.XError = boat2.pos_X - boat1.pos_X;
 
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
@@ -665,17 +665,17 @@ namespace HUST_1_Demo
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             boat2.XError = boat1.pos_X - boat3.pos_X;
 
-             tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
-             tarCircle.Radius = float.Parse(circle_R3.Text);
-             Control_fun(ship3Control, boat3);//3号小船控制
-             if (AutoSpeed.Checked)
-                 ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
-             else
-                 ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-             // ship3Control.command[4] = 110;
-             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
-             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
-             boat3.XError = boat2.pos_X - boat3.pos_X;
+            tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
+            tarCircle.Radius = float.Parse(circle_R3.Text);
+            Control_fun(ship3Control, boat3);//3号小船控制
+            if (AutoSpeed.Checked)
+                ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
+            else
+                ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+            // ship3Control.command[4] = 110;
+            boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+            boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+            boat3.XError = boat2.pos_X - boat3.pos_X;
 
             xError1.Text = boat1.XError.ToString("0.000");//领队减1号
             xError2.Text = boat2.XError.ToString("0.000");//1号减2号
@@ -1102,14 +1102,14 @@ namespace HUST_1_Demo
         private void ControlFromServer(object oControlDara)
         {
             var sControlData = oControlDara.ToString();//这里是json格式数据，需要通过json解析
-           
+
             if (sControlData == "startlink")//开始远程控制请求
             {
                 if (MessageBox.Show("Allow remote control mode?", "Confirm Message",
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
                 {
                     isRmtCtrl = true;
-                    
+
                     RmtCtrl.Text = "Remote control mode";
                 }
             }
@@ -1125,7 +1125,7 @@ namespace HUST_1_Demo
             }
             else
             {
-                if(isRmtCtrl==true)//远程模式在本地允许后才进行命令解析，否则不解析
+                if (isRmtCtrl == true)//远程模式在本地允许后才进行命令解析，否则不解析
                 {
                     string[] sArr = sControlData.Split('-');
 
@@ -1137,135 +1137,240 @@ namespace HUST_1_Demo
                     {
                         //接到闭环命令，立即向云端服务器反馈接收到的跟随目标
                         //本地闭环控制时，跟随目标更新后，也应该立即反馈给云端服务器反馈
-                        UpdtRmtLocalTask(sArr);//更新本地和远程闭环控制目标（直线/圆）
+                        /**********************
+                         * 1. 设定任务模式（点/特殊直线/一般直线/多段直线/圆轨迹等）
+                         *    即更改path_mode属性的值
+                         * 2. 设置目标轨迹参数
+                         * 3. 开始跟随—开启新线程跟随
+                         * *******************/
+                        UpdtPathMode(sArr[2]);
+                        UpdtRefPath(sArr);
+
+                        UpdtRmtRefTask(sArr);//更新远程闭环控制目标（直线/圆）
                         isRmtClsFlag = true;
                         bRecdData = true;//开始记录数据
-                        timer1.Enabled = false;
+                        MessageBox.Show("闭环控制启动！");
                         Thread t = new Thread(this.RmtClsCtrl);
                         t.IsBackground = true;
                         t.Start(sArr);
                     }
-                    if (sArr[0] == "s") 
+                    if (sArr[0] == "s")
                     {
                         isRmtClsFlag = false;
                         bRecdData = false;//停止记录数据
                         ship1Control.Stop_Robot();
                         ship2Control.Stop_Robot();
                         ship3Control.Stop_Robot();
+                        MessageBox.Show("停船！");
                     }
                 }
             }
         }
 
+        private void UpdtPathMode(string sArr)
+        {
+            switch (sArr)
+            {
+                case "p":
+                    {
+                        //点跟踪
+                        path_mode.Text = "Point";
+                        break;
+                    }
+                case "g":
+                    {
+                        //一般直线跟踪
+                        path_mode.Text = "General line";
+                        break;
+                    }
+                case "l":
+                    {
+                        //特殊直线跟踪
+                        path_mode.Text = "Special line";
+                        break;
+                    }
+                case "m":
+                    {
+                        //多段直线跟踪
+                        path_mode.Text = "Multi line";
+                        break;
+                    }
+                case "r":
+                    {
+                        //圆轨迹跟踪
+                        path_mode.Text = "Circular path";
+                        break;
+                    }
+            }
+        }
+
+        private void UpdtRefPath(string[] sArr)
+        {
+            switch (sArr[2])
+            {
+                case "p":
+                    {
+                        //点跟踪参考轨迹参数设定
+                        tar_Point_X.Text = sArr[4];
+                        tar_Point_Y.Text = sArr[5];
+                        tarPoint.X = int.Parse(sArr[4]) * 1000;
+                        tarPoint.Y = int.Parse(sArr[5]) * 1000;
+                        break;
+                    }
+                case "g":
+                    {
+                        //一般直线跟踪
+                        tarLineGe.Start.X = int.Parse(sArr[4]);
+                        tarLineGe.Start.Y = int.Parse(sArr[5]);
+
+                        tarLineGe.End.X = int.Parse(sArr[6]);
+                        tarLineGe.End.Y = int.Parse(sArr[7]);
+                        isTarLineSet = true;
+                        break;
+                    }
+                case "l":
+                    {
+                        //特殊直线跟踪
+                        if (sArr[1] == "1")
+                        {
+                            line_Y1.Text = sArr[3];
+                        }
+
+                        else if (sArr[1] == "2")
+                        {
+                            line_Y2.Text = sArr[3];
+                        }
+
+                        else
+                        {
+                            line_Y3.Text = sArr[3];
+                        }
+                        tarLineSp = int.Parse(sArr[3]);
+                        break;
+                    }
+                case "m":
+                    {
+                        //多段直线跟踪
+                        int Widthmap = PathMap.Width / 2;
+                        int Heightmap = PathMap.Height / 2;
+
+                        //实际大小
+                        int Heigh_mm = halfHeight_mm;
+                        int Width_mm = Heigh_mm / Heightmap * Widthmap;
+
+                        //比例尺和反比例尺
+                        double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
+                        double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
+
+                        int numPt = int.Parse(sArr[3]);
+                        int i = 0;
+                        while (tarMultiLineDraw.Count<numPt)
+                        {
+                            //需要将实际坐标点转换为绘图坐标点
+                            int x = int.Parse(sArr[4 + i]) * 1000;
+                            int y = int.Parse(sArr[5 + i]) * 1000;
+                            tarMultiLine.Add(new Point(x, y));//毫米单位坐标点
+
+                            int x1 = Widthmap - (int)(y * paint_scale);
+                            int y1 = Heightmap - (int)(x * paint_scale);
+                            tarMultiLineDraw.Add(new Point(x1, y1));//绘图坐标点
+                            i = i + 2;
+                        }
+                        break;
+                    }
+                case "r":
+                    {
+                        //圆轨迹跟踪
+                        if (sArr[1] == "1")
+                        {
+                            circle_R1.Text = sArr[3];
+                        }
+
+                        else if (sArr[1] == "2")
+                        {
+                            circle_R2.Text = sArr[3];
+                        }
+
+                        else
+                        {
+                            circle_R3.Text = sArr[3];
+                        }
+                        tarCircle.Radius = double.Parse(sArr[3]);
+                        tarCircle.x = 15;
+                        tarCircle.y = 10;
+                        break;
+                    }
+            }
+        }
+       
+        private void UpdtRmtCtrlOt1(string sArr)
+        {
+            switch(sArr)
+            {
+                case "1":
+                    {
+                        Control_fun(ship1Control, boat1);
+                        ship1Control.command[4] = 100;
+                        boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+                        boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+                        boat1.XError = boat2.pos_X - boat1.pos_X;
+                        break;
+                    }
+                case "2":
+                    {
+                        Control_fun(ship2Control, boat2); ship2Control.command[4] = 100; 
+                        boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
+                        boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+                        boat2.XError = boat1.pos_X - boat3.pos_X;
+                        break;
+                    }
+                case "3":
+                    {
+                        Control_fun(ship3Control, boat3);
+                        ship3Control.command[4] = 100;
+                        boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+                        boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+                        boat3.XError = boat2.pos_X - boat3.pos_X;
+                        break;
+                    }
+            }
+        }
         private void RmtClsCtrl(object s)
         {
             string[] sArr = (string[])s;
             while (isRmtClsFlag)//此处应该开启新线程执行，否则会在此处一直循环，导致其他无法执行
             {
-                ClsCmd(sArr);       //  需一直循环执行，直到接到停止命令，则停止循环，然后停船
+                UpdateCtrlPhi();          //航迹角/航向角选择
+                UpdateCtrlPara();         //控制参数由本地确定
+                UpdtRmtCtrlOt1(sArr[1]);      //更新控制输出
                 Thread.Sleep(195);//控制周期
             }
         }
 
-        private void UpdtRmtLocalTask(string[] sArr)
+        private void UpdtRmtRefTask(string[] sArr)
         {
             var oRefParam = new RefLineData();//参看轨迹参数
 
             if (sArr[2] == "l")
             {
-                tarLineSp = double.Parse(sArr[3]);       //目标直线
-                path_mode.Text = "Special line";
-
                 oRefParam.flag = 1;
                 oRefParam.posY = tarLineSp;
             }
             if (sArr[2] == "r")
             {
-                tarCircle.x = double.Parse(sArr[3]);     //目标圆
-                tarCircle.y = double.Parse(sArr[4]);
-                tarCircle.Radius = double.Parse(sArr[5]);
-                path_mode.Text = "Circular path";
-                circle_X.Text = sArr[3];
-                circle_Y.Text = sArr[4];
-
                 oRefParam.flag = 2;
-                oRefParam.posX = tarCircle.x;
-                oRefParam.posY = tarCircle.y;
+                oRefParam.posX = 15;
+                oRefParam.posY = 10;
                 oRefParam.radius = tarCircle.Radius;
             }
-            NetManager.Instance.NetSubmitRefLine(int.Parse(sArr[1]),oRefParam);//向云端服务器发送参考轨迹
-        }
-
-        private void UpdtRmtCtrlOt(string[] sArr)
-        {
-            if (sArr[1] == "1")
-            {
-                if (sArr[2] == "l")
-                    line_Y1.Text = sArr[3];
-                else
-                    circle_R1.Text = sArr[5];
-
-
-
-                Control_fun(ship1Control, boat1);//1号小船控制
-                if (AutoSpeed.Checked)
-                    ship1Control.Closed_Control_LineSpeed(boat1, boat2, isCirPath, isFlagDir);
-                else
-                    ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-
-                boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
-                boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
-                boat1.XError = boat2.pos_X - boat1.pos_X;
-            }
-            else if (sArr[1] == "2")
-            {
-                if (sArr[2] == "l")
-                    line_Y2.Text = sArr[3];
-                else
-                    circle_R2.Text = sArr[5];
-
-                Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-                if (AutoSpeed.Checked)
-                    ship2Control.Closed_Control_LineSpeed(boat2, boat2, isCirPath, isFlagDir);
-                else
-                    ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-                //   ship2Control.command[4] = 100;
-                boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
-                boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
-                boat2.XError = boat1.pos_X - boat3.pos_X;
-            }
-            else
-            {
-                if (sArr[2] == "l")
-                    line_Y3.Text = sArr[3];
-                else
-                    circle_R3.Text = sArr[5];
-
-                Control_fun(ship3Control, boat3);//3号小船控制
-                if (AutoSpeed.Checked)
-                    ship3Control.Closed_Control_LineSpeed(boat3, boat2, isCirPath, isFlagDir);
-                else
-                    ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-                // ship3Control.command[4] = 110;
-                boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
-                boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
-                boat3.XError = boat2.pos_X - boat3.pos_X;
-            }
-        }
-
-        private bool ClsCmd(string[] sArr)
-        {
-            UpdateCtrlPhi();          //航迹角/航向角选择
-            UpdateCtrlPara();         //控制参数由本地确定
-            UpdtRmtCtrlOt(sArr);      //更新控制输出
-            return true;
+            NetManager.Instance.NetSubmitRefLine(int.Parse(sArr[1]), oRefParam);//向云端服务器发送参考轨迹
         }
 
         private bool OpnCmd(string[] sArr)    //  开环命令解析
         {
             switch (sArr[2])    //  命令解析
             {
-                case "w": 
+                case "w":
                     {
                         if (sArr[1] == "1")
                             ship1Control.Speed_Up();
@@ -1275,7 +1380,7 @@ namespace HUST_1_Demo
                             ship3Control.Speed_Up();
                         break;
                     }
-                case "a": 
+                case "a":
                     {
                         if (sArr[1] == "1")
                             ship1Control.Turn_Left();
@@ -1283,19 +1388,19 @@ namespace HUST_1_Demo
                             ship2Control.Turn_Left();
                         else
                             ship3Control.Turn_Left();
-                        break; 
+                        break;
                     }
-                case "d": 
+                case "d":
                     {
                         if (sArr[1] == "1")
                             ship1Control.Turn_Right();
                         else if (sArr[1] == "2")
                             ship2Control.Turn_Right();
                         else
-                            ship3Control.Turn_Right(); 
-                        break; 
+                            ship3Control.Turn_Right();
+                        break;
                     }
-                case "s": 
+                case "s":
                     {
                         if (sArr[1] == "1")
                             ship1Control.Stop_Robot();
@@ -1303,7 +1408,7 @@ namespace HUST_1_Demo
                             ship2Control.Stop_Robot();
                         else
                             ship3Control.Stop_Robot();
-                        break; 
+                        break;
                     }
             }
             return true;

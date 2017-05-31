@@ -10,6 +10,8 @@ namespace MonitorNet
         public double posX;//X坐标
         public double posY;//Y坐标
 
+        public double fError;//跟随误差
+
         public double phi;//航向角
         public double GPS_Phi;//未滤波航迹角
 
@@ -30,6 +32,8 @@ namespace MonitorNet
             this.lon = 0;
             this.posX = 0;
             this.posY = 0;
+
+            this.fError = 0;
 
             this.phi = 0;
             this.GPS_Phi = 0;
