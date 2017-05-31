@@ -86,11 +86,12 @@ namespace HUST_1_Demo
         string name = "";//保存数据txt
         DataTable dataRec = new DataTable();
 
-        Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
+     //   Point target_pt = new Point();//捕获左键鼠标按下去的点，以得到跟踪目标点
         List<double[]> PtPoolGPSBd = new List<double[]>();//泳池边界点经纬度
         List<double[]> PtPoolXYBd = new List<double[]>();//泳池边界点经纬度
 
         public Point tarPoint;  //目标点
+        public Point tarPointDraw;//绘图使用
         public TargetLine tarLineGe;//一般直线
         public static List<Point> tarMultiLine = new List<Point>();//多段直线
         static List<Point> tarMultiLineDraw = new List<Point>();//绘图使用
@@ -376,7 +377,7 @@ namespace HUST_1_Demo
                 #region 画目标直线和圆
                 if (path_mode.Text == "Point")//绘制目标点
                 {
-                    g.DrawRectangle(new Pen(Color.Red, 2), target_pt.X - 4, target_pt.Y - 4, 4, 4);
+                    g.DrawRectangle(new Pen(Color.Red, 2), tarPointDraw.X - 4, tarPointDraw.Y - 4, 4, 4);
                 }
 
                 if (path_mode.Text == "General line")
@@ -821,7 +822,7 @@ namespace HUST_1_Demo
         }
         private void PathMap_MouseDown(object sender, MouseEventArgs e)
         {
-            target_pt = new Point(e.X, e.Y);
+            Point target_pt = new Point(e.X, e.Y);
             //地图像素大小
             int Widthmap = PathMap.Width / 2;
             int Heightmap = PathMap.Height / 2;
@@ -841,6 +842,9 @@ namespace HUST_1_Demo
                 {
                     tarPoint.X = (int)((Heightmap - target_pt.Y) * scale);//得到以毫米为单位的目标X值
                     tarPoint.Y = (int)((Widthmap - target_pt.X) * scale);//得到以毫米为单位的目标点Y值
+
+                    tarPointDraw.X = target_pt.X;//绘制目标点使用
+                    tarPointDraw.Y = target_pt.Y;
 
                     tar_Point_X.Text = (tarPoint.X / 1000).ToString();
                     tar_Point_Y.Text = (tarPoint.Y / 1000).ToString();
@@ -1206,6 +1210,17 @@ namespace HUST_1_Demo
 
         private void UpdtRefPath(string[] sArr)
         {
+            int Widthmap = PathMap.Width / 2;
+            int Heightmap = PathMap.Height / 2;
+
+            //实际大小
+            int Heigh_mm = halfHeight_mm;
+            int Width_mm = Heigh_mm / Heightmap * Widthmap;
+
+            //比例尺和反比例尺
+            double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
+            double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
+
             switch (sArr[2])
             {
                 case "p":
@@ -1215,6 +1230,9 @@ namespace HUST_1_Demo
                         tar_Point_Y.Text = sArr[5];
                         tarPoint.X = int.Parse(sArr[4]) * 1000;
                         tarPoint.Y = int.Parse(sArr[5]) * 1000;
+
+                        tarPointDraw.X = Widthmap - (int)(tarPoint.Y * paint_scale);
+                        tarPointDraw.Y = Heightmap - (int)(tarPoint.X * paint_scale);
                         break;
                     }
                 case "g":
@@ -1251,17 +1269,6 @@ namespace HUST_1_Demo
                 case "m":
                     {
                         //多段直线跟踪
-                        int Widthmap = PathMap.Width / 2;
-                        int Heightmap = PathMap.Height / 2;
-
-                        //实际大小
-                        int Heigh_mm = halfHeight_mm;
-                        int Width_mm = Heigh_mm / Heightmap * Widthmap;
-
-                        //比例尺和反比例尺
-                        double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
-                        double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
-
                         int numPt = int.Parse(sArr[3]);
                         int i = 0;
                         while (tarMultiLineDraw.Count<numPt)
