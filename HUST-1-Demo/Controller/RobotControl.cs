@@ -494,6 +494,7 @@ namespace HUST_1_Demo.Controller
             {
                 tempLeader = leaderboat.pos_X;
                 tempFollow = boat.pos_X;
+                deltaError = tempLeader - tempFollow;
             }
             if (flagPathSelect==2)//=2:圆轨迹跟随
             {

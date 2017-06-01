@@ -152,16 +152,16 @@ namespace HUST_1_Demo.Model
             Euler_Z[1] = response_data[18];
             Euler_Z[2] = response_data[19];
             Euler_Z[3] = response_data[20];
-            Init_Phi = BitConverter.ToSingle(Euler_Z, 0);
-
+       //     Init_Phi = BitConverter.ToSingle(Euler_Z, 0);
+            Init_Phi++;
             phi = Init_Phi + Phi_buchang;
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;
             //  rud = response_data[21];//大船没有舵角信息
             rud = response_data[21] - 25;//小船舵角信息
             if (response_data[22] == 0) gear = response_data[22];
-            else gear = response_data[22] - 12;
-            MotorSpd = response_data[23];
+            else gear = response_data[22];
+            MotorSpd = response_data[23] - '0';
 
         }
         
