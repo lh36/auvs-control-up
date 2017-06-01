@@ -203,22 +203,23 @@ namespace HUST_1_Demo
 
         }
 
+        
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            byte[] response_data = RecvSeriData.ReceData(serialPort1);
-
+            RecvSeriData.ReceData(serialPort1);
             #region 接收到一组正确的数据，则进行处理和显示
-            if (response_data != null)
+            if (RecvSeriData.bDataGet == true)
             {
-                byte ID_Temp = response_data[3];
+                RecvSeriData.bDataGet = false;
+                byte ID_Temp = RecvSeriData.response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(response_data); boat1.SubmitParamToServer(); if (bRecdData == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(response_data); boat2.SubmitParamToServer(); if (bRecdData == true) boat2.StoreShipData(name, dataRec); break;
-                    case 0x03: boat3.UpdataStatusData(response_data); boat3.SubmitParamToServer(); if (bRecdData == true) boat3.StoreShipData(name, dataRec); break;
+                    case 0x01: boat1.UpdataStatusData(RecvSeriData.response_data); boat1.SubmitParamToServer(); if (bRecdData == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
+                    case 0x02: boat2.UpdataStatusData(RecvSeriData.response_data); boat2.SubmitParamToServer(); if (bRecdData == true) boat2.StoreShipData(name, dataRec); break;
+                    case 0x03: boat3.UpdataStatusData(RecvSeriData.response_data); boat3.SubmitParamToServer(); if (bRecdData == true) boat3.StoreShipData(name, dataRec); break;
                     default: break;
                 }
-                Array.Clear(response_data, 0, response_data.Length);
+                Array.Clear(RecvSeriData.response_data, 0, RecvSeriData.response_data.Length);
                 Display();//有数据更新时才更新显示，否则不更新（即不是每次接收到数据才更新，只有接收到正确的数据才更新）
             }
             #endregion
@@ -250,7 +251,7 @@ namespace HUST_1_Demo
             Boat3_Ru.Text = boat3.rud.ToString("0.0");
             Boat3_speed.Text = boat3.speed.ToString("0.000");
             Boat3_grade.Text = boat3.gear.ToString();
-            Boat3_time.Text = boat3.lTime.ToString();
+            Boat3_time.Text = boat3.sTime;
             Boat3_MotorSpd.Text = boat3.MotorSpd.ToString();
         }
 
@@ -476,9 +477,9 @@ namespace HUST_1_Demo
         private void timer1_Tick(object sender, EventArgs e)
         {
             ship1Control.Send_Command(serialPort1);
-            Thread.Sleep(40);
+        //    Thread.Sleep(40);
             ship2Control.Send_Command(serialPort1);
-            Thread.Sleep(40);
+        //    Thread.Sleep(40);
             ship3Control.Send_Command(serialPort1);
         }
 
@@ -563,7 +564,6 @@ namespace HUST_1_Demo
             if (button1.Text == "Start following")
             {
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
-                timer1.Enabled = false;//首先关闭开环定时器获取当前状态信息的定时器
                 isFlagCtrl = true;
                 bRecdData = true;//开始记录数据
                 Thread threadControl = new Thread(Control_PF);
@@ -574,7 +574,6 @@ namespace HUST_1_Demo
             }
             else
             {
-                timer1.Enabled = true;//关闭闭环控制后，重新开启开环获取船位姿状态信息
                 isFlagCtrl = false;
                 ship1Control.Stop_Robot();
                 Thread.Sleep(40);
@@ -663,11 +662,11 @@ namespace HUST_1_Demo
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
             Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-            if (AutoSpeed.Checked)
+           /* if (AutoSpeed.Checked)
                 ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
             else
-                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-            //   ship2Control.command[4] = 100;
+                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));*/
+            ship2Control.command[4] = 100;
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             boat2.XError = boat1.pos_X - boat3.pos_X;
@@ -675,11 +674,12 @@ namespace HUST_1_Demo
             tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R3.Text);
             Control_fun(ship3Control, boat3);//3号小船控制
+           
             if (AutoSpeed.Checked)
                 ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
             else
                 ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-            // ship3Control.command[4] = 110;
+
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
             boat3.XError = boat2.pos_X - boat3.pos_X;
@@ -1081,8 +1081,8 @@ namespace HUST_1_Demo
                 var oInstanceData = new MonitorNet.InstanceData();
                 oInstanceData.Name = "Local test";                              //  实验名称
                 oInstanceData.Desp = "LH";                                      //  实验描述
-                oInstanceData.Amount = 1;                                   //  此次实验参与船的数量
-                oInstanceData.Shape = "A";                                     //  船的类型
+                oInstanceData.Amount = 3;                                   //  此次实验参与船的数量
+                oInstanceData.Shape = "ABC";                                     //  船的类型
                 oInstanceData.Time = GetTimeStamp();
 
                 NetManager.Instance.NetCreateNewInstance(oInstanceData);        //  创建上传数据实例
@@ -1166,7 +1166,6 @@ namespace HUST_1_Demo
                         ship1Control.Stop_Robot();
                         ship2Control.Stop_Robot();
                         ship3Control.Stop_Robot();
-                        MessageBox.Show("停船！");
                     }
                 }
             }
