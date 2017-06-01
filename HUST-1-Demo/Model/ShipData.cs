@@ -19,6 +19,7 @@ namespace HUST_1_Demo.Model
         public double pos_X { get; set; }//当前X坐标，此为测量坐标系下的坐标，北向为X，东向为Y
         public double pos_Y { get; set; }//Y坐标
         public double XError { get; set; }//编队误差，与leader的跟随误差
+        public double fError { get; set; }//轨迹跟随误差
         public double last_pos_X { get; set; }//上一坐标值
         public double last_pos_Y { get; set; }//Y坐标
         public double X_mm { get; set; }//图上X坐标
@@ -172,6 +173,8 @@ namespace HUST_1_Demo.Model
             oShipParam.lon = this.Lon;
             oShipParam.posX = this.pos_X;
             oShipParam.posY = this.pos_Y;
+
+            oShipParam.fError = this.fError;
 
             oShipParam.phi = this.GPS_Phi;
             oShipParam.GPS_Phi = this.GPS_Phi;

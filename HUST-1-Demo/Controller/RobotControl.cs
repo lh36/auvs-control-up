@@ -250,7 +250,7 @@ namespace HUST_1_Demo.Controller
                 {
                     Ref_phi = 180 - Ref_phi;
                 }
-                HUST_1_Demo.Form1.isFlagDir = true;
+                HUST_1_Demo.Form1.cirDir = 2;//逆时针
             }
             #endregion
 
@@ -484,29 +484,31 @@ namespace HUST_1_Demo.Controller
         #endregion
 
         #region 闭环控制区-速度控制
-        public void Closed_Control_LineSpeed(ShipData boat, ShipData leaderboat, bool flagPathSelect, bool flagFollowDir)
+        public void Closed_Control_LineSpeed(ShipData boat, ShipData leaderboat, int flagPathSelect, int flagFollowDir)
         {
             double tempLeader = 0.0d;
             double tempFollow = 0.0d;//跟随者变量
             double deltaError = 0.0d;//距离误差
-            if (flagPathSelect == false)//判断为跟随直线控制还是跟随圆轨迹控制
+            
+            if (flagPathSelect == 1)//判断为跟随直线控制还是跟随圆轨迹控制,=1:直线跟随
             {
                 tempLeader = leaderboat.pos_X;
                 tempFollow = boat.pos_X;
             }
-            else
+            if (flagPathSelect==2)//=2:圆轨迹跟随
             {
                 tempLeader = leaderboat.Pos_Phi;
                 tempFollow = boat.Pos_Phi;
             }
 
-            if (flagFollowDir == false)
+            //如果是圆轨迹跟随时才需要处理顺时针逆时针跟随时边界条件的不同情况
+            if (flagPathSelect == 2 && flagFollowDir == 1)//圆轨迹顺时针跟随
             {
                 if ((tempFollow < 0) && (tempLeader > 0)) //处理正负180°附近的情况
                     tempFollow = tempFollow + 360;
                 deltaError = tempFollow - tempLeader;
             }
-            else
+            if (flagPathSelect == 2 && flagFollowDir == 2)//圆轨迹逆时针
             {
                 if ((tempLeader < 0) && (tempFollow > 0)) //处理正负180°附近的情况
                     tempLeader = tempLeader + 360;
