@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Permissions;
 using MonitorNet;
+using HUST_1_Demo.View;
 
 
 namespace HUST_1_Demo
@@ -1477,6 +1478,12 @@ namespace HUST_1_Demo
                 isRmtClsFlag = false;//关闭闭环循环模式
                 RmtCtrl.Text = "Local control mode";
             }
+        }
+
+        private void LocalVideo_Click(object sender, EventArgs e)
+        {
+            Camera cam = new Camera();
+            cam.ShowDialog();
         }
     }
 }
