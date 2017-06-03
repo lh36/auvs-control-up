@@ -94,6 +94,22 @@ namespace MonitorNet
 			oApi.Request ();
 		}
 
+		/// <summary>
+		/// 发送视频数据
+		/// </summary>
+		/// <param name="oParam">数据</param>
+		public void NetSubmitVideo(byte[] btData)
+		{
+			Thread oThread = new Thread (SubmitVideoThread);
+			oThread.Start (btData);
+		}
+
+		private void SubmitVideoThread(object oData)
+		{
+			SubmitVideoApi oApi = new SubmitVideoApi ((byte[])oData);
+			oApi.Request ();
+		}
+
         /// <summary>
         /// 获取控制信息
         /// </summary>

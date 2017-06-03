@@ -39,7 +39,7 @@
             // 
             // timer
             // 
-            this.timer.Interval = 20;
+            this.timer.Interval = 50;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // OpnVideo
@@ -77,6 +77,7 @@
             this.pictureBox1.Location = new System.Drawing.Point(360, 74);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(344, 312);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             // 

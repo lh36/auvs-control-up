@@ -81,6 +81,7 @@
     <Compile Include="MonitorNet\Api\GetControlApi.cs" />
     <Compile Include="MonitorNet\Api\SubmitParamApi.cs" />
     <Compile Include="MonitorNet\Api\SubmitRefLineApi.cs" />
+    <Compile Include="MonitorNet\Api\SubmitVideoApi.cs" />
     <Compile Include="MonitorNet\Bean\InstanceData.cs" />
     <Compile Include="MonitorNet\Bean\RefLineData.cs" />
     <Compile Include="MonitorNet\Bean\SShipParam.cs" />
