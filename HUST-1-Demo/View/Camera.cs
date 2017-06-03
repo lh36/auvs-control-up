@@ -50,6 +50,7 @@ namespace HUST_1_Demo.View
 
             this.Cursor = Cursors.Default;
         }
+
         private void CloseCurrentVideoSource()
         {
             if (videoSourcePlayer.VideoSource != null)

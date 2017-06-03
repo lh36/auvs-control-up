@@ -49,7 +49,7 @@
             this.Backoff = new System.Windows.Forms.Button();
             this.rightup = new System.Windows.Forms.Button();
             this.leftup = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.clsCtrlBtn = new System.Windows.Forms.Button();
             this.label70 = new System.Windows.Forms.Label();
             this.xError1 = new System.Windows.Forms.TextBox();
             this.Boat1_speed = new System.Windows.Forms.TextBox();
@@ -67,6 +67,8 @@
             this.Reset = new System.Windows.Forms.Button();
             this.Start = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.asv_state = new System.Windows.Forms.Button();
+            this.LocalVideo = new System.Windows.Forms.Button();
             this.boat3_init_Phi = new System.Windows.Forms.Button();
             this.boat2_init_Phi = new System.Windows.Forms.Button();
             this.boat1_init_Phi = new System.Windows.Forms.Button();
@@ -227,7 +229,6 @@
             this.groupBox21 = new System.Windows.Forms.GroupBox();
             this.RmtCtrl = new System.Windows.Forms.Button();
             this.bSerInit = new System.Windows.Forms.Button();
-            this.LocalVideo = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -492,17 +493,17 @@
             this.leftup.UseVisualStyleBackColor = false;
             this.leftup.Click += new System.EventHandler(this.leftup_Click);
             // 
-            // button1
+            // clsCtrlBtn
             // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(244, 224);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(110, 42);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Start following";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.clsCtrlBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.clsCtrlBtn.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.clsCtrlBtn.Location = new System.Drawing.Point(244, 224);
+            this.clsCtrlBtn.Name = "clsCtrlBtn";
+            this.clsCtrlBtn.Size = new System.Drawing.Size(110, 42);
+            this.clsCtrlBtn.TabIndex = 5;
+            this.clsCtrlBtn.Text = "Start following";
+            this.clsCtrlBtn.UseVisualStyleBackColor = false;
+            this.clsCtrlBtn.Click += new System.EventHandler(this.clsCtrlBtn_Click);
             // 
             // label70
             // 
@@ -630,10 +631,10 @@
             // Reset
             // 
             this.Reset.BackColor = System.Drawing.Color.Aqua;
-            this.Reset.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Reset.Location = new System.Drawing.Point(110, 83);
+            this.Reset.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Reset.Location = new System.Drawing.Point(94, 139);
             this.Reset.Name = "Reset";
-            this.Reset.Size = new System.Drawing.Size(79, 45);
+            this.Reset.Size = new System.Drawing.Size(79, 49);
             this.Reset.TabIndex = 10;
             this.Reset.Text = "Reset";
             this.Reset.UseVisualStyleBackColor = false;
@@ -642,10 +643,10 @@
             // Start
             // 
             this.Start.BackColor = System.Drawing.Color.Lime;
-            this.Start.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Start.Location = new System.Drawing.Point(110, 144);
+            this.Start.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Start.Location = new System.Drawing.Point(9, 139);
             this.Start.Name = "Start";
-            this.Start.Size = new System.Drawing.Size(79, 45);
+            this.Start.Size = new System.Drawing.Size(79, 49);
             this.Start.TabIndex = 11;
             this.Start.Text = "Start";
             this.Start.UseVisualStyleBackColor = false;
@@ -653,6 +654,7 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.asv_state);
             this.groupBox5.Controls.Add(this.LocalVideo);
             this.groupBox5.Controls.Add(this.boat3_init_Phi);
             this.groupBox5.Controls.Add(this.boat2_init_Phi);
@@ -661,18 +663,39 @@
             this.groupBox5.Controls.Add(this.Start);
             this.groupBox5.Controls.Add(this.Reset);
             this.groupBox5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox5.Location = new System.Drawing.Point(857, 12);
+            this.groupBox5.Location = new System.Drawing.Point(855, 268);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(268, 200);
             this.groupBox5.TabIndex = 12;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Operation config";
             // 
+            // asv_state
+            // 
+            this.asv_state.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.asv_state.Location = new System.Drawing.Point(115, 20);
+            this.asv_state.Name = "asv_state";
+            this.asv_state.Size = new System.Drawing.Size(128, 55);
+            this.asv_state.TabIndex = 15;
+            this.asv_state.Text = "ASV stopped";
+            this.asv_state.UseVisualStyleBackColor = true;
+            // 
+            // LocalVideo
+            // 
+            this.LocalVideo.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LocalVideo.Location = new System.Drawing.Point(9, 20);
+            this.LocalVideo.Name = "LocalVideo";
+            this.LocalVideo.Size = new System.Drawing.Size(79, 55);
+            this.LocalVideo.TabIndex = 14;
+            this.LocalVideo.Text = "Video";
+            this.LocalVideo.UseVisualStyleBackColor = true;
+            this.LocalVideo.Click += new System.EventHandler(this.LocalVideo_Click);
+            // 
             // boat3_init_Phi
             // 
-            this.boat3_init_Phi.Location = new System.Drawing.Point(14, 144);
+            this.boat3_init_Phi.Location = new System.Drawing.Point(179, 81);
             this.boat3_init_Phi.Name = "boat3_init_Phi";
-            this.boat3_init_Phi.Size = new System.Drawing.Size(79, 45);
+            this.boat3_init_Phi.Size = new System.Drawing.Size(79, 52);
             this.boat3_init_Phi.TabIndex = 13;
             this.boat3_init_Phi.Text = "3# Heading angle init";
             this.boat3_init_Phi.UseVisualStyleBackColor = true;
@@ -680,9 +703,9 @@
             // 
             // boat2_init_Phi
             // 
-            this.boat2_init_Phi.Location = new System.Drawing.Point(14, 83);
+            this.boat2_init_Phi.Location = new System.Drawing.Point(94, 81);
             this.boat2_init_Phi.Name = "boat2_init_Phi";
-            this.boat2_init_Phi.Size = new System.Drawing.Size(79, 45);
+            this.boat2_init_Phi.Size = new System.Drawing.Size(79, 52);
             this.boat2_init_Phi.TabIndex = 13;
             this.boat2_init_Phi.Text = "2# Heading angle init ";
             this.boat2_init_Phi.UseVisualStyleBackColor = true;
@@ -690,9 +713,9 @@
             // 
             // boat1_init_Phi
             // 
-            this.boat1_init_Phi.Location = new System.Drawing.Point(14, 22);
+            this.boat1_init_Phi.Location = new System.Drawing.Point(9, 81);
             this.boat1_init_Phi.Name = "boat1_init_Phi";
-            this.boat1_init_Phi.Size = new System.Drawing.Size(79, 45);
+            this.boat1_init_Phi.Size = new System.Drawing.Size(79, 52);
             this.boat1_init_Phi.TabIndex = 13;
             this.boat1_init_Phi.Text = "1# Heading angle init";
             this.boat1_init_Phi.UseVisualStyleBackColor = true;
@@ -701,10 +724,10 @@
             // Switch
             // 
             this.Switch.BackColor = System.Drawing.Color.Magenta;
-            this.Switch.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Switch.Location = new System.Drawing.Point(110, 22);
+            this.Switch.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Switch.Location = new System.Drawing.Point(179, 139);
             this.Switch.Name = "Switch";
-            this.Switch.Size = new System.Drawing.Size(79, 45);
+            this.Switch.Size = new System.Drawing.Size(79, 49);
             this.Switch.TabIndex = 12;
             this.Switch.Text = "Aotu";
             this.Switch.UseVisualStyleBackColor = false;
@@ -716,7 +739,7 @@
             this.groupBox6.Controls.Add(this.Phi_mode);
             this.groupBox6.Controls.Add(this.groupBox11);
             this.groupBox6.Controls.Add(this.groupBox10);
-            this.groupBox6.Controls.Add(this.button1);
+            this.groupBox6.Controls.Add(this.clsCtrlBtn);
             this.groupBox6.Controls.Add(this.path_mode);
             this.groupBox6.Controls.Add(this.groupBox9);
             this.groupBox6.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -1329,7 +1352,7 @@
             this.line_Y1.Name = "line_Y1";
             this.line_Y1.Size = new System.Drawing.Size(38, 23);
             this.line_Y1.TabIndex = 1;
-            this.line_Y1.Text = "7";
+            this.line_Y1.Text = "0";
             // 
             // label64
             // 
@@ -1346,7 +1369,7 @@
             this.line_Y3.Name = "line_Y3";
             this.line_Y3.Size = new System.Drawing.Size(38, 23);
             this.line_Y3.TabIndex = 1;
-            this.line_Y3.Text = "13";
+            this.line_Y3.Text = "0";
             // 
             // label65
             // 
@@ -1363,7 +1386,7 @@
             this.line_Y2.Name = "line_Y2";
             this.line_Y2.Size = new System.Drawing.Size(38, 23);
             this.line_Y2.TabIndex = 1;
-            this.line_Y2.Text = "10";
+            this.line_Y2.Text = "0";
             // 
             // label17
             // 
@@ -2000,7 +2023,7 @@
             this.groupBox19.Controls.Add(this.ManualSpeed);
             this.groupBox19.Controls.Add(this.AutoSpeed);
             this.groupBox19.Controls.Add(this.label69);
-            this.groupBox19.Location = new System.Drawing.Point(857, 227);
+            this.groupBox19.Location = new System.Drawing.Point(855, 5);
             this.groupBox19.Name = "groupBox19";
             this.groupBox19.Size = new System.Drawing.Size(268, 86);
             this.groupBox19.TabIndex = 17;
@@ -2123,7 +2146,7 @@
             this.groupBox20.Controls.Add(this.RiseKs);
             this.groupBox20.Controls.Add(this.Alfa2);
             this.groupBox20.Controls.Add(this.Alfa1);
-            this.groupBox20.Location = new System.Drawing.Point(857, 326);
+            this.groupBox20.Location = new System.Drawing.Point(855, 112);
             this.groupBox20.Name = "groupBox20";
             this.groupBox20.Size = new System.Drawing.Size(120, 141);
             this.groupBox20.TabIndex = 19;
@@ -2204,7 +2227,7 @@
             this.groupBox22.Controls.Add(this.label87);
             this.groupBox22.Controls.Add(this.NSFC_Kd);
             this.groupBox22.Controls.Add(this.NSFC_Kp);
-            this.groupBox22.Location = new System.Drawing.Point(1005, 326);
+            this.groupBox22.Location = new System.Drawing.Point(1003, 112);
             this.groupBox22.Name = "groupBox22";
             this.groupBox22.Size = new System.Drawing.Size(120, 141);
             this.groupBox22.TabIndex = 19;
@@ -2278,16 +2301,6 @@
             this.bSerInit.UseVisualStyleBackColor = true;
             this.bSerInit.Click += new System.EventHandler(this.bSerInit_Click);
             // 
-            // LocalVideo
-            // 
-            this.LocalVideo.Location = new System.Drawing.Point(197, 85);
-            this.LocalVideo.Name = "LocalVideo";
-            this.LocalVideo.Size = new System.Drawing.Size(57, 42);
-            this.LocalVideo.TabIndex = 14;
-            this.LocalVideo.Text = "Video";
-            this.LocalVideo.UseVisualStyleBackColor = true;
-            this.LocalVideo.Click += new System.EventHandler(this.LocalVideo_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -2302,10 +2315,10 @@
             this.Controls.Add(this.groupBox15);
             this.Controls.Add(this.groupBox12);
             this.Controls.Add(this.groupBox7);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.groupBox5);
             this.Name = "Form1";
             this.Text = "HUST-1号";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -2383,7 +2396,7 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button Switch;
         private System.Windows.Forms.Button Backoff;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button clsCtrlBtn;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.ComboBox path_mode;
         private System.Windows.Forms.Label label14;
@@ -2554,6 +2567,7 @@
         private System.Windows.Forms.Label label73;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.Button LocalVideo;
+        private System.Windows.Forms.Button asv_state;
     }
 }
 

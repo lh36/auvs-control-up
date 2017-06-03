@@ -134,11 +134,19 @@ namespace HUST_1_Demo
             }
             else
             {
+                ship1Control.Stop_Robot();//关闭串口先停船
+                ship2Control.Stop_Robot();
+                ship3Control.Stop_Robot();
+
                 timer1.Enabled = false;
                 serialPort1.Close();
                 ComOpen1.Text = "Open port";
                 ComPortNum1.Enabled = true;
                 BaudRate1.Enabled = true;
+
+                
+                asv_state.Text = "ASV stopped";
+                clsCtrlBtn.Text = "Start following";
             }
         }
 
@@ -560,9 +568,9 @@ namespace HUST_1_Demo
 
 
 
-        private void button1_Click(object sender, EventArgs e)
+        private void clsCtrlBtn_Click(object sender, EventArgs e)
         {
-            if (button1.Text == "Start following")
+            if (clsCtrlBtn.Text == "Start following")
             {
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 isFlagCtrl = true;
@@ -570,18 +578,18 @@ namespace HUST_1_Demo
                 Thread threadControl = new Thread(Control_PF);
                 threadControl.IsBackground = true;
                 threadControl.Start();
-                button1.Text = "Stop following";
+                clsCtrlBtn.Text = "Stop following";
 
             }
             else
             {
                 isFlagCtrl = false;
                 ship1Control.Stop_Robot();
-                Thread.Sleep(40);
+              //  Thread.Sleep(40);
                 ship2Control.Stop_Robot();
-                Thread.Sleep(40);
+              //  Thread.Sleep(40);
                 ship3Control.Stop_Robot();
-                button1.Text = "Start following";
+                clsCtrlBtn.Text = "Start following";
             }
 
         }
@@ -1101,10 +1109,17 @@ namespace HUST_1_Demo
                 isRmtCtrl = false;//关闭远程模式-切换到本地模式
                 isRmtClsFlag = false;//关闭闭环循环模式
                 RmtCtrl.Text = "Local control mode";
+
+                ship1Control.Stop_Robot();
+                ship2Control.Stop_Robot();
+                ship3Control.Stop_Robot();
+                asv_state.Text = "ASV stopped";
+                clsCtrlBtn.Text = "Start following";
             }
 
         }
-
+        
+        string[] sArr;
         private void ControlFromServer(object oControlDara)
         {
             var sControlData = oControlDara.ToString();//这里是json格式数据，需要通过json解析
@@ -1133,7 +1148,7 @@ namespace HUST_1_Demo
             {
                 if (isRmtCtrl == true)//远程模式在本地允许后才进行命令解析，否则不解析
                 {
-                    string[] sArr = sControlData.Split('-');
+                    sArr = sControlData.Split('-');
 
                     if (sArr[0] == "o")     //  开环控制命令解析
                     {
@@ -1149,16 +1164,18 @@ namespace HUST_1_Demo
                          * 2. 设置目标轨迹参数
                          * 3. 开始跟随—开启新线程跟随
                          * *******************/
-                        UpdtPathMode(sArr[2]);
-                        UpdtRefPath(sArr);
+                        UpdtPathMode();
+                        UpdtRefPath();
 
                         UpdtRmtRefTask(sArr);//更新远程闭环控制目标（直线/圆）
                         isRmtClsFlag = true;
                         bRecdData = true;//开始记录数据
-                        MessageBox.Show("闭环控制启动！");
-                        Thread t = new Thread(this.RmtClsCtrl);
+
+                        Thread t = new Thread(RmtClsCtrl);
                         t.IsBackground = true;
-                        t.Start(sArr);
+                        t.Start();
+                        asv_state.Text = "ASV running";
+                        clsCtrlBtn.Text = "Stop following";
                     }
                     if (sArr[0] == "s")
                     {
@@ -1167,14 +1184,16 @@ namespace HUST_1_Demo
                         ship1Control.Stop_Robot();
                         ship2Control.Stop_Robot();
                         ship3Control.Stop_Robot();
+                        asv_state.Text = "ASV stopped";
+                        clsCtrlBtn.Text = "Start following";
                     }
                 }
             }
         }
 
-        private void UpdtPathMode(string sArr)
+        private void UpdtPathMode()
         {
-            switch (sArr)
+            switch (sArr[2])
             {
                 case "p":
                     {
@@ -1215,7 +1234,7 @@ namespace HUST_1_Demo
             }
         }
 
-        private void UpdtRefPath(string[] sArr)
+        private void UpdtRefPath()
         {
             int Widthmap = PathMap.Width / 2;
             int Heightmap = PathMap.Height / 2;
@@ -1235,21 +1254,23 @@ namespace HUST_1_Demo
                         //点跟踪参考轨迹参数设定
                         tar_Point_X.Text = sArr[4];
                         tar_Point_Y.Text = sArr[5];
-                        tarPoint.X = int.Parse(sArr[4]) * 1000;
-                        tarPoint.Y = int.Parse(sArr[5]) * 1000;
+
+                        tarPoint.X = (int)(double.Parse(sArr[4])) * 1000;
+                        tarPoint.Y = (int)(double.Parse(sArr[5])) * 1000;
 
                         tarPointDraw.X = Widthmap - (int)(tarPoint.Y * paint_scale);
                         tarPointDraw.Y = Heightmap - (int)(tarPoint.X * paint_scale);
+
                         break;
                     }
                 case "g":
                     {
                         //一般直线跟踪
-                        tarLineGe.Start.X = int.Parse(sArr[4]) * 1000;
-                        tarLineGe.Start.Y = int.Parse(sArr[5]) * 1000;
+                        tarLineGe.Start.X = (int)(double.Parse(sArr[4])) * 1000;
+                        tarLineGe.Start.Y = (int)(double.Parse(sArr[5])) * 1000;
 
-                        tarLineGe.End.X = int.Parse(sArr[6]) * 1000;
-                        tarLineGe.End.Y = int.Parse(sArr[7]) * 1000;
+                        tarLineGe.End.X = (int)(double.Parse(sArr[6])) * 1000;
+                        tarLineGe.End.Y = (int)(double.Parse(sArr[7])) * 1000;
 
                         tarLineGe.LineK = (double)(tarLineGe.Start.Y - tarLineGe.End.Y) / (double)(tarLineGe.Start.X - tarLineGe.End.X);
                         tarLineGe.LineB = (tarLineGe.Start.Y - tarLineGe.LineK * tarLineGe.Start.X) / 1000.0f;
@@ -1260,6 +1281,7 @@ namespace HUST_1_Demo
                             tarLineGe.isReverse = false;
 
                         isTarLineSet = true;
+                        MessageBox.Show("闭环控制启动！");
                         break;
                     }
                 case "l":
@@ -1280,6 +1302,7 @@ namespace HUST_1_Demo
                             line_Y3.Text = sArr[3];
                         }
                         tarLineSp = int.Parse(sArr[3]);
+                        MessageBox.Show("闭环控制启动！");
                         break;
                     }
                 case "m":
@@ -1287,11 +1310,12 @@ namespace HUST_1_Demo
                         //多段直线跟踪
                         int numPt = int.Parse(sArr[3]);
                         int i = 0;
+                        tarMultiLineDraw.Clear();
                         while (tarMultiLineDraw.Count<numPt)
                         {
                             //需要将实际坐标点转换为绘图坐标点
-                            int x = int.Parse(sArr[4 + i]) * 1000;
-                            int y = int.Parse(sArr[5 + i]) * 1000;
+                            int x = (int)(double.Parse(sArr[4 + i])) * 1000;
+                            int y = (int)(double.Parse(sArr[5 + i])) * 1000;
                             tarMultiLine.Add(new Point(x, y));//毫米单位坐标点
 
                             int x1 = Widthmap - (int)(y * paint_scale);
@@ -1299,6 +1323,7 @@ namespace HUST_1_Demo
                             tarMultiLineDraw.Add(new Point(x1, y1));//绘图坐标点
                             i = i + 2;
                         }
+                        MessageBox.Show("闭环控制启动！");
                         break;
                     }
                 case "r":
@@ -1318,9 +1343,13 @@ namespace HUST_1_Demo
                         {
                             circle_R3.Text = sArr[3];
                         }
+                        circle_X.Text = "15";
+                        circle_Y.Text = "10";
+
                         tarCircle.Radius = double.Parse(sArr[3]);
                         tarCircle.x = 15;
                         tarCircle.y = 10;
+                        MessageBox.Show("闭环控制启动！");
                         break;
                     }
             }
@@ -1385,9 +1414,9 @@ namespace HUST_1_Demo
                     }
             }
         }
-        private void RmtClsCtrl(object s)
+
+        private void RmtClsCtrl()
         {
-            string[] sArr = (string[])s;
             while (isRmtClsFlag)//此处应该开启新线程执行，否则会在此处一直循环，导致其他无法执行
             {
                 UpdateCtrlPhi();          //航迹角/航向角选择
@@ -1428,6 +1457,7 @@ namespace HUST_1_Demo
                             ship2Control.Speed_Up();
                         else
                             ship3Control.Speed_Up();
+                        asv_state.Text = "ASV running";
                         break;
                     }
                 case "a":
@@ -1458,6 +1488,7 @@ namespace HUST_1_Demo
                             ship2Control.Stop_Robot();
                         else
                             ship3Control.Stop_Robot();
+                        asv_state.Text = "ASV stopped";
                         break;
                     }
             }
@@ -1485,5 +1516,6 @@ namespace HUST_1_Demo
             Camera cam = new Camera();
             cam.ShowDialog();
         }
+
     }
 }
