@@ -103,7 +103,7 @@ namespace HUST_1_Demo.View
 
                 NetManager.Instance.NetSubmitVideo(videoData);
 
-                pictureBox1.Image = BytesToBitmap(videoData);
+               // pictureBox1.Image = BytesToBitmap(videoData);
             }
             
         }

@@ -729,7 +729,7 @@
             this.Switch.Name = "Switch";
             this.Switch.Size = new System.Drawing.Size(79, 49);
             this.Switch.TabIndex = 12;
-            this.Switch.Text = "Aotu";
+            this.Switch.Text = "Auto";
             this.Switch.UseVisualStyleBackColor = false;
             // 
             // groupBox6

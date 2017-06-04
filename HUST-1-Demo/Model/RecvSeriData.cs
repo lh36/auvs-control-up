@@ -27,6 +27,7 @@ namespace HUST_1_Demo.Model
             int len = serialPort1.BytesToRead;
             serialPort1.Read(recv, 0, len);
 
+
             if (len != 0)
             {
                 for (int i = 0; i < len; i++)

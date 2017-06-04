@@ -1148,7 +1148,7 @@ namespace HUST_1_Demo
             {
                 if (isRmtCtrl == true)//远程模式在本地允许后才进行命令解析，否则不解析
                 {
-                    sArr = sControlData.Split('-');
+                    sArr = sControlData.Split('&');
 
                     if (sArr[0] == "o")     //  开环控制命令解析
                     {

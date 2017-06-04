@@ -15,8 +15,7 @@ namespace MonitorNet
 		{  
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);  
 			request.Method = "POST";  
-			request.ContentType = "application/x-www-form-urlencoded";
-        //    request.ContentType = "application/octet-stream"; 
+			request.ContentType = "application/x-www-form-urlencoded";  
 			request.ContentLength = postDataStr.Length;  
 			StreamWriter writer = new StreamWriter(request.GetRequestStream(),Encoding.ASCII);  
 			writer.Write(postDataStr);  
@@ -61,8 +60,8 @@ namespace MonitorNet
 		{  
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);  
 			request.Method = "POST";  
-			//request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentType = "application/octet-stream"; 
+			request.ContentType = "application/octet-stream";  
+
 			request.ContentLength = btData.Length;
 			request.GetRequestStream ().Write (btData, 0, btData.Length);
 

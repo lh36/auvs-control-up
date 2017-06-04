@@ -10,6 +10,8 @@ namespace MonitorNet
 
 		private int m_iSubmitLimit = 0;
 
+		private bool m_bIsVideoIdle = true;
+
         private GetControlApi m_GetControlApi;
 
 		public NetManager ()
@@ -100,14 +102,24 @@ namespace MonitorNet
 		/// <param name="oParam">数据</param>
 		public void NetSubmitVideo(byte[] btData)
 		{
+			if(! this.m_bIsVideoIdle)
+			{
+				return;
+			}
+			this.m_bIsVideoIdle = false;
 			Thread oThread = new Thread (SubmitVideoThread);
 			oThread.Start (btData);
 		}
 
 		private void SubmitVideoThread(object oData)
 		{
-			SubmitVideoApi oApi = new SubmitVideoApi ((byte[])oData);
+			SubmitVideoApi oApi = new SubmitVideoApi ((byte[])oData, this.VideoApiDone);
 			oApi.Request ();
+		}
+
+		private void VideoApiDone(object oSender)
+		{
+			this.m_bIsVideoIdle = true;
 		}
 
         /// <summary>
