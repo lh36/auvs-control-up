@@ -673,7 +673,7 @@
             // asv_state
             // 
             this.asv_state.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.asv_state.Location = new System.Drawing.Point(115, 20);
+            this.asv_state.Location = new System.Drawing.Point(110, 20);
             this.asv_state.Name = "asv_state";
             this.asv_state.Size = new System.Drawing.Size(128, 55);
             this.asv_state.TabIndex = 15;
@@ -729,7 +729,7 @@
             this.Switch.Name = "Switch";
             this.Switch.Size = new System.Drawing.Size(79, 49);
             this.Switch.TabIndex = 12;
-            this.Switch.Text = "Aotu";
+            this.Switch.Text = "Auto";
             this.Switch.UseVisualStyleBackColor = false;
             // 
             // groupBox6

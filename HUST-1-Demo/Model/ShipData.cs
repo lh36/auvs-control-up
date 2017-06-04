@@ -152,8 +152,8 @@ namespace HUST_1_Demo.Model
             Euler_Z[1] = response_data[18];
             Euler_Z[2] = response_data[19];
             Euler_Z[3] = response_data[20];
-       //     Init_Phi = BitConverter.ToSingle(Euler_Z, 0);
-            Init_Phi++;
+            Init_Phi = BitConverter.ToSingle(Euler_Z, 0);
+          //  Init_Phi++;
             phi = Init_Phi + Phi_buchang;
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;

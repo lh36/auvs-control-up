@@ -13,6 +13,7 @@ using AForge.Video;
 using AForge.Video.DirectShow;
 using System.IO;
 using System.Drawing.Imaging;
+using MonitorNet;
 
 namespace HUST_1_Demo.View
 {
@@ -100,7 +101,9 @@ namespace HUST_1_Demo.View
             {
                 byte[] videoData = Bitmap2Byte(oBitmap);
 
-                pictureBox1.Image = BytesToBitmap(videoData);
+                NetManager.Instance.NetSubmitVideo(videoData);
+
+               // pictureBox1.Image = BytesToBitmap(videoData);
             }
             
         }
