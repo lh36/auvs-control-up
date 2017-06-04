@@ -17,7 +17,9 @@ namespace HUST_1_Demo.Model
         public double LLat { get; set; }//纬度
         public double LLon { get; set; }//经度
         public double pos_X { get; set; }//当前X坐标，此为测量坐标系下的坐标，北向为X，东向为Y
+        public double Fter_pos_X { get; set; }
         public double pos_Y { get; set; }//Y坐标
+        public double Fter_pos_Y { get; set; }
         public double XError { get; set; }//编队误差，与leader的跟随误差
         public double fError { get; set; }//轨迹跟随误差
         public double last_pos_X { get; set; }//上一坐标值
@@ -65,9 +67,11 @@ namespace HUST_1_Demo.Model
         public static double lat_start = 30.51582550;//定义原点位置
         public static double lon_start = 114.426780000;
 
-        public double[] FilterLat = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public double[] FilterLon = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+     //   public double[] FilterLat = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    //    public double[] FilterLon = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public double[] tempFterGPSPhi = new double[5] { 0, 0, 0, 0, 0 };
+        public double[] tempFterPosX = new double[5] { 0, 0, 0, 0, 0 };
+        public double[] tempFterPosY = new double[5] { 0, 0, 0, 0, 0 };
         public double Filter(double[] Lvbobuf)
         {
             double average, max, min, sum = 0.0d;
@@ -125,16 +129,22 @@ namespace HUST_1_Demo.Model
             for (int i = 0; i < 4; i++)
             {
                 tempFterGPSPhi[i] = tempFterGPSPhi[i + 1];
+                tempFterPosX[i] = tempFterPosX[i + 1];
+                tempFterPosY[i] = tempFterPosY[i + 1];
             }
             tempFterGPSPhi[4] = GPS_Phi;//存入最新值  
+            tempFterPosX[4] = pos_X;
+            tempFterPosY[4] = pos_Y;
 
-            Fter_GPS_Phi = Filter(tempFterGPSPhi);//滤波后的航迹角
+            Fter_GPS_Phi = Filter(tempFterGPSPhi);//对航迹角滤波
+            Fter_pos_X = Filter(tempFterPosX);//对x坐标滤波
+            Fter_pos_Y = Filter(tempFterPosY);//对y坐标滤波
 
             last_pos_X = pos_X;//更新上一次坐标信息
             last_pos_Y = pos_Y;
 
-            X_mm = pos_X * 1000;
-            Y_mm = pos_Y * 1000;
+            X_mm = Fter_pos_X * 1000;
+            Y_mm = Fter_pos_Y * 1000;
 
            // Time = response_data[12].ToString() + ":" + response_data[13].ToString() + ":" + response_data[14].ToString();
             this.lTime = HUST_1_Demo.Form1.GetTimeStamp();
@@ -232,7 +242,7 @@ namespace HUST_1_Demo.Model
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
                 Time.ToString());*/
             dataRec.Rows.Add(new object[] { ShipID.ToString(), Lat.ToString("0.00000000"), Lon.ToString("0.00000000"),
-                pos_X.ToString("0.000"), pos_Y.ToString("0.000"), XError.ToString("0.000"),
+                Fter_pos_X.ToString("0.000"), Fter_pos_Y.ToString("0.000"), XError.ToString("0.000"),
                 phi.ToString("0.0"), GPS_Phi.ToString("0.0"),Fter_GPS_Phi.ToString("0.0"),
                 speed.ToString("0.00"), gear.ToString(),
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),

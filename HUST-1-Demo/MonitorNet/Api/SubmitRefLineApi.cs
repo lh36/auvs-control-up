@@ -16,9 +16,9 @@ namespace MonitorNet
 		public void Request()
 		{
 			RefLineData oData = this.m_Data.oParam as RefLineData;
-			string sPostData = "&instanceid=" + NetManager.Instance.GetInstanceID ().ToString () +
+			string sPostData = "instanceid=" + NetManager.Instance.GetInstanceID ().ToString () +
 			                   "&shipid=" + this.m_Data.iShipID.ToString () +
-			                   "flag=" + oData.flag.ToString () +
+			                   "&flag=" + oData.flag.ToString () +
 			                   "&posX=" + oData.posX.ToString () +
 			                   "&posY=" + oData.posY.ToString () +
 			                   "&radius=" + oData.radius.ToString ();

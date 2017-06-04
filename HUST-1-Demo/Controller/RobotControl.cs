@@ -111,9 +111,9 @@ namespace HUST_1_Demo.Controller
             float k = 3.5f;//制导角参数
             double Err_phi = 0.0f;
 
-            double targetY = line.LineK * boat.pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
+            double targetY = line.LineK * boat.Fter_pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
             double refDir = Math.Atan(line.LineK)/Math.PI*180; //参考方向，与目标直线平行
-            double deltaY = boat.pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
+            double deltaY = boat.Fter_pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
             double Ye=deltaY*Math.Cos(refDir/180*Math.PI);//航行器到目标线的垂向距离
             float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
            
@@ -166,7 +166,7 @@ namespace HUST_1_Demo.Controller
             double Err_phi = 0.0d;
             double y_d = line;//目标直线，单位为米
 
-            double Ye = boat.pos_Y - y_d;//实际坐标减参考坐标
+            double Ye = boat.Fter_pos_Y - y_d;//实际坐标减参考坐标
             double Ref_phi = -Math.Atan(Ye / k) / Math.PI * 180;//制导角（角度制°）
 
             Err_phi = Ref_phi - boat.Ctrl_Phi;
@@ -228,9 +228,9 @@ namespace HUST_1_Demo.Controller
             double Center_X = circle.x;//圆心坐标
             double Center_Y = circle.y;
 
-            double Ye = (Math.Sqrt((boat.pos_X - Center_X) * (boat.pos_X - Center_X) + (boat.pos_Y - Center_Y) * (boat.pos_Y - Center_Y)) - Radius);
+            double Ye = (Math.Sqrt((boat.Fter_pos_X - Center_X) * (boat.Fter_pos_X - Center_X) + (boat.Fter_pos_Y - Center_Y) * (boat.Fter_pos_Y - Center_Y)) - Radius);
 
-            float Robot_xy = (float)(Math.Atan2(boat.pos_Y - Center_Y, boat.pos_X - Center_X) / Math.PI * 180);//航行器相对于原点的极坐标点
+            float Robot_xy = (float)(Math.Atan2(boat.Fter_pos_Y - Center_Y, boat.Fter_pos_X - Center_X) / Math.PI * 180);//航行器相对于原点的极坐标点
             double Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
 
             if (Dir_R > 180) Dir_R = Dir_R - 360;
@@ -492,8 +492,8 @@ namespace HUST_1_Demo.Controller
             
             if (flagPathSelect == 1)//判断为跟随直线控制还是跟随圆轨迹控制,=1:直线跟随
             {
-                tempLeader = leaderboat.pos_X;
-                tempFollow = boat.pos_X;
+                tempLeader = leaderboat.Fter_pos_X;
+                tempFollow = boat.Fter_pos_X;
                 deltaError = tempLeader - tempFollow;
             }
             if (flagPathSelect==2)//=2:圆轨迹跟随
