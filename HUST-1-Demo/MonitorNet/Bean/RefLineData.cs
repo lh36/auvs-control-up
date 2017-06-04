@@ -60,7 +60,7 @@ namespace MonitorNet
 		/// <param name="posX">Position x.</param>
 		/// <param name="posY">Position y.</param>
 		/// <param name="radius">Radius.</param>
-		public RefLineData(int flag, double posX, double posY, double radius)
+		public RefLineData(int flag, double posX, double posY)
 		{
 			this.flag = flag;
 			this.posX = posX;

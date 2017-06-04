@@ -30,12 +30,21 @@ namespace HUST_1_Demo.Model
 
             if (len != 0)
             {
-                for (int i = 0; i < len; i++)
+                try
                 {
-                    rxdata[rx_counter] = recv[i];//接收数   据二级缓存，用来进行包头包尾寻找
-                    rx_counter++;
+                    for (int i = 0; i < len; i++)
+                    {
+                        rxdata[rx_counter] = recv[i];//接收数   据二级缓存，用来进行包头包尾寻找
+                        rx_counter++;
+                    }
+                    Array.Clear(recv, 0, recv.Length);
                 }
-                Array.Clear(recv, 0, recv.Length);
+                catch
+                {
+                    rx_counter = 0;
+                    Array.Clear(rxdata, 0, rxdata.Length);
+                    Array.Clear(recv, 0, recv.Length);
+                }
 
                 #region 数据接收程序
                 if (rx_counter >= 26)
