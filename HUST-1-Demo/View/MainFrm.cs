@@ -1513,6 +1513,13 @@ namespace HUST_1_Demo
 
         private void LocalVideo_Click(object sender, EventArgs e)
         {
+            var oVideoThread = new Thread(VideoFun);
+            oVideoThread.IsBackground = true;
+            oVideoThread.Start();
+            
+        }
+        private void VideoFun()
+        {
             Camera cam = new Camera();
             cam.ShowDialog();
         }
