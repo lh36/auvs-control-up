@@ -486,9 +486,7 @@ namespace HUST_1_Demo
         private void timer1_Tick(object sender, EventArgs e)
         {
             ship1Control.Send_Command(serialPort1);
-        //    Thread.Sleep(40);
             ship2Control.Send_Command(serialPort1);
-        //    Thread.Sleep(40);
             ship3Control.Send_Command(serialPort1);
         }
 
@@ -537,7 +535,7 @@ namespace HUST_1_Demo
                     threadDraw.Start();
 
                     timer1.Enabled = true;//默认是开环控制，则启动获取三船位姿线程
-                    timer2.Enabled = true;
+                  //  timer2.Enabled = true;
                     this.Start.Text = "Stop";
 
                 }
@@ -546,7 +544,7 @@ namespace HUST_1_Demo
                     isFlagDraw = false;
                     isFlagCtrl = false;//控制线程标志
                     timer1.Enabled = false;//坐标跟新
-                    timer2.Enabled = false;
+                  //  timer2.Enabled = false;
                     this.Start.Text = "Start";
                 }
 
@@ -1165,9 +1163,11 @@ namespace HUST_1_Demo
                          * 3. 开始跟随—开启新线程跟随
                          * *******************/
                         UpdtPathMode();
-                        UpdtRefPath();
 
                         UpdtRmtRefTask();//更新远程闭环控制目标（直线/圆）
+
+                        UpdtRefPath();
+
                         isRmtClsFlag = true;
                         bRecdData = true;//开始记录数据
 
@@ -1301,7 +1301,7 @@ namespace HUST_1_Demo
                         {
                             line_Y3.Text = sArr[3];
                         }
-                        tarLineSp = int.Parse(sArr[3]);
+                        tarLineSp = double.Parse(sArr[3]);
                         MessageBox.Show("闭环控制启动！");
                         break;
                     }
@@ -1355,9 +1355,9 @@ namespace HUST_1_Demo
             }
         }
        
-        private void UpdtRmtCtrlOt1(string sArr)
+        private void UpdtRmtCtrlOt1()
         {
-            switch(sArr)
+            switch(sArr[1])
             {
                 case "1":
                     {
@@ -1421,7 +1421,7 @@ namespace HUST_1_Demo
             {
                 UpdateCtrlPhi();          //航迹角/航向角选择
                 UpdateCtrlPara();         //控制参数由本地确定
-                UpdtRmtCtrlOt1(sArr[1]);      //更新控制输出
+                UpdtRmtCtrlOt1();  //更新控制输出
                 Thread.Sleep(195);//控制周期
             }
         }
@@ -1432,11 +1432,11 @@ namespace HUST_1_Demo
 
             if (sArr[2] == "l")
             {
-                oRefParam = new RefLineData(1,tarLineSp);
+                oRefParam = new RefLineData(1, double.Parse(sArr[3]));
             }
             if (sArr[2] == "r")
             {
-                oRefParam = new RefLineData(2, 15, 10, tarCircle.Radius);
+                oRefParam = new RefLineData(2, 15, 10, double.Parse(sArr[3]));
             }
             if (sArr[2] == "g")
             {

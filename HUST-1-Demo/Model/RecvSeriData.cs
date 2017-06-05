@@ -25,7 +25,11 @@ namespace HUST_1_Demo.Model
         public static void ReceData(SerialPort serialPort1)
         {
             int len = serialPort1.BytesToRead;
-            serialPort1.Read(recv, 0, len);
+            if(len<200)
+            {
+                serialPort1.Read(recv, 0, len);
+            }
+            
 
 
             if (len != 0)

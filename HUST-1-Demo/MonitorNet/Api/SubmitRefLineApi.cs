@@ -27,9 +27,9 @@ namespace MonitorNet
 			if(pointList.Count != 0)
 			{
 				sPostData += "&points=";
-				for(int i=1; i<pointList.Count; i++)
+				for(int i=0; i<pointList.Count; i++)
 				{
-					if(i != 1)
+					if(i != 0)
 					{
 						sPostData += ",";
 					}

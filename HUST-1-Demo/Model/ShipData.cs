@@ -137,8 +137,20 @@ namespace HUST_1_Demo.Model
             tempFterPosY[4] = pos_Y;
 
             Fter_GPS_Phi = Filter(tempFterGPSPhi);//对航迹角滤波
-            Fter_pos_X = Filter(tempFterPosX);//对x坐标滤波
-            Fter_pos_Y = Filter(tempFterPosY);//对y坐标滤波
+            double x = Filter(tempFterPosX);
+            double y = Filter(tempFterPosY);
+
+            if(Math.Abs(x)<50)
+            {
+                Fter_pos_X = x;//对x坐标滤波
+            }
+
+            if(Math.Abs(y)<50)
+            {
+                Fter_pos_Y = y;//对y坐标滤波
+            }
+           
+            
 
             last_pos_X = pos_X;//更新上一次坐标信息
             last_pos_Y = pos_Y;
@@ -181,8 +193,8 @@ namespace HUST_1_Demo.Model
             
             oShipParam.lat = this.Lat;
             oShipParam.lon = this.Lon;
-            oShipParam.posX = this.pos_X;
-            oShipParam.posY = this.pos_Y;
+            oShipParam.posX = this.Fter_pos_X;
+            oShipParam.posY = this.Fter_pos_Y;
 
             oShipParam.fError = this.fError;
 
