@@ -30,8 +30,6 @@ namespace HUST_1_Demo.Model
                 serialPort1.Read(recv, 0, len);
             }
             
-
-
             if (len != 0)
             {
                 try

@@ -139,6 +139,9 @@ namespace HUST_1_Demo
                 ship3Control.Stop_Robot();
 
                 timer1.Enabled = false;
+                isFlagDraw = false;
+                this.Start.Text = "Start";
+
                 serialPort1.Close();
                 ComOpen1.Text = "Open port";
                 ComPortNum1.Enabled = true;
@@ -1169,6 +1172,7 @@ namespace HUST_1_Demo
                         UpdtRefPath();
 
                         isRmtClsFlag = true;
+                        isFlagCtrl = true;
                         bRecdData = true;//开始记录数据
 
                         Thread t = new Thread(RmtClsCtrl);
@@ -1387,24 +1391,25 @@ namespace HUST_1_Demo
                     }
                 case "4"://编队，三条船一起控横向距离2米，纵向距离2米
                     {
-                        line_Y1.Text = "7";
-                        tarLineSp = 7;
+                        line_Y1.Text = "4";
+                        tarLineSp = 4;
                         Control_fun(ship1Control, boat1);
                         ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
                         boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
                         boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
                         boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
 
-                        line_Y2.Text = "10";
-                        tarLineSp = 10;
+                        line_Y2.Text = "7";
+                        tarLineSp = 7;
                         Control_fun(ship2Control, boat2);
-                        ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
+                        ship2Control.command[4] = 110;
+                       // ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
                         boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
                         boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
                         boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
 
-                        line_Y3.Text = "13";
-                        tarLineSp = 13;
+                        line_Y3.Text = "10";
+                        tarLineSp = 10;
                         Control_fun(ship3Control, boat3);
                         ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
                         boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量

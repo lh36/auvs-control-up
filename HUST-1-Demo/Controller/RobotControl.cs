@@ -64,10 +64,11 @@ namespace HUST_1_Demo.Controller
 
             double distance = Math.Sqrt((boat.X_mm - targetPoint.X) * (boat.X_mm - targetPoint.X) + (boat.Y_mm - targetPoint.Y) * (boat.Y_mm - targetPoint.Y));//毫米单位的距离
 
-            if (distance <= 800.0d)
+            if (distance <= 1000.0d)
             {
+                HUST_1_Demo.Form1.isRmtClsFlag = false;
                 HUST_1_Demo.Form1.isFlagCtrl = false;
-                this.command[3] = 0x53;
+                Stop_Robot();
             }
 
             else//距离目标点很远 需要控制

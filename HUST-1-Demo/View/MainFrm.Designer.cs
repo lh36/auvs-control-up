@@ -869,7 +869,7 @@
             this.Boat1_Kp.Name = "Boat1_Kp";
             this.Boat1_Kp.Size = new System.Drawing.Size(52, 21);
             this.Boat1_Kp.TabIndex = 27;
-            this.Boat1_Kp.Text = "1";
+            this.Boat1_Kp.Text = "0.8";
             // 
             // label48
             // 

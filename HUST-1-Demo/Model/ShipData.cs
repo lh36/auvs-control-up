@@ -140,18 +140,16 @@ namespace HUST_1_Demo.Model
             double x = Filter(tempFterPosX);
             double y = Filter(tempFterPosY);
 
-            if(Math.Abs(x)<50)
+            if (Math.Abs(pos_X) < 50)
             {
-                Fter_pos_X = x;//对x坐标滤波
+                Fter_pos_X = pos_X;//对x坐标滤波
             }
 
-            if(Math.Abs(y)<50)
+            if (Math.Abs(pos_Y) < 50)
             {
-                Fter_pos_Y = y;//对y坐标滤波
+                Fter_pos_Y = pos_Y;//对y坐标滤波
             }
            
-            
-
             last_pos_X = pos_X;//更新上一次坐标信息
             last_pos_Y = pos_Y;
 
