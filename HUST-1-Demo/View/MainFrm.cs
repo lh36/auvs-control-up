@@ -584,7 +584,10 @@ namespace HUST_1_Demo
             }
             else
             {
-                isFlagCtrl = false;
+                isFlagCtrl = false;//停止本地闭环
+                isRmtClsFlag = false;//停止远程闭环
+                bRecdData = false;//停止记录数据
+
                 ship1Control.Stop_Robot();
               //  Thread.Sleep(40);
                 ship2Control.Stop_Robot();
@@ -659,11 +662,14 @@ namespace HUST_1_Demo
             tarCircle.x = float.Parse(circle_X.Text);
             tarCircle.y = float.Parse(circle_Y.Text);
 
-            Control_fun(ship1Control, boat1);//1号小船控制
+            //先给速度信息，再给舵角信息，因为速度信息在点跟踪控制中有可能被刷新
             if (AutoSpeed.Checked)
                 ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
             else
                 ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+
+            Control_fun(ship1Control, boat1);//1号小船控制
+            
 
             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
@@ -671,6 +677,7 @@ namespace HUST_1_Demo
 
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
+
             Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
            /* if (AutoSpeed.Checked)
                 ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
@@ -683,13 +690,14 @@ namespace HUST_1_Demo
 
             tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R3.Text);
-            Control_fun(ship3Control, boat3);//3号小船控制
-           
+
             if (AutoSpeed.Checked)
                 ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
             else
                 ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
+            Control_fun(ship3Control, boat3);//3号小船控制
+           
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
             boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
@@ -1314,6 +1322,7 @@ namespace HUST_1_Demo
                         //多段直线跟踪
                         int numPt = int.Parse(sArr[3]);
                         int i = 0;
+                        tarMultiLine.Clear();
                         tarMultiLineDraw.Clear();
                         while (tarMultiLineDraw.Count<numPt)
                         {
@@ -1365,8 +1374,8 @@ namespace HUST_1_Demo
             {
                 case "1":
                     {
+                        ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));//先给速度，再给舵角，因为点跟踪速度量有可能更新为零
                         Control_fun(ship1Control, boat1);
-                        ship1Control.command[4] = 100;
                         boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
                         boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
                         boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
@@ -1374,7 +1383,8 @@ namespace HUST_1_Demo
                     }
                 case "2":
                     {
-                        Control_fun(ship2Control, boat2); ship2Control.command[4] = 100; 
+                        ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                        Control_fun(ship2Control, boat2);  
                         boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
                         boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
                         boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
@@ -1382,8 +1392,8 @@ namespace HUST_1_Demo
                     }
                 case "3":
                     {
+                        ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
                         Control_fun(ship3Control, boat3);
-                        ship3Control.command[4] = 100;
                         boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
                         boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
                         boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
