@@ -247,6 +247,7 @@ namespace HUST_1_Demo
             Boat1_grade.Text = boat1.gear.ToString();
             Boat1_time.Text = boat1.sTime;
             Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
+            xError1.Text = boat1.XError.ToString();
 
             Boat2_X.Text = boat2.Fter_pos_X.ToString("0.00");
             Boat2_Y.Text = boat2.Fter_pos_Y.ToString("0.00");
@@ -256,6 +257,7 @@ namespace HUST_1_Demo
             Boat2_grade.Text = boat2.gear.ToString();
             Boat2_time.Text = boat2.sTime;
             Boat2_MotorSpd.Text = boat2.MotorSpd.ToString();
+            xError2.Text = boat2.XError.ToString();
 
             Boat3_X.Text = boat3.Fter_pos_X.ToString("0.00");
             Boat3_Y.Text = boat3.Fter_pos_Y.ToString("0.00");
@@ -265,6 +267,7 @@ namespace HUST_1_Demo
             Boat3_grade.Text = boat3.gear.ToString();
             Boat3_time.Text = boat3.sTime;
             Boat3_MotorSpd.Text = boat3.MotorSpd.ToString();
+            xError3.Text = boat3.XError.ToString();
         }
 
         private void leftup_Click(object sender, EventArgs e)
@@ -499,6 +502,8 @@ namespace HUST_1_Demo
             listPoint_Boat1.Clear();
             listPoint_Boat2.Clear();
             listPoint_Boat3.Clear();
+            tarMultiLine.Clear();
+            tarMultiLineDraw.Clear();
             webBrowser1.Document.InvokeScript("clear_line");
             //多段直线数据清除
             tarMultiLine.Clear();
@@ -702,9 +707,9 @@ namespace HUST_1_Demo
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
             boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
 
-            xError1.Text = boat1.XError.ToString("0.000");//领队减1号
-            xError2.Text = boat2.XError.ToString("0.000");//1号减2号
-            xError3.Text = boat3.XError.ToString("0.000");//领队减3号
+      //      xError1.Text = boat1.XError.ToString("0.000");//领队减1号
+       //     xError2.Text = boat2.XError.ToString("0.000");//1号减2号
+        //    xError3.Text = boat3.XError.ToString("0.000");//领队减3号
         }
 
         /// <summary>

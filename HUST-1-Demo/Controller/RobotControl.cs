@@ -213,7 +213,7 @@ namespace HUST_1_Demo.Controller
                 HUST_1_Demo.Form1.followLineID++;
             if (HUST_1_Demo.Form1.followLineID == HUST_1_Demo.Form1.tarMultiLine.Count - 1)
             {
-                HUST_1_Demo.Form1.followLineID = 0;
+                Stop_Robot();
             }
         }
         
