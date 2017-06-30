@@ -82,6 +82,7 @@ namespace HUST_1_Demo
         public static bool isRmtCtrl = false;//是否接受远程控制
         public static bool isRmtClsFlag = false;//可直接循环执行当跟随目标轨迹
         public static bool bRecdData = false;//是否保存数据
+        public static bool bSceneMode = true;//真实数据还是虚拟数据, true:真实，false：虚拟
 
 
         string name = "";//保存数据txt
@@ -109,6 +110,7 @@ namespace HUST_1_Demo
         RobotControl ship2Control = new RobotControl(0xa2, 0x2a);
         RobotControl ship3Control = new RobotControl(0xa3, 0x3a);
 
+        VRController VRship = new VRController();
         /// <summary>
         /// 打开串口
         /// </summary>
@@ -155,25 +157,44 @@ namespace HUST_1_Demo
 
         private void Advance_Click(object sender, EventArgs e)/*前进*/
         {
-            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+            if (bSceneMode)//真实场景
             {
-                MessageBox.Show("请先打开串口！\r\n");
-            }
-            else
-            {
-                if (asv1.Checked)
+                if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
                 {
-                    ship1Control.Speed_Up();
-                }
-                else if (asv2.Checked)
-                {
-                    ship2Control.Speed_Up();
+                    MessageBox.Show("请先打开串口！\r\n");
                 }
                 else
                 {
-                    ship3Control.Speed_Up();
+                    if (asv1.Checked)
+                    {
+                        ship1Control.Speed_Up();
+                    }
+                    else if (asv2.Checked)
+                    {
+                        ship2Control.Speed_Up();
+                    }
+                    else
+                    {
+                        ship3Control.Speed_Up();
+                    }
                 }
             }
+            else    //虚拟场景
+            {
+                if (asv1.Checked)
+                {
+                    VRship.Speed_Up(boat1);
+                }
+                else if (asv2.Checked)
+                {
+                    VRship.Speed_Up(boat2);
+                }
+                else
+                {
+                    VRship.Speed_Up(boat3);
+                }
+            }
+            
         }
 
         private void Back_Click(object sender, EventArgs e)/*后退*/
@@ -211,6 +232,10 @@ namespace HUST_1_Demo
                 ship1Control.Stop_Robot();
                 ship2Control.Stop_Robot();
                 ship3Control.Stop_Robot();
+
+                VRship.Stop_Robot(boat1);
+                VRship.Stop_Robot(boat2);
+                VRship.Stop_Robot(boat3);
             }
 
         }
@@ -272,49 +297,85 @@ namespace HUST_1_Demo
 
         private void leftup_Click(object sender, EventArgs e)
         {
-
-            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+            if (bSceneMode)//真实场景
             {
-                MessageBox.Show("请先打开串口！\r\n");
+                if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+                {
+                    MessageBox.Show("请先打开串口！\r\n");
+                }
+                else
+                {
+                    if (asv1.Checked)
+                    {
+                        ship1Control.Turn_Left();
+                    }
+                    else if (asv2.Checked)
+                    {
+                        ship2Control.Turn_Left();
+                    }
+                    else
+                    {
+                        ship3Control.Turn_Left();
+                    }
+                }
             }
             else
             {
                 if (asv1.Checked)
                 {
-                    ship1Control.Turn_Left();
+                    VRship.Turn_Left(boat1);
                 }
                 else if (asv2.Checked)
                 {
-                    ship2Control.Turn_Left();
+                    VRship.Turn_Left(boat2);
                 }
                 else
                 {
-                    ship3Control.Turn_Left();
+                    VRship.Turn_Left(boat3);
                 }
             }
 
         }
         private void rightup_Click(object sender, EventArgs e)
         {
-            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+            if (bSceneMode)//真实场景
             {
-                MessageBox.Show("请先打开串口！\r\n");
+                if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+                {
+                    MessageBox.Show("请先打开串口！\r\n");
+                }
+                else
+                {
+                    if (asv1.Checked)
+                    {
+                        ship1Control.Turn_Right();
+                    }
+                    else if (asv2.Checked)
+                    {
+                        ship2Control.Turn_Right();
+                    }
+                    else
+                    {
+                        ship3Control.Turn_Right();
+                    }
+                }
             }
             else
             {
                 if (asv1.Checked)
                 {
-                    ship1Control.Turn_Right();
+                    VRship.Turn_Right(boat1);
                 }
                 else if (asv2.Checked)
                 {
-                    ship2Control.Turn_Right();
+                    VRship.Turn_Right(boat2);
                 }
                 else
                 {
-                    ship3Control.Turn_Right();
+                    VRship.Turn_Right(boat3);
                 }
             }
+            
 
         }
 
@@ -325,6 +386,57 @@ namespace HUST_1_Demo
         static List<Point> listPoint_Boat2 = new List<Point>();
         static List<Point> listPoint_Boat3 = new List<Point>();
 
+        public static double d2r = Math.PI / 180;
+        public static double r2d = 1 / d2r;
+        private void UpdateDisBoat(ShipData boat, PictureBox PathMap, Color color)
+        {
+            int Widthmap = PathMap.Width / 2;
+            int Heightmap = PathMap.Height / 2;
+
+            //实际大小
+            int Heigh_mm = halfHeight_mm;
+            int Width_mm = Heigh_mm / Heightmap * Widthmap;
+
+            //比例尺和反比例尺
+            double scale = Heigh_mm / Heightmap;//单位像素代表的实际长度，单位：mm
+            double paint_scale = 1 / scale;//每毫米在图上画多少像素，单位：像素
+
+            double a = Math.Sqrt(1500 * 1500 + 2500 * 2500);
+
+            double[] x = new double[5];
+            double[] y = new double[5];
+
+            int[] paintX = new int[6];
+            int[] paintY = new int[6];
+
+            x[0] = 3300.0 * Math.Cos(boat.Ctrl_Phi * d2r) + boat.X_mm;
+            y[0] = 3300.0 * Math.Sin(boat.Ctrl_Phi * d2r) + boat.Y_mm;
+            x[1] = a * Math.Cos(boat.Ctrl_Phi * d2r + Math.Atan(425.0 / 675)) + boat.X_mm;
+            y[1] = a * Math.Sin(boat.Ctrl_Phi * d2r + Math.Atan(425.0 / 675)) + boat.Y_mm;
+            x[2] = a * Math.Cos(Math.PI - Math.Atan(425.0 / 675) + boat.Ctrl_Phi * d2r) + boat.X_mm;
+            y[2] = a * Math.Sin(Math.PI - Math.Atan(425.0 / 675) + boat.Ctrl_Phi * d2r) + boat.Y_mm;
+            x[3] = a * Math.Cos((boat.Ctrl_Phi * d2r)-Math.PI + Math.Atan(425.0 / 675)) + boat.X_mm;
+            y[3] = a * Math.Sin((boat.Ctrl_Phi * d2r)-Math.PI + Math.Atan(425.0 / 675)) + boat.Y_mm;
+            x[4] = a * Math.Cos(boat.Ctrl_Phi * d2r - Math.Atan(425.0 / 675)) + boat.X_mm;
+            y[4] = a * Math.Sin(boat.Ctrl_Phi * d2r - Math.Atan(425.0 / 675)) + boat.Y_mm;
+
+            for(int i = 0;i<5;i++)
+            {
+                paintX[i] = Widthmap - (int)(y[i] * paint_scale);
+                paintY[i] = Heightmap - (int)(x[i] * paint_scale);
+            }
+            paintX[5] = paintX[0];
+            paintY[5] = paintY[0];
+
+            Graphics g = this.PathMap.CreateGraphics();
+
+            for (int i = 0; i < 5;i++ )
+            {
+                g.DrawLine(new Pen(color, 1), paintX[i], paintY[i], paintX[i+1], paintY[i+1]);
+            }
+                
+        }
+
         private void DrawMap()
         {
             while (isFlagDraw)
@@ -334,6 +446,7 @@ namespace HUST_1_Demo
                 Pen p = new Pen(Color.Black, 2);//定义了一个蓝色,宽度为的画笔
                 g.DrawLine(p, 0, PathMap.Height / 2, PathMap.Width, PathMap.Height / 2);//在画板上画直线,起始坐标为(10,10),终点坐标为(100,100)
                 g.DrawLine(p, PathMap.Width / 2, 0, PathMap.Width / 2, PathMap.Height);
+                
                 //地图像素大小
                 int Widthmap = PathMap.Width / 2;
                 int Heightmap = PathMap.Height / 2;
@@ -466,24 +579,29 @@ namespace HUST_1_Demo
 
                 #endregion
 
+                #region 画船
+                UpdateDisBoat(boat1, PathMap, Color.Black);
+                UpdateDisBoat(boat2, PathMap, Color.Red);
+                UpdateDisBoat(boat3, PathMap, Color.Cyan);
+                #endregion
 
                 listPoint_Boat1.Add(new Point(paint_x1, paint_y1));
                 listPoint_Boat2.Add(new Point(paint_x2, paint_y2));
                 listPoint_Boat3.Add(new Point(paint_x3, paint_y3));
                 if (listPoint_Boat1.Count >= 2)
                 {
-                    g.DrawCurve(new Pen(Color.Red, 2), listPoint_Boat1.ToArray());
+                    g.DrawCurve(new Pen(Color.Red, 1), listPoint_Boat1.ToArray());
                 }
                 if (listPoint_Boat2.Count >= 2)
                 {
-                    g.DrawCurve(new Pen(Color.Green, 2), listPoint_Boat2.ToArray());
+                    g.DrawCurve(new Pen(Color.Green, 1), listPoint_Boat2.ToArray());
                 }
                 if (listPoint_Boat3.Count >= 2)
                 {
-                    g.DrawCurve(new Pen(Color.Gold, 2), listPoint_Boat3.ToArray());
+                    g.DrawCurve(new Pen(Color.Gold, 1), listPoint_Boat3.ToArray());
                 }
 
-                Thread.Sleep(200);
+                Thread.Sleep(300);
             }
 
         }
@@ -824,6 +942,7 @@ namespace HUST_1_Demo
         {
             InitRecTable();
             Init_Map();
+          //  double a = Math.Atan(15.0 / 58);
             Control.CheckForIllegalCrossThreadCalls = false;
 
         }
@@ -1560,6 +1679,40 @@ namespace HUST_1_Demo
         {
             Camera cam = new Camera();
             cam.ShowDialog();
+        }
+
+        private void SceneModeChange_Click(object sender, EventArgs e)
+        {
+            bSceneMode = !bSceneMode;
+            if(bSceneMode)
+            {
+                SceneMode.Text = "Real mode";
+                timer3.Enabled = false;
+            }
+            else
+            {
+                SceneMode.Text = "Virtual reality mode";
+                timer3.Enabled = true;
+            }
+        }
+
+        private void timer3_Tick(object sender, EventArgs e)
+        {
+            if(bSceneMode==false)//虚拟场景模式下，用航迹推算更新无人船位置
+            {
+                boat1.Ctrl_Phi += boat1.rud * (boat1.speed * boat1.speed);
+                boat2.Ctrl_Phi += boat2.rud * (boat2.speed * boat2.speed);
+                boat3.Ctrl_Phi += boat3.rud * (boat3.speed * boat3.speed);
+
+                boat1.X_mm = (int)(boat1.X_mm + boat1.speed * Math.Cos(boat1.Ctrl_Phi * d2r)*1000);
+                boat1.Y_mm = (int)(boat1.Y_mm + boat1.speed * Math.Sin(boat1.Ctrl_Phi * d2r)*1000);
+
+                boat2.X_mm = (int)(boat2.X_mm + boat2.speed * Math.Cos(boat2.Ctrl_Phi * d2r)*1000);
+                boat2.Y_mm = (int)(boat2.Y_mm + boat2.speed * Math.Sin(boat2.Ctrl_Phi * d2r)*1000);
+
+                boat3.X_mm = (int)(boat3.X_mm + boat3.speed * Math.Cos(boat3.Ctrl_Phi * d2r)*1000);
+                boat3.Y_mm = (int)(boat3.Y_mm + boat3.speed * Math.Sin(boat3.Ctrl_Phi * d2r)*1000);
+            }
         }
 
     }

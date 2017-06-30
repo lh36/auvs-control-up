@@ -67,6 +67,7 @@
             this.Reset = new System.Windows.Forms.Button();
             this.Start = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.SceneMode = new System.Windows.Forms.Button();
             this.asv_state = new System.Windows.Forms.Button();
             this.LocalVideo = new System.Windows.Forms.Button();
             this.boat3_init_Phi = new System.Windows.Forms.Button();
@@ -229,6 +230,8 @@
             this.groupBox21 = new System.Windows.Forms.GroupBox();
             this.RmtCtrl = new System.Windows.Forms.Button();
             this.bSerInit = new System.Windows.Forms.Button();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.timer3 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -255,6 +258,7 @@
             this.groupBox20.SuspendLayout();
             this.groupBox22.SuspendLayout();
             this.groupBox21.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
             // serialPort1
@@ -654,6 +658,7 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.SceneMode);
             this.groupBox5.Controls.Add(this.asv_state);
             this.groupBox5.Controls.Add(this.LocalVideo);
             this.groupBox5.Controls.Add(this.boat3_init_Phi);
@@ -670,12 +675,24 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Operation config";
             // 
+            // SceneMode
+            // 
+            this.SceneMode.BackColor = System.Drawing.Color.Yellow;
+            this.SceneMode.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.SceneMode.Location = new System.Drawing.Point(161, 19);
+            this.SceneMode.Name = "SceneMode";
+            this.SceneMode.Size = new System.Drawing.Size(96, 55);
+            this.SceneMode.TabIndex = 16;
+            this.SceneMode.Text = "Real mode";
+            this.SceneMode.UseVisualStyleBackColor = false;
+            this.SceneMode.Click += new System.EventHandler(this.SceneModeChange_Click);
+            // 
             // asv_state
             // 
             this.asv_state.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.asv_state.Location = new System.Drawing.Point(110, 20);
+            this.asv_state.Location = new System.Drawing.Point(76, 19);
             this.asv_state.Name = "asv_state";
-            this.asv_state.Size = new System.Drawing.Size(128, 55);
+            this.asv_state.Size = new System.Drawing.Size(79, 55);
             this.asv_state.TabIndex = 15;
             this.asv_state.Text = "ASV stopped";
             this.asv_state.UseVisualStyleBackColor = true;
@@ -685,7 +702,7 @@
             this.LocalVideo.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.LocalVideo.Location = new System.Drawing.Point(9, 20);
             this.LocalVideo.Name = "LocalVideo";
-            this.LocalVideo.Size = new System.Drawing.Size(79, 55);
+            this.LocalVideo.Size = new System.Drawing.Size(61, 55);
             this.LocalVideo.TabIndex = 14;
             this.LocalVideo.Text = "Video";
             this.LocalVideo.UseVisualStyleBackColor = true;
@@ -754,7 +771,7 @@
             // 
             this.TckAngFter.AutoSize = true;
             this.TckAngFter.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TckAngFter.Location = new System.Drawing.Point(266, 148);
+            this.TckAngFter.Location = new System.Drawing.Point(249, 148);
             this.TckAngFter.Name = "TckAngFter";
             this.TckAngFter.Size = new System.Drawing.Size(60, 16);
             this.TckAngFter.TabIndex = 18;
@@ -2301,6 +2318,11 @@
             this.bSerInit.UseVisualStyleBackColor = true;
             this.bSerInit.Click += new System.EventHandler(this.bSerInit_Click);
             // 
+            // timer3
+            // 
+            this.timer3.Interval = 1000;
+            this.timer3.Tick += new System.EventHandler(this.timer3_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -2362,6 +2384,7 @@
             this.groupBox22.ResumeLayout(false);
             this.groupBox22.PerformLayout();
             this.groupBox21.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2568,6 +2591,9 @@
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.Button LocalVideo;
         private System.Windows.Forms.Button asv_state;
+        private System.Windows.Forms.Button SceneMode;
+        private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.Timer timer3;
     }
 }
 
