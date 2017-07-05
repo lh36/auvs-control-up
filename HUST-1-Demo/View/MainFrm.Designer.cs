@@ -231,7 +231,6 @@
             this.RmtCtrl = new System.Windows.Forms.Button();
             this.bSerInit = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.timer3 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -2318,11 +2317,6 @@
             this.bSerInit.UseVisualStyleBackColor = true;
             this.bSerInit.Click += new System.EventHandler(this.bSerInit_Click);
             // 
-            // timer3
-            // 
-            this.timer3.Interval = 1000;
-            this.timer3.Tick += new System.EventHandler(this.timer3_Tick);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -2593,7 +2587,6 @@
         private System.Windows.Forms.Button asv_state;
         private System.Windows.Forms.Button SceneMode;
         private System.Windows.Forms.BindingSource bindingSource1;
-        private System.Windows.Forms.Timer timer3;
     }
 }
 

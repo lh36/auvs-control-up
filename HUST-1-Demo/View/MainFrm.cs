@@ -266,7 +266,7 @@ namespace HUST_1_Demo
         {
             Boat1_X.Text = boat1.Fter_pos_X.ToString("0.00");
             Boat1_Y.Text = boat1.Fter_pos_Y.ToString("0.00");
-            Boat1_phi.Text = boat1.phi.ToString("0.00");
+            Boat1_phi.Text = boat1.Ctrl_Phi.ToString("0.00");
             Boat1_Ru.Text = boat1.rud.ToString("0.0");
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
@@ -276,7 +276,7 @@ namespace HUST_1_Demo
 
             Boat2_X.Text = boat2.Fter_pos_X.ToString("0.00");
             Boat2_Y.Text = boat2.Fter_pos_Y.ToString("0.00");
-            Boat2_phi.Text = boat2.phi.ToString("0.00");
+            Boat2_phi.Text = boat2.Ctrl_Phi.ToString("0.00");
             Boat2_Ru.Text = boat2.rud.ToString("0.0");
             Boat2_speed.Text = boat2.speed.ToString("0.000");
             Boat2_grade.Text = boat2.gear.ToString();
@@ -286,7 +286,7 @@ namespace HUST_1_Demo
 
             Boat3_X.Text = boat3.Fter_pos_X.ToString("0.00");
             Boat3_Y.Text = boat3.Fter_pos_Y.ToString("0.00");
-            Boat3_phi.Text = boat3.phi.ToString("0.00");
+            Boat3_phi.Text = boat3.Ctrl_Phi.ToString("0.00");
             Boat3_Ru.Text = boat3.rud.ToString("0.0");
             Boat3_speed.Text = boat3.speed.ToString("0.000");
             Boat3_grade.Text = boat3.gear.ToString();
@@ -607,7 +607,7 @@ namespace HUST_1_Demo
                     g.DrawCurve(new Pen(Color.Gold, 1), listPoint_Boat3.ToArray());
                 }
 
-                Thread.Sleep(300);
+                Thread.Sleep(200);
             }
 
         }
@@ -623,6 +623,22 @@ namespace HUST_1_Demo
         private void Reset_Click(object sender, EventArgs e)
         {
             //三船状态数据清除
+            if(bSceneMode==false)
+            {
+                boat1.Ctrl_Phi = 0;
+                boat2.Ctrl_Phi = 0;
+                boat3.Ctrl_Phi = 0;
+
+                boat1.X_mm = 0;
+                boat1.Y_mm = 0;
+
+                boat2.X_mm = 0;
+                boat2.Y_mm = 0;
+
+                boat3.X_mm = 0;
+                boat3.Y_mm = 0;
+            }
+
             listPoint_Boat1.Clear();
             listPoint_Boat2.Clear();
             listPoint_Boat3.Clear();
@@ -676,7 +692,7 @@ namespace HUST_1_Demo
                     isFlagDraw = false;
                     isFlagCtrl = false;//控制线程标志
                     timer1.Enabled = false;//坐标跟新
-                    //  timer2.Enabled = false;
+                    
                     this.Start.Text = "Start";
                 }
 
@@ -1397,6 +1413,11 @@ namespace HUST_1_Demo
                         ship1Control.Stop_Robot();
                         ship2Control.Stop_Robot();
                         ship3Control.Stop_Robot();
+
+                        VRship.Stop_Robot(boat1);
+                        VRship.Stop_Robot(boat2);
+                        VRship.Stop_Robot(boat3);
+
                         asv_state.Text = "ASV stopped";
                         clsCtrlBtn.Text = "Start following";
                     }
@@ -1575,57 +1596,94 @@ namespace HUST_1_Demo
             {
                 case "1":
                     {
-                        ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));//先给速度，再给舵角，因为点跟踪速度量有可能更新为零
-                        Control_fun(ship1Control, boat1);
-                        boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
-                        boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
-                        boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
+                        if (bSceneMode)
+                        {
+                            ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));//先给速度，再给舵角，因为点跟踪速度量有可能更新为零
+                            Control_fun(ship1Control, boat1);
+                            boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+                            boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+                            boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
+                        }
+                        else
+                        {
+                            VRship.SetSpeed(boat1, 0.75f);
+                            VRControl_fun(boat1);//1号小船舵角控制
+                        }
                         break;
                     }
                 case "2":
                     {
-                        ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-                        Control_fun(ship2Control, boat2);
-                        boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
-                        boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
-                        boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
+                        if (bSceneMode)
+                        {
+                            ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                            Control_fun(ship2Control, boat2);
+                            boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
+                            boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+                            boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
+                        }
+                        else
+                        {
+                            VRship.SetSpeed(boat2, 0.75f);
+                            VRControl_fun(boat2);//1号小船舵角控制
+                        }
                         break;
                     }
                 case "3":
                     {
-                        ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-                        Control_fun(ship3Control, boat3);
-                        boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
-                        boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
-                        boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+                        if (bSceneMode)
+                        {
+                            ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                            Control_fun(ship3Control, boat3);
+                            boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+                            boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+                            boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+                        }
+                        else
+                        {
+                            VRship.SetSpeed(boat3, 0.75f);
+                            VRControl_fun(boat3);//1号小船舵角控制
+                        }
                         break;
                     }
                 case "4"://编队，三条船一起控横向距离2米，纵向距离2米
                     {
                         line_Y1.Text = "4";
-                        tarLineSp = 4;
-                        Control_fun(ship1Control, boat1);
-                        ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
-                        boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
-                        boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
-                        boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
-
                         line_Y2.Text = "7";
-                        tarLineSp = 7;
-                        Control_fun(ship2Control, boat2);
-                        ship2Control.command[4] = 110;
-                        // ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
-                        boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
-                        boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
-                        boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
-
                         line_Y3.Text = "10";
-                        tarLineSp = 10;
-                        Control_fun(ship3Control, boat3);
-                        ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
-                        boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
-                        boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
-                        boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+
+
+                        if(bSceneMode)
+                        {
+                            tarLineSp = float.Parse(line_Y1.Text);
+                            Control_fun(ship1Control, boat1);
+                            ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
+                            boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+                            boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+                            boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
+
+
+                            tarLineSp = float.Parse(line_Y2.Text);
+                            Control_fun(ship2Control, boat2);
+                            ship2Control.command[4] = 110;
+                            // ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
+                            boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
+                            boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+                            boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
+
+
+                            tarLineSp = float.Parse(line_Y3.Text);
+                            Control_fun(ship3Control, boat3);
+                            ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
+                            boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+                            boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+                            boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+                        }
+                        else
+                        {
+                            UpdateVRCtrlOutput();
+                        }
+
+
                         break;
                     }
             }
@@ -1635,7 +1693,10 @@ namespace HUST_1_Demo
         {
             while (isRmtClsFlag)//此处应该开启新线程执行，否则会在此处一直循环，导致其他无法执行
             {
-                UpdateCtrlPhi();          //航迹角/航向角选择
+                if(bSceneMode)//真实场景下才需要选择航迹角或者航向角，因为，虚拟下GPS_Phi一直都是0.虚拟场景下boat.Ctrl_Phi由定时器自己更新
+                {
+                    UpdateCtrlPhi();          //航迹角/航向角选择
+                }
                 UpdateCtrlPara();         //控制参数由本地确定
                 UpdtRmtCtrlOt1();  //更新控制输出
                 Thread.Sleep(195);//控制周期
@@ -1685,33 +1746,70 @@ namespace HUST_1_Demo
             {
                 case "w":
                     {
-                        if (sArr[1] == "1")
-                            ship1Control.Speed_Up();
-                        else if (sArr[1] == "2")
-                            ship2Control.Speed_Up();
+                        if (bSceneMode)
+                        {
+                            if (sArr[1] == "1")
+                                ship1Control.Speed_Up();
+                            else if (sArr[1] == "2")
+                                ship2Control.Speed_Up();
+                            else
+                                ship3Control.Speed_Up();
+                            asv_state.Text = "ASV running";
+                        }
                         else
-                            ship3Control.Speed_Up();
-                        asv_state.Text = "ASV running";
+                        {
+                            if (sArr[1] == "1")
+                                VRship.Speed_Up(boat1);
+                            else if (sArr[1] == "2")
+                                VRship.Speed_Up(boat2);
+                            else
+                                VRship.Speed_Up(boat3);
+                            asv_state.Text = "ASV running";
+                        }
                         break;
                     }
                 case "a":
                     {
-                        if (sArr[1] == "1")
-                            ship1Control.Turn_Left();
-                        else if (sArr[1] == "2")
-                            ship2Control.Turn_Left();
+                        if (bSceneMode)
+                        {
+                            if (sArr[1] == "1")
+                                ship1Control.Turn_Left();
+                            else if (sArr[1] == "2")
+                                ship2Control.Turn_Left();
+                            else
+                                ship3Control.Turn_Left();
+                        }
                         else
-                            ship3Control.Turn_Left();
+                        {
+                            if (sArr[1] == "1")
+                                VRship.Turn_Left(boat1);
+                            else if (sArr[1] == "2")
+                                VRship.Turn_Left(boat2);
+                            else
+                                VRship.Turn_Left(boat3);
+                        }
                         break;
                     }
                 case "d":
                     {
-                        if (sArr[1] == "1")
-                            ship1Control.Turn_Right();
-                        else if (sArr[1] == "2")
-                            ship2Control.Turn_Right();
+                        if (bSceneMode)
+                        {
+                            if (sArr[1] == "1")
+                                ship1Control.Turn_Right();
+                            else if (sArr[1] == "2")
+                                ship2Control.Turn_Right();
+                            else
+                                ship3Control.Turn_Right();
+                        }
                         else
-                            ship3Control.Turn_Right();
+                        {
+                            if (sArr[1] == "1")
+                                VRship.Turn_Right(boat1);
+                            else if (sArr[1] == "2")
+                                VRship.Turn_Right(boat2);
+                            else
+                                VRship.Turn_Right(boat3);
+                        }
                         break;
                     }
                 case "s":
@@ -1723,6 +1821,9 @@ namespace HUST_1_Demo
                         else
                             ship3Control.Stop_Robot();
                         asv_state.Text = "ASV stopped";
+
+                        
+
                         break;
                     }
             }
@@ -1764,12 +1865,14 @@ namespace HUST_1_Demo
             if (bSceneMode)
             {
                 SceneMode.Text = "Real mode";
-                timer3.Enabled = false;
             }
             else
             {
+                var oUpdateVRdata = new Thread(UpdateVRshipData);
+                oUpdateVRdata.IsBackground = true;
+                oUpdateVRdata.Start();
+
                 SceneMode.Text = "Virtual reality mode";
-                timer3.Enabled = true;
             }
         }
 
@@ -1778,6 +1881,8 @@ namespace HUST_1_Demo
             boat1.Ctrl_Phi += boat1.rud * (boat1.speed * boat1.speed);
             boat2.Ctrl_Phi += boat2.rud * (boat2.speed * boat2.speed);
             boat3.Ctrl_Phi += boat3.rud * (boat3.speed * boat3.speed);
+
+          //  MessageBox.Show(boat3.Ctrl_Phi.ToString());
 
             if (boat1.Ctrl_Phi > 180.0f)
             {
@@ -1806,11 +1911,16 @@ namespace HUST_1_Demo
                 boat3.Ctrl_Phi += 360;
             }
         }
-        private void timer3_Tick(object sender, EventArgs e)
+
+        private void UpdateVRshipData()
         {
-            if (bSceneMode == false)//虚拟场景模式下，用航迹推算更新无人船位置
+            while (bSceneMode == false)
             {
                 UpdateVRCtrl_Phi();
+
+                boat1.ShipID = 0x01;
+                boat2.ShipID = 0x02;
+                boat3.ShipID = 0x03;
 
                 boat1.X_mm = (int)(boat1.X_mm + boat1.speed * Math.Cos(boat1.Ctrl_Phi * d2r) * 1000);
                 boat1.Y_mm = (int)(boat1.Y_mm + boat1.speed * Math.Sin(boat1.Ctrl_Phi * d2r) * 1000);
@@ -1830,8 +1940,14 @@ namespace HUST_1_Demo
                 boat3.Fter_pos_X = boat3.X_mm / 1000.0;
                 boat3.Fter_pos_Y = boat3.Y_mm / 1000.0;
 
+                Display();
+
+                boat1.SubmitParamToServer();
+                boat2.SubmitParamToServer();
+                boat3.SubmitParamToServer();
+
+                Thread.Sleep(1000);//数据更新频率为 1 Hz
             }
         }
-
     }
 }

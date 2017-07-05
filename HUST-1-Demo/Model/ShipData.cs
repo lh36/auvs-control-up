@@ -196,7 +196,7 @@ namespace HUST_1_Demo.Model
 
             oShipParam.fError = this.fError;
 
-            oShipParam.phi = this.GPS_Phi;
+            oShipParam.phi = this.Ctrl_Phi;
             oShipParam.GPS_Phi = this.GPS_Phi;
 
             oShipParam.rud = this.rud;
