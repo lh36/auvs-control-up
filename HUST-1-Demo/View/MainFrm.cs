@@ -1424,7 +1424,6 @@ namespace HUST_1_Demo
                 }
             }
         }
-
         private void UpdtPathMode()
         {
             switch (sArr[2])
