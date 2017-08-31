@@ -1650,7 +1650,6 @@ namespace HUST_1_Demo
                         line_Y2.Text = "7";
                         line_Y3.Text = "10";
 
-
                         if(bSceneMode)
                         {
                             tarLineSp = float.Parse(line_Y1.Text);

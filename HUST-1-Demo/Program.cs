@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HUST_1_Demo.Model;
+using HUST_1_Demo.View;
 
 namespace HUST_1_Demo
 {
@@ -24,7 +25,7 @@ namespace HUST_1_Demo
          //   Model.LoginJson loginJson = Model.JsonHelper.JsonToClass<Model.LoginJson>(str2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Login());
         }
     }
 }
