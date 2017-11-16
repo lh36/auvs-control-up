@@ -83,6 +83,7 @@ namespace HUST_1_Demo
         public static bool isRmtClsFlag = false;//可直接循环执行当跟随目标轨迹
         public static bool bRecdData = false;//是否保存数据
         public static bool bSceneMode = true;//真实数据还是虚拟数据, true:真实，false：虚拟
+        //public static bool line_stop = false;//多段直线跟踪停止位
 
 
         string name = "";//保存数据txt
@@ -264,6 +265,8 @@ namespace HUST_1_Demo
 
         private void Display()//参数显示函数
         {
+           // UpdateCtrlPhi();
+
             Boat1_X.Text = boat1.Fter_pos_X.ToString("0.00");
             Boat1_Y.Text = boat1.Fter_pos_Y.ToString("0.00");
             Boat1_phi.Text = boat1.Ctrl_Phi.ToString("0.00");
@@ -271,8 +274,15 @@ namespace HUST_1_Demo
             Boat1_speed.Text = boat1.speed.ToString("0.000");
             Boat1_grade.Text = boat1.gear.ToString();
             Boat1_time.Text = boat1.sTime;
-            Boat1_MotorSpd.Text = boat1.MotorSpd.ToString();
+            Boat1_MotorSpd.Text = boat1.MotorSpd1.ToString();
             xError1.Text = boat1.XError.ToString();
+            Boat1_Tem.Text = boat1.Water_Tem.ToString("0.00");
+            Boat1_PH.Text = boat1.Water_PH.ToString("0.00");
+            Boat1_Oxy.Text = boat1.Water_Oxy.ToString("0.00");
+            Boat1_Tur.Text = boat1.Water_Tur.ToString("0.00");
+            Boat1_Con.Text = boat1.Water_Con.ToString();
+
+
 
             Boat2_X.Text = boat2.Fter_pos_X.ToString("0.00");
             Boat2_Y.Text = boat2.Fter_pos_Y.ToString("0.00");
@@ -281,8 +291,15 @@ namespace HUST_1_Demo
             Boat2_speed.Text = boat2.speed.ToString("0.000");
             Boat2_grade.Text = boat2.gear.ToString();
             Boat2_time.Text = boat2.sTime;
-            Boat2_MotorSpd.Text = boat2.MotorSpd.ToString();
+            Boat2_MotorSpd.Text = boat2.Dzhangai.ToString();
             xError2.Text = boat2.XError.ToString();
+            Boat2_Tem.Text = boat2.Water_Tem.ToString("0.00");
+            Boat2_PH.Text = boat2.Water_PH.ToString("0.00");
+            Boat2_Oxy.Text = boat2.Water_Oxy.ToString("0.00");
+            Boat2_Tur.Text = boat2.Water_Tur.ToString("0.00");
+            Boat2_Con.Text = boat2.Water_Con.ToString();
+            Boat2_zhangai.Text = (boat2.Dzhangai - 50).ToString();
+
 
             Boat3_X.Text = boat3.Fter_pos_X.ToString("0.00");
             Boat3_Y.Text = boat3.Fter_pos_Y.ToString("0.00");
@@ -291,8 +308,13 @@ namespace HUST_1_Demo
             Boat3_speed.Text = boat3.speed.ToString("0.000");
             Boat3_grade.Text = boat3.gear.ToString();
             Boat3_time.Text = boat3.sTime;
-            Boat3_MotorSpd.Text = boat3.MotorSpd.ToString();
+            Boat3_MotorSpd.Text = boat3.MotorSpd1.ToString();
             xError3.Text = boat3.XError.ToString();
+            Boat3_Tem.Text = boat3.Water_Tem.ToString("0.00");
+            Boat3_PH.Text = boat3.Water_PH.ToString("0.00");
+            Boat3_Oxy.Text = boat3.Water_Oxy.ToString("0.00");
+            Boat3_Tur.Text = boat3.Water_Tur.ToString("0.00");
+            Boat3_Con.Text = boat3.Water_Con.ToString();
         }
 
         private void leftup_Click(object sender, EventArgs e)
@@ -381,7 +403,7 @@ namespace HUST_1_Demo
 
 
 
-        static int halfHeight_mm = 55000;//地图一半长55米
+        static int halfHeight_mm = 150000;//地图一半长55米
         static List<Point> listPoint_Boat1 = new List<Point>();
         static List<Point> listPoint_Boat2 = new List<Point>();
         static List<Point> listPoint_Boat3 = new List<Point>();
@@ -390,8 +412,11 @@ namespace HUST_1_Demo
         public static double r2d = 1 / d2r;
         private void UpdateDisBoat(ShipData boat, PictureBox PathMap, Color color)
         {
-            int Widthmap = PathMap.Width / 2;
-            int Heightmap = PathMap.Height / 2;
+         //   int Widthmap = PathMap.Width / 2;
+         //   int Heightmap = PathMap.Height / 2;
+
+            int Widthmap = (int)(PathMap.Width / 1.5);
+            int Heightmap = (int)(PathMap.Height / 1.5);
 
             //实际大小
             int Heigh_mm = halfHeight_mm;
@@ -444,12 +469,21 @@ namespace HUST_1_Demo
                 Graphics g = this.PathMap.CreateGraphics();
                 g.Clear(Color.White);
                 Pen p = new Pen(Color.Black, 2);//定义了一个蓝色,宽度为的画笔
-                g.DrawLine(p, 0, PathMap.Height / 2, PathMap.Width, PathMap.Height / 2);//在画板上画直线,起始坐标为(10,10),终点坐标为(100,100)
-                g.DrawLine(p, PathMap.Width / 2, 0, PathMap.Width / 2, PathMap.Height);
+
+              //  int Widthmap = (int)(PathMap.Width / 2);
+              //  int Heightmap = (int)(PathMap.Height / 2);
+
+                int Widthmap = (int)(PathMap.Width / 1.5);
+                int Heightmap = (int)(PathMap.Height / 1.5);
+
+                g.DrawLine(p, 0, Heightmap, PathMap.Width, Heightmap);//在画板上画直线,起始坐标为(10,10),终点坐标为(100,100)
+                g.DrawLine(p, Widthmap, 0, Widthmap, PathMap.Height);
+
+            //    g.DrawLine(p, 0, PathMap.Height / 2, PathMap.Width, PathMap.Height / 2);//在画板上画直线,起始坐标为(10,10),终点坐标为(100,100)
+            //    g.DrawLine(p, PathMap.Width / 2, 0, PathMap.Width / 2, PathMap.Height);
 
                 //地图像素大小
-                int Widthmap = PathMap.Width / 2;
-                int Heightmap = PathMap.Height / 2;
+                
 
                 //实际大小
                 int Heigh_mm = halfHeight_mm;
@@ -470,10 +504,18 @@ namespace HUST_1_Demo
 
                 #region 绘制泳池边界
                 List<Point> PtPaint = new List<Point>();//绘图
-                double[] Pt1 = new double[2] { 30.51582463, 114.426777 };//定义边界点
-                double[] Pt2 = new double[2] { 30.51584359, 114.4265784 };
-                double[] Pt3 = new double[2] { 30.5162782, 114.42661763 };
-                double[] Pt4 = new double[2] { 30.51626484, 114.426825 };
+                //double[] Pt1 = new double[2] { 30.51582463, 114.426777 };//定义边界点
+                //double[] Pt2 = new double[2] { 30.51584359, 114.4265784 };
+                //double[] Pt3 = new double[2] { 30.5162782, 114.42661763 };
+                //double[] Pt4 = new double[2] { 30.51626484, 114.426825 };
+                double[] Pt1 = new double[2] { 31.402835, 121.348840 };
+                double[] Pt2 = new double[2] { 31.403787, 121.348065 };
+                double[] Pt3 = new double[2] { 31.403391, 121.347280 };
+                double[] Pt4 = new double[2] { 31.402369, 121.348105 };
+                //double[] Pt5 = new double[2] { 31.315477, 121.388135 };
+                //double[] Pt6 = new double[2] { 31.315495, 121.388968 };
+                //double[] Pt7 = new double[2] { 31.315654, 121.389463 };
+
 
                 PtPoolGPSBd.Add(Pt1);
                 PtPoolGPSBd.Add(Pt2);
@@ -616,8 +658,30 @@ namespace HUST_1_Demo
         private void timer1_Tick(object sender, EventArgs e)
         {
             ship1Control.Send_Command(serialPort1);
+            //if ((obs_work == true) && (boat2.Dzhangai != 0))
+            //{
+            //    ship2Control.command[3] = (byte)(-8 * (boat2.Dzhangai - 50) + 32);
+            //}
             ship2Control.Send_Command(serialPort1);
             ship3Control.Send_Command(serialPort1);
+
+                       
+            if (zhangai_tim49==0)
+            {
+                zhangai_tim49 = 0;
+            }
+            else
+            {
+                zhangai_tim49--;//编队延时
+            }
+            if (zhangai_tim55==0)
+            {
+                zhangai_tim55 = 0;
+            }
+            else
+            {
+                zhangai_tim55--;
+            }
         }
 
         private void Reset_Click(object sender, EventArgs e)
@@ -751,6 +815,10 @@ namespace HUST_1_Demo
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 isFlagCtrl = true;
                 bRecdData = true;//开始记录数据
+                boat1.point_stop = false;//跟踪停止位清除
+                boat2.point_stop = false;
+                boat3.point_stop = false;
+
                 
                 if (bSceneMode)//真实场景
                 {
@@ -813,29 +881,97 @@ namespace HUST_1_Demo
                 }
             }
         }
-
+        int zhangai_tim_date = 50;//避障延时时间，1表示延时0.2秒
+        int zhangai_tim55 = 0;//定时变量
+        int zhangai_tim49 = 0;//定时变量
         private void UpdateCtrlPara()
         {
+
+            #region 避障策略， 根据障碍物情况重新规划跟踪路径，即设计路径偏差
+            if (obs_work == true) 
+            {             
+                if ((boat2.Dzhangai == 50) || (boat2.Dzhangai == 0))
+                {
+                    boat1.dx_err = float.Parse(Boat1_DX.Text);
+                    boat1.dy_err = float.Parse(Boat1_DY.Text);
+
+                    boat2.dx_err = float.Parse(Boat2_DX.Text);
+                    boat2.dy_err = float.Parse(Boat2_DY.Text);
+
+                    boat3.dx_err = float.Parse(Boat3_DX.Text);
+                    boat3.dy_err = float.Parse(Boat3_DY.Text);
+                }
+                
+                if ((boat2.Dzhangai == 55 || zhangai_tim55 != 0) && zhangai_tim49 == 0)
+                {
+                    if (boat2.Dzhangai == 55)
+                    {
+                        zhangai_tim55 = zhangai_tim_date;
+                    } 
+                   
+                    boat1.dx_err = float.Parse(Boat1_DX.Text) + 1;
+                    boat1.dy_err = 0;
+
+                    boat2.dx_err = float.Parse(Boat2_DX.Text);
+                    boat2.dy_err = float.Parse(Boat2_DY.Text);
+
+                    boat3.dx_err = float.Parse(Boat3_DX.Text) - 1;
+                    boat3.dy_err = 0;
+                }
+
+                if (boat2.Dzhangai == 49 || boat2.Dzhangai == 51 || zhangai_tim49 != 0)
+                {
+                    if (boat2.Dzhangai == 49 || boat2.Dzhangai == 51)
+                    {
+                        zhangai_tim49 = zhangai_tim_date;
+                    }
+                    
+
+                    float fuhao1 = 1*(boat2.Dzhangai - 50) * float.Parse(Boat1_DY.Text) / Math.Abs(float.Parse(Boat1_DY.Text));
+                    boat1.dx_err = float.Parse(Boat1_DX.Text) + fuhao1;
+                    boat1.dy_err = 0;
+
+                    boat2.dx_err = float.Parse(Boat2_DX.Text);
+                    boat2.dy_err = float.Parse(Boat2_DY.Text) + (boat2.Dzhangai - 50);
+
+
+                    float fuhao3 = 1 * (boat2.Dzhangai - 50) * float.Parse(Boat3_DY.Text) / Math.Abs(float.Parse(Boat3_DY.Text));
+                    boat3.dx_err = float.Parse(Boat3_DX.Text) + fuhao3;
+                    boat3.dy_err = 0;
+                }                              
+            }
+            else
+            {
+                boat1.dx_err = float.Parse(Boat1_DX.Text);
+                boat1.dy_err = float.Parse(Boat1_DY.Text);
+
+                boat2.dx_err = float.Parse(Boat2_DX.Text);
+                boat2.dy_err = float.Parse(Boat2_DY.Text);
+
+                boat3.dx_err = float.Parse(Boat3_DX.Text);
+                boat3.dy_err = float.Parse(Boat3_DY.Text);
+            }
+            #endregion
+
+
             boat1.Kp = float.Parse(Boat1_Kp.Text);//获取舵机控制参数
             boat1.Ki = float.Parse(Boat1_Ki.Text);
             boat1.Kd = float.Parse(Boat1_Kd.Text);
             boat1.K1 = float.Parse(Boat1_K1.Text);//获取螺旋桨控制参数
             boat1.K2 = float.Parse(Boat1_K2.Text);
-            boat1.dl_err = float.Parse(Boat1_DL.Text);
 
             boat2.Kp = float.Parse(Boat2_Kp.Text);//获取舵机控制参数
             boat2.Ki = float.Parse(Boat2_Ki.Text);
             boat2.Kd = float.Parse(Boat2_Kd.Text);
             boat2.K1 = float.Parse(Boat2_K1.Text);//获取螺旋桨控制参数
             boat2.K2 = float.Parse(Boat2_K2.Text);
-            boat2.dl_err = float.Parse(Boat2_DL.Text);
-
+           
             boat3.Kp = float.Parse(Boat3_Kp.Text);//获取舵机控制参数
             boat3.Ki = float.Parse(Boat3_Ki.Text);
             boat3.Kd = float.Parse(Boat3_Kd.Text);
             boat3.K1 = float.Parse(Boat3_K1.Text);//获取螺旋桨控制参数
             boat3.K2 = float.Parse(Boat3_K2.Text);
-            boat3.dl_err = float.Parse(Boat3_DL.Text);
+            
 
             HUST_1_Demo.Controller.RobotControl.Alf1 = float.Parse(Alfa1.Text);
             HUST_1_Demo.Controller.RobotControl.Alf2 = float.Parse(Alfa1.Text);
@@ -859,8 +995,8 @@ namespace HUST_1_Demo
             else
                 ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
-            Control_fun(ship1Control, boat1);//1号小船控制
-
+            //Control_fun(ship1Control, boat1);//1号小船控制
+            follower_control(ship1Control, boat1, boat2);
 
             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
@@ -869,12 +1005,19 @@ namespace HUST_1_Demo
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
 
+            
             Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-            /* if (AutoSpeed.Checked)
-                 ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
-             else
-                 ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));*/
-            ship2Control.command[4] = 100;
+                /* if (AutoSpeed.Checked)
+                     ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
+                 else
+                     ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));*/
+            
+
+            if (boat2.point_stop == true)
+                ship2Control.command[4] = 0;
+            else
+                ship2Control.command[4] = 30;
+                       
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
@@ -887,7 +1030,8 @@ namespace HUST_1_Demo
             else
                 ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
-            Control_fun(ship3Control, boat3);//3号小船控制
+            //Control_fun(ship3Control, boat3);//3号小船控制
+            follower_control(ship3Control, boat3, boat2);
 
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
@@ -944,6 +1088,7 @@ namespace HUST_1_Demo
             if (path_mode.Text == "Point")
             {
                 shipControl.FollowPoint(shipData, tarPoint);
+
             }
             #endregion
 
@@ -951,6 +1096,7 @@ namespace HUST_1_Demo
             if (path_mode.Text == "General line")
             {
                 shipControl.FollowLine(shipData, tarLineGe);
+                pathType = 3;
             }
             #endregion
 
@@ -965,7 +1111,28 @@ namespace HUST_1_Demo
             #region 跟随多段直线
             if (path_mode.Text == "Multi line")
             {
-                shipControl.FollowMulLine(shipData);
+                //if (followLineID > 1)
+                //{
+                    shipControl.FollowMulLine(shipData);
+                    pathType = 3;
+                //}
+                //else
+                //{
+                //    isFlagCtrl = false;//停止本地闭环
+                //    isRmtClsFlag = false;//停止远程闭环
+                //    bRecdData = false;//停止记录数据
+
+                //    ship1Control.Stop_Robot();
+                //    ship2Control.Stop_Robot();
+                //    ship3Control.Stop_Robot();
+
+                //    VRship.Stop_Robot(boat1);
+                //    VRship.Stop_Robot(boat2);
+                //    VRship.Stop_Robot(boat3);
+
+                //    clsCtrlBtn.Text = "Start following";
+                //}
+               
             }
             #endregion
 
@@ -995,6 +1162,56 @@ namespace HUST_1_Demo
             if (path_mode.Text == "NSFC test")
             {
                 shipControl.NSFC_Test(shipData);
+            }
+            #endregion
+        }
+
+        private void follower_control(RobotControl shipControl,ShipData shipData,ShipData leader)
+        {
+            #region 跟踪目标点
+            if (path_mode.Text == "Point")
+            {
+                shipControl.FollowPoint(shipData, tarPoint);
+
+            }
+            #endregion
+
+            #region 跟随一般直线
+            if (path_mode.Text == "General line")
+            {
+                shipControl.Follower_Follow(shipData, leader);
+                pathType = 3;
+            }
+            #endregion
+
+            #region 跟随特殊直线
+            if (path_mode.Text == "Special line")
+            {
+                shipControl.FollowLine(shipData, tarLineSp);
+                pathType = 1;
+            }
+            #endregion
+
+            #region 跟随多段直线
+            if (path_mode.Text == "Multi line")
+            {
+                shipControl.Follower_Follow(shipData, leader);
+                pathType = 3;
+            }
+            #endregion
+
+            #region 跟随圆轨迹
+            if (path_mode.Text == "Circular path")
+            {
+                shipControl.FollowCircle(shipData, tarCircle);
+                pathType = 2;
+            }
+            #endregion
+
+            #region 跟随椭圆
+            if (path_mode.Text == "Oval path")
+            {
+                shipControl.Follower_Follow(shipData, leader);
             }
             #endregion
         }
@@ -1060,8 +1277,11 @@ namespace HUST_1_Demo
         {
             Point target_pt = new Point(e.X, e.Y);
             //地图像素大小
-            int Widthmap = PathMap.Width / 2;
-            int Heightmap = PathMap.Height / 2;
+         //   int Widthmap = PathMap.Width / 2;
+         //   int Heightmap = PathMap.Height / 2;
+
+            int Widthmap = (int)(PathMap.Width / 1.5);
+            int Heightmap = (int)(PathMap.Height / 1.5);
 
             //实际大小
             int Heigh_mm = halfHeight_mm;
@@ -1469,8 +1689,8 @@ namespace HUST_1_Demo
 
         private void UpdtRefPath()
         {
-            int Widthmap = PathMap.Width / 2;
-            int Heightmap = PathMap.Height / 2;
+            int Widthmap = (int)(PathMap.Width / 1.5);
+            int Heightmap = (int)(PathMap.Height / 1.5);
 
             //实际大小
             int Heigh_mm = halfHeight_mm;
@@ -1618,6 +1838,63 @@ namespace HUST_1_Demo
                             Control_fun(ship2Control, boat2);
                             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
                             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+
+                            if (path_mode.Text == "Multi line")
+                            {
+                                tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
+                                tarCircle.Radius = float.Parse(circle_R1.Text);
+                                tarCircle.x = float.Parse(circle_X.Text);
+                                tarCircle.y = float.Parse(circle_Y.Text);
+
+                                //先给速度信息，再给舵角信息，因为速度信息在点跟踪控制中有可能被刷新
+                                if (AutoSpeed.Checked)
+                                    ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
+                                else
+                                    ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+
+                                //Control_fun(ship1Control, boat1);//1号小船控制
+                                follower_control(ship1Control, boat1, boat2);
+
+                                boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+                                boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+                                boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
+
+                                tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
+                                tarCircle.Radius = float.Parse(circle_R2.Text);
+
+
+                                Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+                                /* if (AutoSpeed.Checked)
+                                     ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
+                                 else
+                                     ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));*/
+
+
+                                if (boat2.point_stop == true)
+                                    ship2Control.command[4] = 0;
+                                else
+                                    ship2Control.command[4] = 30;
+
+                                boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
+                                boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+                                boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
+
+                                tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
+                                tarCircle.Radius = float.Parse(circle_R3.Text);
+
+                                if (AutoSpeed.Checked)
+                                    ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
+                                else
+                                    ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+
+                                //Control_fun(ship3Control, boat3);//3号小船控制
+                                follower_control(ship3Control, boat3, boat2);
+
+                                boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+                                boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+                                boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+
+                            }
                             boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
                         }
                         else
@@ -1945,6 +2222,56 @@ namespace HUST_1_Demo
                 boat3.SubmitParamToServer();
 
                 Thread.Sleep(1000);//数据更新频率为 1 Hz
+            }
+        }
+
+        int shuileng;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+            {
+                MessageBox.Show("请先打开串口！\r\n");
+            }
+            else
+            {
+                if (this.Cooling.Text == "Cool")
+                {
+                    shuileng |= 0x01;//启动水冷
+                    this.Cooling.Text = "Cooling";
+
+                }
+                else if (this.Cooling.Text == "Cooling")
+                {
+                    shuileng &= 0xFE;//关闭水冷
+                    this.Cooling.Text = "Cool";
+                }
+                ship1Control.command[5] = (byte)shuileng;
+                ship2Control.command[5] = (byte)shuileng;
+                ship3Control.command[5] = (byte)shuileng;
+
+            }
+        }
+
+        //激光雷达避障开关
+        bool obs_work = false;
+        private void OBS_JG_Click(object sender, EventArgs e)
+        {
+            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+            {
+                MessageBox.Show("请先打开串口！\r\n");
+            }
+            else
+            {
+                if (this.OBS_JG.Text=="OBS")
+                {
+                    obs_work = true;
+                    this.OBS_JG.Text = "OBSING";
+                }
+                else
+                {
+                    obs_work = false;
+                    this.OBS_JG.Text = "OBS";
+                }
             }
         }
     }

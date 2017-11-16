@@ -12,7 +12,7 @@ namespace HUST_1_Demo.Controller
     public class RobotControl
     {
 
-        public byte[] command = new byte[6] { 0x00, 0x00, 0x06, 0x20, 0x00, 0xaa };
+        public byte[] command = new byte[7] { 0x00, 0x00, 0x07, 0x20, 0x00, 0x00, 0xaa };
 
         public RobotControl() { } //默认构造函数
         public RobotControl(byte head1, byte head2) //带参构造函数
@@ -22,13 +22,16 @@ namespace HUST_1_Demo.Controller
         }
         public void Send_Command(SerialPort port)
         {
-            port.Write(this.command, 0, 6);
+            port.Write(this.command, 0, 7);
         }
 
         #region 开环控制区
         public void Speed_Up()
         {
-            this.command[4] += 10;
+            if (this.command[4] == 80)
+                return;
+            else
+                this.command[4] += 5;
         }
 
         public void Speed_Down()
@@ -36,17 +39,25 @@ namespace HUST_1_Demo.Controller
             if (this.command[4] == 0)
                 return;
             else
-                this.command[4] -= 10;
+                this.command[4] -= 5;
         }
 
         public void Turn_Left()
         {
-            this.command[3] ++;
+            if (this.command[3] == 64)
+                return;
+            else
+                this.command[3] += 2;             
+                
         }
 
         public void Turn_Right()
         {
-            this.command[3] --;
+            if (this.command[3] == 0)
+                return;
+            else
+                this.command[3] -= 2;          
+            
         }
 
         public void Stop_Robot()
@@ -64,11 +75,12 @@ namespace HUST_1_Demo.Controller
 
             double distance = Math.Sqrt((boat.X_mm - targetPoint.X) * (boat.X_mm - targetPoint.X) + (boat.Y_mm - targetPoint.Y) * (boat.Y_mm - targetPoint.Y));//毫米单位的距离
 
-            if (distance <= 1000.0d)
+            if ((distance <= 2000.0d)||(boat.point_stop))
             {
-                HUST_1_Demo.Form1.isRmtClsFlag = false;
-                HUST_1_Demo.Form1.isFlagCtrl = false;
+              //  HUST_1_Demo.Form1.isRmtClsFlag = false;
+             //   HUST_1_Demo.Form1.isFlagCtrl = false;
                 Stop_Robot();
+                boat.point_stop = true;//停船标志位
             }
 
             else//距离目标点很远 需要控制
@@ -111,12 +123,41 @@ namespace HUST_1_Demo.Controller
         {
             float k = 3.5f;//制导角参数
             double Err_phi = 0.0f;
+            double targetY;
 
-            double targetY = line.LineK * boat.Fter_pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
+            //if (line.isReverse)
+            //{
+                if (line.isReverse)
+                {
+                    targetY = line.LineK * boat.Fter_pos_X + line.LineB - 6 * boat.dy_err * Math.Sqrt(line.LineK * line.LineK + 1);//航行器X坐标对应目标直线的Y坐标
+                }
+                else
+                {
+                    targetY = line.LineK * boat.Fter_pos_X + line.LineB + 6 * boat.dy_err * Math.Sqrt(line.LineK * line.LineK + 1);//航行器X坐标对应目标直线的Y坐标
+                }
+            //}
+            //else
+            //{
+            //    if (line.LineK > 0)
+            //    {
+            //        targetY = line.LineK * boat.Fter_pos_X + line.LineB - 5 * boat.dy_err * Math.Sqrt(line.LineK * line.LineK + 1);//航行器X坐标对应目标直线的Y坐标
+            //    }
+            //    else
+            //    {
+            //        targetY = line.LineK * boat.Fter_pos_X + line.LineB + 5 * boat.dy_err * Math.Sqrt(line.LineK * line.LineK + 1);//航行器X坐标对应目标直线的Y坐标
+            //    }
+            //}
+            
+            
+           
+
+            
+
+
             double refDir = Math.Atan(line.LineK)/Math.PI*180; //参考方向，与目标直线平行
             double deltaY = boat.Fter_pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
-            double Ye=deltaY*Math.Cos(refDir/180*Math.PI);//航行器到目标线的垂向距离
-            float Ref_phi = (float)(-Math.Atan(Ye / k) / Math.PI * 180);//制导角（角度制°）
+            double Ye = deltaY * Math.Cos(refDir / 180 * Math.PI);//航行器到目标线的垂向距离
+            float Ref_phi = (float)(-Math.Atan((Ye) / k) / Math.PI * 180);//制导角（角度制°）
            
             if (line.isReverse == true)//如果为逆向直线，则需要对制导角进行Y轴对称变换
             {
@@ -164,7 +205,7 @@ namespace HUST_1_Demo.Controller
         public void FollowLine(ShipData boat, double line)
         {
             double k = 3.5d;//制导角参数
-            double Err_phi = 0.0d;
+            double Err_phi = 0.0d;//制导角与航向角之差
             double y_d = line;//目标直线，单位为米
 
             double Ye = boat.Fter_pos_Y - y_d;//实际坐标减参考坐标
@@ -172,17 +213,16 @@ namespace HUST_1_Demo.Controller
 
             Err_phi = Ref_phi - boat.Ctrl_Phi;
 
-
             if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
             {
                 Err_phi = Err_phi - 360;
             }
-            if (Math.Abs(Ye) < 0.2)
+            if (Math.Abs(Ye) < 0.2)//积分入口设置
             {
                 boat.Err_phi_In += Err_phi;
             }
 
-            int R = (int)(boat.Kp * Err_phi + boat.Ki * boat.Err_phi_In);
+            int R = (int)(boat.Kp * Err_phi + boat.Ki * boat.Err_phi_In);//获得舵角
 
             if (R > 32)
             {
@@ -196,10 +236,12 @@ namespace HUST_1_Demo.Controller
             this.command[3] = (byte)R;
         }
 
-        //多段直线跟踪
+        //多段直线跟踪       
         public void FollowMulLine(ShipData boat)
         {
             HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+            
+            
             line.Start = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID);//线段起始点
             line.End = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID+1);//线端终点
             line.LineK = (double)(line.Start.Y - line.End.Y) / (double)(line.Start.X - line.End.X);
@@ -213,6 +255,7 @@ namespace HUST_1_Demo.Controller
                 HUST_1_Demo.Form1.followLineID++;
             if (HUST_1_Demo.Form1.followLineID == HUST_1_Demo.Form1.tarMultiLine.Count - 1)
             {
+                
                 Stop_Robot();
             }
         }
@@ -229,9 +272,11 @@ namespace HUST_1_Demo.Controller
             double Center_X = circle.x;//圆心坐标
             double Center_Y = circle.y;
 
-            double Ye = (Math.Sqrt((boat.Fter_pos_X - Center_X) * (boat.Fter_pos_X - Center_X) + (boat.Fter_pos_Y - Center_Y) * (boat.Fter_pos_Y - Center_Y)) - Radius);
+            double Ye = (Math.Sqrt((boat.Fter_pos_X - Center_X) * (boat.Fter_pos_X - Center_X) + (boat.Fter_pos_Y - Center_Y) * (boat.Fter_pos_Y - Center_Y)) - Radius) + boat.dy_err;
 
             float Robot_xy = (float)(Math.Atan2(boat.Fter_pos_Y - Center_Y, boat.Fter_pos_X - Center_X) / Math.PI * 180);//航行器相对于原点的极坐标点
+            boat.Pos_Phi = Robot_xy;//赋值位置极坐标
+
             double Dir_R = Robot_xy - 90;//圆切线角     得出航行器和制导角的参考0向，即极坐标的x轴，两者角度都是相对该轴的角度值
 
             if (Dir_R > 180) Dir_R = Dir_R - 360;
@@ -273,6 +318,60 @@ namespace HUST_1_Demo.Controller
             int R = (int)(boat.Kp * Err_phi + boat.Ki * boat.Err_phi_In);
 
             //   R = (int)(boat.Kp * Err_phi);
+
+            if (R > 32)
+            {
+                R = 32;
+            }
+            else if (R < -32)
+            {
+                R = -32;
+            }
+            R = R + 32;
+            this.command[3] = (byte)R;
+        }
+
+        //跟随者航迹控制
+        public void Follower_Follow(ShipData boat,ShipData leader)
+        {
+            float k = 3.5f;//制导角参数
+            double Err_phi = 0.0f;
+
+            //double targetY = line.LineK * boat.Fter_pos_X + line.LineB;//航行器X坐标对应目标直线的Y坐标
+            //double refDir = Math.Atan(line.LineK) / Math.PI * 180; //参考方向，与目标直线平行
+            //double deltaY = boat.Fter_pos_Y - targetY;//实际坐标减参考坐标,基于参考坐标点坐标系的建立的误差
+            double Ye = -Math.Sin(leader.Ctrl_Phi / 180 * Math.PI) * (boat.Fter_pos_X - leader.Fter_pos_X) + Math.Cos(leader.Ctrl_Phi / 180 * Math.PI) * (boat.Fter_pos_Y - leader.Fter_pos_Y) + boat.dy_err;//航行器到目标线的垂向距离
+            float Ref_phi = (float)(-Math.Atan((Ye) / k) / Math.PI * 180);//制导角（角度制°）
+
+            //if ((leader.Ctrl_Phi<-90)||(leader.Ctrl_Phi>90))//如果为逆向直线，则需要对制导角进行Y轴对称变换
+            //{
+            //    if (Ref_phi < 0)
+            //    {
+            //        Ref_phi = -180 - Ref_phi;
+            //    }
+            //    else
+            //    {
+            //        Ref_phi = 180 - Ref_phi;
+            //    }
+            //}
+
+            Err_phi = Ref_phi - (boat.Ctrl_Phi - leader.Ctrl_Phi);
+
+            if (Err_phi > 180)//偏差角大于180°时减去360°得到负值，表示航向左偏于制导角；偏差小于180°时表示航向右偏于制导角。
+            {
+                Err_phi = Err_phi - 360;
+            }
+            if (Err_phi < -180)
+            {
+                Err_phi = Err_phi + 360;
+            }
+
+            if (Math.Abs(Ye) < 0.5)
+            {
+                boat.Err_phi_In += Err_phi;
+            }
+
+            int R = (int)(boat.Kp * Err_phi + boat.Ki * boat.Err_phi_In);
 
             if (R > 32)
             {
@@ -347,7 +446,7 @@ namespace HUST_1_Demo.Controller
 
         public static long timeTickCnt = 0;
         public static double[] yawd = new double[3] { 0.0d, 0.0d, 0.0d };
-        public static double[] UpdateYawd()
+        public static double[] UpdateYawd()    //什么意思
         {
             if (timeTickCnt < 5)
             {
@@ -489,13 +588,13 @@ namespace HUST_1_Demo.Controller
         {
             double tempLeader = 0.0d;
             double tempFollow = 0.0d;//跟随者变量
-            double deltaError = 0.0d;//距离误差
+            double dxError = 0.0d;//X方向距离误差
             
             if (flagPathSelect == 1)//判断为跟随直线控制还是跟随圆轨迹控制,=1:直线跟随
             {
                 tempLeader = leaderboat.Fter_pos_X;
                 tempFollow = boat.Fter_pos_X;
-                deltaError = tempLeader - tempFollow;
+                dxError = tempLeader - tempFollow;
             }
             if (flagPathSelect==2)//=2:圆轨迹跟随
             {
@@ -508,26 +607,55 @@ namespace HUST_1_Demo.Controller
             {
                 if ((tempFollow < 0) && (tempLeader > 0)) //处理正负180°附近的情况
                     tempFollow = tempFollow + 360;
-                deltaError = tempFollow - tempLeader;
+                dxError = tempFollow - tempLeader;
             }
             if (flagPathSelect == 2 && flagFollowDir == 2)//圆轨迹逆时针
             {
                 if ((tempLeader < 0) && (tempFollow > 0)) //处理正负180°附近的情况
                     tempLeader = tempLeader + 360;
-                deltaError = tempLeader - tempFollow;
+                dxError = tempLeader - tempFollow;
+            }
+            //任意直线或多段直线
+            if (flagPathSelect==3)
+            {
+                //HUST_1_Demo.Form1.TargetLine line = new Form1.TargetLine();
+                //line.Start = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID);//线段起始点
+                //line.End = HUST_1_Demo.Form1.tarMultiLine.ElementAt(HUST_1_Demo.Form1.followLineID + 1);//线端终点
+                //line.LineK = (double)(line.Start.Y - line.End.Y) / (double)(line.Start.X - line.End.X);
+                //line.LineB = (line.Start.Y - line.LineK * line.Start.X) / 1000.0f;
+
+                if ((leaderboat.Ctrl_Phi < -90) || (leaderboat.Ctrl_Phi > 90))//判断是否为逆向直线
+                {                  
+
+                    //领航者与跟随者的距离,目前假设领航者与跟随者的差值均为正数
+                    tempFollow = Math.Sqrt((leaderboat.Fter_pos_X - boat.Fter_pos_X) * (leaderboat.Fter_pos_X - boat.Fter_pos_X) + (leaderboat.Fter_pos_Y - boat.Fter_pos_Y) * (leaderboat.Fter_pos_Y - boat.Fter_pos_Y));
+                    dxError = tempFollow * Math.Cos((Math.Atan2(leaderboat.Fter_pos_Y - boat.Fter_pos_Y, leaderboat.Fter_pos_X - boat.Fter_pos_X) / Math.PI * 180 - leaderboat.Ctrl_Phi) / 180 * Math.PI);
+
+                }
+                else
+                {
+                    
+                    //领航者与跟随者的距离
+                    tempFollow = Math.Sqrt((leaderboat.Fter_pos_X - boat.Fter_pos_X) * (leaderboat.Fter_pos_X - boat.Fter_pos_X) + (leaderboat.Fter_pos_Y - boat.Fter_pos_Y) * (leaderboat.Fter_pos_Y - boat.Fter_pos_Y));
+                    dxError = tempFollow * Math.Cos((Math.Atan2(leaderboat.Fter_pos_Y - boat.Fter_pos_Y, leaderboat.Fter_pos_X - boat.Fter_pos_X) / Math.PI * 180 - leaderboat.Ctrl_Phi) / 180 * Math.PI);
+
+                }                            
+
             }
 
             
-            int U = (int)(boat.K1 * 100 + boat.K2 * (deltaError - boat.dl_err));//速度控制
-            if (U > 150)   //将速度档位范围保持在4~16范围内
-            {
-                U = 150;
-            }
-            else if (U < 50)
+            int U = (int)(boat.K1 * 30 + boat.K2 * (dxError + boat.dx_err));//速度控制
+            if (U > 50)   //将速度档位范围保持在4~16范围内
             {
                 U = 50;
             }
+            else if (U < 10)
+            {
+                U = 10;
+            }
             this.command[4] = (byte)U;
+
+
         }
 
         #endregion

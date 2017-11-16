@@ -33,6 +33,11 @@ namespace MonitorNet
                 "&kd=" + oParam.Kd.ToString () +
                 "&k1=" + oParam.K1.ToString () +
                 "&k2=" + oParam.K2.ToString () +
+                "&tem=" + oParam.tem.ToString() +
+                "&pH=" + oParam.ph.ToString() +
+                "&diso=" + oParam.diso.ToString() +
+                "&tur=" + oParam.tur.ToString() +
+                "&con=" + oParam.con.ToString() +
                 "&instanceid=" + NetManager.Instance.GetInstanceID ().ToString () +
                 "&shipid=" + this.m_Data.iShipID.ToString ();
             try

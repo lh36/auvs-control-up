@@ -24,9 +24,10 @@ namespace HUST_1_Demo.View
             string psrWrd = PassWord.Text;
             if ( usrName == "admin" && psrWrd == "liuhui" )
             {
-                //this.Hide();
+                //
                 
                 Form1 form = new Form1();
+                this.Hide();
                 form.ShowDialog();
                 this.Close();
             }

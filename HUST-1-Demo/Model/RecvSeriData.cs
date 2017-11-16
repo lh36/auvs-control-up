@@ -10,9 +10,10 @@ namespace HUST_1_Demo.Model
 {
     public class RecvSeriData
     {
+        static int len_data = 42;//数据长度
         byte[] Euler_Z = new byte[4];//Yaw角度
         static byte[] rxdata = new byte[200];//数据接收二级缓存，用来存储寻找包含包头包尾的数据
-        public static byte[] response_data = new byte[26];//下位机回复报文
+        public static byte[] response_data = new byte[len_data];//下位机回复报文
         public static bool bDataGet = false;//获取一组正确的数据标志
         static byte[] recv = new byte[200];//这里定义的是临时局部变量，所以每次进来都会重新更新，所以不用清空
         static int rx_counter = 0;
@@ -21,6 +22,7 @@ namespace HUST_1_Demo.Model
         static byte tail = 0xAA;
         static int head_pos = 0;//报头位置
         static int tail_pos = 0;//报尾位置
+       
 
         public static void ReceData(SerialPort serialPort1)
         {
@@ -49,7 +51,7 @@ namespace HUST_1_Demo.Model
                 }
 
                 #region 数据接收程序
-                if (rx_counter >= 26)
+                if (rx_counter >= len_data)
                 {
                     head_pos = Array.IndexOf(rxdata, head1);
 
@@ -66,17 +68,17 @@ namespace HUST_1_Demo.Model
                             }
                             bDataGet = true;
 
-                            if (response_data[25] == tail)
+                            if (response_data[len_data-1] == tail)
                             {
-                                rx_counter = rx_counter - (head_pos + 26);//除去最后一个包尾后剩余的数据的个数
+                                rx_counter = rx_counter - (head_pos + len_data);//除去最后一个包尾后剩余的数据的个数
 
                                 for (int i = 0; i < rx_counter; i++)//保留缓存区包尾后的数据
                                 {
-                                    rxdata[i] = rxdata[head_pos + i + 26];
+                                    rxdata[i] = rxdata[head_pos + i + len_data];
                                 }
                                 Array.Clear(rxdata, rx_counter, 200 - rx_counter);//清除遗留的尾数
                             }
-                            else if ((rxdata[25] != 0) || (rx_counter > 26))
+                            else if ((rxdata[len_data-1] != 0) || (rx_counter > len_data))
                             {
                                 rx_counter = 0;
                                 Array.Clear(rxdata, 0, rxdata.Length);//清除遗留的尾数
