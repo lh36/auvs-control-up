@@ -30,7 +30,8 @@ namespace MonitorNet
         public double ph;
         public double diso;
         public double tur;
-        public double con;
+        public int con;
+        public double check_value;
 
         public SShipParam() //默认构造函数
         {
@@ -65,7 +66,7 @@ namespace MonitorNet
         public SShipParam(double lat, double lon, double posX, double posY,
             double phi, double gps_phi, float rudAng, float speed, int gear, long time,
             float kp, float ki, float kd, float k1, float k2, double tem, 
-            double ph, double diso, double tur, double con) //带参构造函数
+            double ph, double diso, double tur, int con) //带参构造函数
         {
             this.lat = lat;
             this.lon = lon;

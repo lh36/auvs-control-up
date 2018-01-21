@@ -38,6 +38,7 @@ namespace MonitorNet
                 "&diso=" + oParam.diso.ToString() +
                 "&tur=" + oParam.tur.ToString() +
                 "&con=" + oParam.con.ToString() +
+                "&check_value=" + oParam.check_value.ToString() +
                 "&instanceid=" + NetManager.Instance.GetInstanceID ().ToString () +
                 "&shipid=" + this.m_Data.iShipID.ToString ();
             try

@@ -10,7 +10,7 @@ namespace HUST_1_Demo.Model
 {
     public class RecvSeriData
     {
-        static int len_data = 42;//数据长度
+        static int len_data = 43;//数据长度
         byte[] Euler_Z = new byte[4];//Yaw角度
         static byte[] rxdata = new byte[200];//数据接收二级缓存，用来存储寻找包含包头包尾的数据
         public static byte[] response_data = new byte[len_data];//下位机回复报文
@@ -62,13 +62,21 @@ namespace HUST_1_Demo.Model
                         #region 找到包头和包尾
                         if (tail_pos != -1)//找到了一组完整的数据
                         {
-                            for (int i = 0; i < rxdata[head_pos + 2]; i++)
+                            byte check_value = 0;//本地校验值
+                            for (int i = 0; i < rxdata[head_pos+2]-2;i++ )
                             {
-                                response_data[i] = rxdata[head_pos + i];
+                                check_value += rxdata[i];//计算校验值
                             }
-                            bDataGet = true;
+                            if (check_value == rxdata[rxdata[head_pos + 2] - 2])//校验值对比，如果无误则存入数据respose_data
+                            {
+                                for (int i = 0; i < rxdata[head_pos + 2]; i++)
+                                {
+                                    response_data[i] = rxdata[head_pos + i];
+                                }
+                                bDataGet = true;
+                            }
 
-                            if (response_data[len_data-1] == tail)
+                            if (response_data[len_data - 1] == tail)
                             {
                                 rx_counter = rx_counter - (head_pos + len_data);//除去最后一个包尾后剩余的数据的个数
 
@@ -78,11 +86,12 @@ namespace HUST_1_Demo.Model
                                 }
                                 Array.Clear(rxdata, rx_counter, 200 - rx_counter);//清除遗留的尾数
                             }
-                            else if ((rxdata[len_data-1] != 0) || (rx_counter > len_data))
+                            else if ((rxdata[len_data - 1] != 0) || (rx_counter > len_data))
                             {
                                 rx_counter = 0;
                                 Array.Clear(rxdata, 0, rxdata.Length);//清除遗留的尾数
                             }
+
                         }
                         #endregion
 

@@ -82,7 +82,7 @@ namespace HUST_1_Demo
         public static bool isRmtCtrl = false;//是否接受远程控制
         public static bool isRmtClsFlag = false;//可直接循环执行当跟随目标轨迹
         public static bool bRecdData = false;//是否保存数据
-        public static bool bSceneMode = true;//真实数据还是虚拟数据, true:真实，false：虚拟
+        public static bool isRealMode = true;//真实数据还是虚拟数据, true:真实，false：虚拟
         //public static bool line_stop = false;//多段直线跟踪停止位
 
 
@@ -158,7 +158,7 @@ namespace HUST_1_Demo
 
         private void Advance_Click(object sender, EventArgs e)/*前进*/
         {
-            if (bSceneMode)//真实场景
+            if (isRealMode)//真实场景
             {
                 if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
                 {
@@ -241,7 +241,8 @@ namespace HUST_1_Demo
 
         }
 
-
+        public static int storecnt = 0;
+        public static int sendcnt = 0;
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             RecvSeriData.ReceData(serialPort1);
@@ -252,9 +253,27 @@ namespace HUST_1_Demo
                 byte ID_Temp = RecvSeriData.response_data[3];
                 switch (ID_Temp)
                 {
-                    case 0x01: boat1.UpdataStatusData(RecvSeriData.response_data); boat1.SubmitParamToServer(); if (bRecdData == true) boat1.StoreShipData(name, dataRec); break;//闭环时的数据才进行存储
-                    case 0x02: boat2.UpdataStatusData(RecvSeriData.response_data); boat2.SubmitParamToServer(); if (bRecdData == true) boat2.StoreShipData(name, dataRec); break;
-                    case 0x03: boat3.UpdataStatusData(RecvSeriData.response_data); boat3.SubmitParamToServer(); if (bRecdData == true) boat3.StoreShipData(name, dataRec); break;
+                    case 0x01:
+                        {
+                            boat1.UpdataStatusData(RecvSeriData.response_data);
+                            boat1.StoreShipData(name, dataRec);
+                            boat1.SubmitParamToServer();
+                            break;
+                        }
+                    case 0x02:
+                        {
+                            boat2.UpdataStatusData(RecvSeriData.response_data); 
+                            boat2.SubmitParamToServer(); 
+                            boat2.StoreShipData(name, dataRec); 
+                            break;
+                        }
+                    case 0x03:
+                        {
+                            boat3.UpdataStatusData(RecvSeriData.response_data); 
+                            boat3.SubmitParamToServer(); 
+                            boat3.StoreShipData(name, dataRec); 
+                            break;
+                        } 
                     default: break;
                 }
                 Array.Clear(RecvSeriData.response_data, 0, RecvSeriData.response_data.Length);
@@ -265,8 +284,11 @@ namespace HUST_1_Demo
 
         private void Display()//参数显示函数
         {
-           // UpdateCtrlPhi();
-
+            if(isRealMode)//真实场景下才更新ctrlphi，虚拟场景下自动更新
+            {
+                UpdateCtrlPhi();
+            }
+            
             Boat1_X.Text = boat1.Fter_pos_X.ToString("0.00");
             Boat1_Y.Text = boat1.Fter_pos_Y.ToString("0.00");
             Boat1_phi.Text = boat1.Ctrl_Phi.ToString("0.00");
@@ -319,7 +341,7 @@ namespace HUST_1_Demo
 
         private void leftup_Click(object sender, EventArgs e)
         {
-            if (bSceneMode)//真实场景
+            if (isRealMode)//真实场景
             {
                 if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
                 {
@@ -360,7 +382,7 @@ namespace HUST_1_Demo
         }
         private void rightup_Click(object sender, EventArgs e)
         {
-            if (bSceneMode)//真实场景
+            if (isRealMode)//真实场景
             {
                 if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
                 {
@@ -403,7 +425,7 @@ namespace HUST_1_Demo
 
 
 
-        static int halfHeight_mm = 150000;//地图一半长55米
+        static int halfHeight_mm = 55000;//地图一半长55米
         static List<Point> listPoint_Boat1 = new List<Point>();
         static List<Point> listPoint_Boat2 = new List<Point>();
         static List<Point> listPoint_Boat3 = new List<Point>();
@@ -657,11 +679,12 @@ namespace HUST_1_Demo
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            ship1Control.Send_Command(serialPort1);
+            //
             //if ((obs_work == true) && (boat2.Dzhangai != 0))
             //{
             //    ship2Control.command[3] = (byte)(-8 * (boat2.Dzhangai - 50) + 32);
             //}
+            ship1Control.Send_Command(serialPort1);
             ship2Control.Send_Command(serialPort1);
             ship3Control.Send_Command(serialPort1);
 
@@ -687,7 +710,7 @@ namespace HUST_1_Demo
         private void Reset_Click(object sender, EventArgs e)
         {
             //三船状态数据清除
-            if(bSceneMode==false)
+            if(isRealMode==false)
             {
                 boat1.Ctrl_Phi = 0;
                 boat2.Ctrl_Phi = 0;
@@ -741,6 +764,7 @@ namespace HUST_1_Demo
             {
                 if (this.Start.Text == "Start")
                 {
+                    ship1Control.Send_Command(serialPort1);
                     isFlagDraw = true;
                     Thread threadDraw = new Thread(DrawMap);
                     threadDraw.IsBackground = true;
@@ -795,7 +819,7 @@ namespace HUST_1_Demo
 
             tarLineSp = float.Parse(line_Y3.Text);//1号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R3.Text);
-            VRship.SetSpeed(boat3, 0.75f);
+            VRship.SetSpeed(boat3, 0.75f);      
             VRControl_fun(boat3); ;//1号小船控制
         }
 
@@ -820,7 +844,7 @@ namespace HUST_1_Demo
                 boat3.point_stop = false;
 
                 
-                if (bSceneMode)//真实场景
+                if (isRealMode)//真实场景
                 {
                     Thread threadControl = new Thread(Control_PF);
                     threadControl.IsBackground = true;
@@ -1251,7 +1275,7 @@ namespace HUST_1_Demo
         private void Form1_Load(object sender, EventArgs e)
         {
             InitRecTable();
-            Init_Map();
+            //Init_Map();
             //  double a = Math.Atan(15.0 / 58);
             Control.CheckForIllegalCrossThreadCalls = false;
 
@@ -1815,7 +1839,7 @@ namespace HUST_1_Demo
             {
                 case "1":
                     {
-                        if (bSceneMode)
+                        if (isRealMode)
                         {
                             ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));//先给速度，再给舵角，因为点跟踪速度量有可能更新为零
                             Control_fun(ship1Control, boat1);
@@ -1832,7 +1856,7 @@ namespace HUST_1_Demo
                     }
                 case "2":
                     {
-                        if (bSceneMode)
+                        if (isRealMode)
                         {
                             ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
                             Control_fun(ship2Control, boat2);
@@ -1906,7 +1930,7 @@ namespace HUST_1_Demo
                     }
                 case "3":
                     {
-                        if (bSceneMode)
+                        if (isRealMode)
                         {
                             ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
                             Control_fun(ship3Control, boat3);
@@ -1923,11 +1947,11 @@ namespace HUST_1_Demo
                     }
                 case "4"://编队，三条船一起控横向距离2米，纵向距离2米
                     {
-                        line_Y1.Text = "4";
-                        line_Y2.Text = "7";
-                        line_Y3.Text = "10";
+                        line_Y1.Text = "10";
+                        line_Y2.Text = "20";
+                        line_Y3.Text = "30";
 
-                        if(bSceneMode)
+                        if(isRealMode)
                         {
                             tarLineSp = float.Parse(line_Y1.Text);
                             Control_fun(ship1Control, boat1);
@@ -1968,10 +1992,6 @@ namespace HUST_1_Demo
         {
             while (isRmtClsFlag)//此处应该开启新线程执行，否则会在此处一直循环，导致其他无法执行
             {
-                if(bSceneMode)//真实场景下才需要选择航迹角或者航向角，因为，虚拟下GPS_Phi一直都是0.虚拟场景下boat.Ctrl_Phi由定时器自己更新
-                {
-                    UpdateCtrlPhi();          //航迹角/航向角选择
-                }
                 UpdateCtrlPara();         //控制参数由本地确定
                 UpdtRmtCtrlOt1();  //更新控制输出
                 Thread.Sleep(195);//控制周期
@@ -2021,7 +2041,7 @@ namespace HUST_1_Demo
             {
                 case "w":
                     {
-                        if (bSceneMode)
+                        if (isRealMode)
                         {
                             if (sArr[1] == "1")
                                 ship1Control.Speed_Up();
@@ -2045,7 +2065,7 @@ namespace HUST_1_Demo
                     }
                 case "a":
                     {
-                        if (bSceneMode)
+                        if (isRealMode)
                         {
                             if (sArr[1] == "1")
                                 ship1Control.Turn_Left();
@@ -2067,7 +2087,7 @@ namespace HUST_1_Demo
                     }
                 case "d":
                     {
-                        if (bSceneMode)
+                        if (isRealMode)
                         {
                             if (sArr[1] == "1")
                                 ship1Control.Turn_Right();
@@ -2136,8 +2156,8 @@ namespace HUST_1_Demo
 
         private void SceneModeChange_Click(object sender, EventArgs e)
         {
-            bSceneMode = !bSceneMode;
-            if (bSceneMode)
+            isRealMode = !isRealMode;
+            if (isRealMode)
             {
                 SceneMode.Text = "Real mode";
             }
@@ -2157,7 +2177,6 @@ namespace HUST_1_Demo
             boat2.Ctrl_Phi += boat2.rud * (boat2.speed * boat2.speed);
             boat3.Ctrl_Phi += boat3.rud * (boat3.speed * boat3.speed);
 
-          //  MessageBox.Show(boat3.Ctrl_Phi.ToString());
 
             if (boat1.Ctrl_Phi > 180.0f)
             {
@@ -2189,7 +2208,7 @@ namespace HUST_1_Demo
 
         private void UpdateVRshipData()
         {
-            while (bSceneMode == false)
+            while (isRealMode == false)
             {
                 UpdateVRCtrl_Phi();
 

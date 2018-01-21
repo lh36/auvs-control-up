@@ -77,12 +77,14 @@ namespace HUST_1_Demo.Model
         public static double a = 6378137.0;//定义地球长半轴长度  
         public static double earth_e = 0.003352810664; //定义椭球的第一偏心律
 
-        public static double lat_start = 31.402835;//定义原点位置
-        public static double lon_start = 121.348840;
+  //      public static double lat_start = 31.402835;//定义原点位置
+   //     public static double lon_start = 121.348840;
 
-   //     public static double lat_start = 30.51582550;//定义原点位置
-   //     public static double lon_start = 114.426780000;
+        //public static double lat_start = 30.51582550;//定义原点位置
+        //public static double lon_start = 114.426780000;
 
+        public static double lat_start = 30.513891333;//定义原点位置
+        public static double lon_start = 114.409441333;
 
 
      //   public double[] FilterLat = new double[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -122,25 +124,14 @@ namespace HUST_1_Demo.Model
         public void UpdataStatusData(byte[] response_data)
         {
             ShipID = response_data[3];
-            Lat = ((response_data[4] << 24) + (response_data[5] << 16) + (response_data[6] << 8) + response_data[7]) / Math.Pow(10, 8) + 31;
-            Lon = ((response_data[8] << 24) + (response_data[9] << 16) + (response_data[10] << 8) + response_data[11]) / Math.Pow(10, 8) + 121;
-            /*for (int i = 0; i < 9; i++)
-            {
-                FilterLat[i] = FilterLat[i + 1];
-                FilterLon[i] = FilterLon[i + 1];
-            }
-            FilterLat[9] = Lat;
-            FilterLon[9] = Lon;
-
-            Lat = Filter(FilterLat);
-            Lon = Filter(FilterLon);*/
+            Lat = ((response_data[4] << 24) + (response_data[5] << 16) + (response_data[6] << 8) + response_data[7]) / Math.Pow(10, 8) + 30;
+            Lon = ((response_data[8] << 24) + (response_data[9] << 16) + (response_data[10] << 8) + response_data[11]) / Math.Pow(10, 8) + 114;
+           
             double[] tempGPS = new double[2] { Lat, Lon };
             double[] tempXY = GPS2XY(tempGPS);
-            //  pos_X = (float)((Lat - lat_start) * a * (1 - Math.Pow(earth_e, 2)) * 3.1415926 / (180 * Math.Sqrt(Math.Pow((1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)), 3))));
-            //  pos_Y = (float)(-((Lon - lon_start) * a * Math.Cos(Lat / 180 * 3.1415926) * 3.1415926 / (180 * Math.Sqrt(1 - Math.Pow(earth_e * Math.Sin(Lat / 180 * 3.1415926), 2)))));//Y坐标正向朝西
+            
             pos_X = tempXY[0];
             pos_Y = tempXY[1];
-
             GPS_Phi = Math.Atan2(pos_Y - last_pos_Y, pos_X - last_pos_X) / Math.PI * 180;//航迹角
 
             //将临时存储区向前移位
@@ -158,24 +149,14 @@ namespace HUST_1_Demo.Model
             double x = Filter(tempFterPosX);
             double y = Filter(tempFterPosY);
 
-            //if (Math.Abs(pos_X) < 50)
-            //{
-            //    Fter_pos_X = pos_X;//对x坐标滤波
-            //}
-
-            //if (Math.Abs(pos_Y) < 50)
-            //{
-            //    Fter_pos_Y = pos_Y;//对y坐标滤波
-            //}
-
-            if (Math.Abs(tempFterPosX[4] - tempFterPosX[3]) < 5)
+            if (Math.Abs(tempFterPosX[4] - tempFterPosX[3]) < 1)//0.2s内不可能走这么多，正常的数据才去更新，否则不更新
             {
-                Fter_pos_X = pos_X;//对x坐标滤波
+                Fter_pos_X = x;//对x坐标滤波
             }
 
-            if (Math.Abs(tempFterPosY[4] - tempFterPosY[3]) < 5)
+            if (Math.Abs(tempFterPosY[4] - tempFterPosY[3]) < 1)
             {
-                Fter_pos_Y = pos_Y;//对y坐标滤波
+                Fter_pos_Y = y;//对y坐标滤波
             }
            
             last_pos_X = pos_X;//更新上一次坐标信息
@@ -184,7 +165,6 @@ namespace HUST_1_Demo.Model
             X_mm = Fter_pos_X * 1000;
             Y_mm = Fter_pos_Y * 1000;
 
-           // Time = response_data[12].ToString() + ":" + response_data[13].ToString() + ":" + response_data[14].ToString();
             this.lTime = HUST_1_Demo.Form1.GetTimeStamp();
             
             DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
@@ -201,19 +181,13 @@ namespace HUST_1_Demo.Model
             Euler_Z[2] = response_data[19];
             Euler_Z[3] = response_data[20];
             Init_Phi = BitConverter.ToSingle(Euler_Z, 0);
-          //  Init_Phi++;
             phi = Init_Phi + Phi_buchang;
             if (phi > 180) phi = phi - 360;
             if (phi < -180) phi = phi + 360;
-            //  rud = response_data[21];//大船没有舵角信息
             rud = (float)((response_data[21] - 32) * 0.9);//小船舵角信息
             if (response_data[22] == 0) gear = response_data[22];
             else gear = response_data[22];
-            
-            //传感器值获取
-            //23、24是船内温湿度
-            //MotorSpd1 = response_data[25];//电机转速
-            //MotorSpd2 = response_data[26];
+
             Dzhangai = response_data[27];//障碍物信息49-51
 
             Water_Tem = ((response_data[28] << 8) + response_data[29]) * 0.0625;//水温度
@@ -221,22 +195,11 @@ namespace HUST_1_Demo.Model
             Water_Oxy = ((response_data[32] << 8) + response_data[33]);//水溶解氧
             Water_Tur = ((response_data[34] << 8) + response_data[35]) / 1000.00;//水浊度
             Water_Con = ((response_data[36] << 8) + response_data[37]);//电导率
-
-            ////障碍物信息接收
-            //obstacle[0, 0] = response_data[32];
-            //obstacle[0, 1] = response_data[33];
-            //obstacle[0, 2] = response_data[34];
-            //obstacle[1, 0] = response_data[35];
-            //obstacle[1, 1] = response_data[36];
-            //obstacle[1, 2] = response_data[37];
-            //obstacle[2, 0] = response_data[38];
-            //obstacle[2, 1] = response_data[39];
-            //obstacle[2, 2] = response_data[40];
-
         }
         
         public void SubmitParamToServer()
         {
+            HUST_1_Demo.Form1.sendcnt++;
             var oShipParam = new MonitorNet.SShipParam();
             
             oShipParam.lat = this.Lat;
@@ -265,7 +228,11 @@ namespace HUST_1_Demo.Model
             oShipParam.diso = this.Water_Oxy;
             oShipParam.tur = this.Water_Tur;
             oShipParam.con = this.Water_Con;
-            
+            oShipParam.check_value = oShipParam.lat + oShipParam.lon + oShipParam.posX + oShipParam.posY + oShipParam.phi +
+                                             oShipParam.GPS_Phi + oShipParam.rud + oShipParam.speed + oShipParam.Kp + oShipParam.Ki +
+                                             oShipParam.Kd + oShipParam.K1 + oShipParam.K2 + oShipParam.tem + oShipParam.ph +
+                                             oShipParam.diso + oShipParam.tur + oShipParam.con;
+
             MonitorNet.NetManager.Instance.NetSubmitParam((int)this.ShipID, oShipParam);
         }
 
@@ -275,6 +242,7 @@ namespace HUST_1_Demo.Model
         /// <param name="fileName"></param>
         public void StoreShipData(string fileName, DataTable dataRec)
         {
+            HUST_1_Demo.Form1.storecnt++;
             /*using (FileStream fs = new FileStream(@"D:\" + fileName + ".txt", FileMode.Append))
             {
                 //数据保存信息量为：
@@ -308,9 +276,9 @@ namespace HUST_1_Demo.Model
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
                 Time.ToString());*/
             dataRec.Rows.Add(new object[] { ShipID.ToString(), Lat.ToString("0.00000000"), Lon.ToString("0.00000000"),
-                Fter_pos_X.ToString("0.000"), Fter_pos_Y.ToString("0.000"), XError.ToString("0.000"),
+                Fter_pos_X.ToString("0.0000"), Fter_pos_Y.ToString("0.0000"), XError.ToString("0.000"),
                 phi.ToString("0.0"), GPS_Phi.ToString("0.0"),Fter_GPS_Phi.ToString("0.0"),
-                speed.ToString("0.00"), gear.ToString(),
+                speed.ToString("0.000"), gear.ToString(),
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
                 e1.ToString(),e2.ToString(),Vf.ToString(),F2.ToString(),
                 MotorSpd1.ToString(),

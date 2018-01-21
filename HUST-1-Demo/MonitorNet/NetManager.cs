@@ -59,8 +59,9 @@ namespace MonitorNet
 			CSubmitData oData = new CSubmitData ();
 			oData.iShipID = iShipID;
 			oData.oParam = oParam;
-			Thread oThread = new Thread (SubmitParamThread);
-			oThread.Start (oData);
+            SubmitParamThread(oData);
+            //Thread oThread = new Thread (SubmitParamThread);
+            //oThread.Start (oData);
 		}
 
 		private void SubmitParamThread(object oData)
