@@ -199,23 +199,41 @@ namespace HUST_1_Demo
 
         private void Back_Click(object sender, EventArgs e)/*后退*/
         {
-            if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
+            if(isRealMode)
             {
-                MessageBox.Show("请先打开串口！\r\n");
-            }
-            else
-            {
-                if (asv1.Checked)
+                if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
                 {
-                    ship1Control.Speed_Down();
-                }
-                else if (asv2.Checked)
-                {
-                    ship2Control.Speed_Down();
+                    MessageBox.Show("请先打开串口！\r\n");
                 }
                 else
                 {
-                    ship3Control.Speed_Down();
+                    if (asv1.Checked)
+                    {
+                        ship1Control.Speed_Down();
+                    }
+                    else if (asv2.Checked)
+                    {
+                        ship2Control.Speed_Down();
+                    }
+                    else
+                    {
+                        ship3Control.Speed_Down();
+                    }
+                }
+            }
+            else 
+            {
+                if (asv1.Checked)
+                {
+                    VRship.Speed_Down(boat1);
+                }
+                else if (asv2.Checked)
+                {
+                    VRship.Speed_Down(boat2);
+                }
+                else
+                {
+                    VRship.Speed_Down(boat3);
                 }
             }
 
