@@ -98,7 +98,6 @@ namespace HUST_1_Demo
         public TargetLine tarLineGe;//一般直线
         public static List<Point> tarMultiLine = new List<Point>();//多段直线
         static List<Point> tarMultiLineDraw = new List<Point>();//绘图使用
-        public static int followLineID = 0;//跟随多段直线分段标志
         public TargetCircle tarCircle; //目标圆
         public TargetOval tarOval;//椭圆
         public double tarLineSp;  //平行于X轴的特殊直线
@@ -724,6 +723,10 @@ namespace HUST_1_Demo
 
                 boat3.X_mm = 0;
                 boat3.Y_mm = 0;
+
+                boat1.m_iMulLineNum = 0;
+                boat2.m_iMulLineNum = 0;
+                boat3.m_iMulLineNum = 0;
             }
 
             listPoint_Boat1.Clear();
@@ -736,7 +739,7 @@ namespace HUST_1_Demo
             tarMultiLine.Clear();
             tarMultiLineDraw.Clear();//画图数据清除
             isMulLineEnd = false;//多段直线设定完成置位
-            followLineID = 0;//多段直线分段标志置位
+
             dataRec.Clear();
             if (!serialPort1.IsOpen)//由于画图需要打开串口，因此先判断串口状态，若没打开则先打开
             {
@@ -809,18 +812,29 @@ namespace HUST_1_Demo
             tarCircle.y = float.Parse(circle_Y.Text);
 
             //先给速度信息，再给舵角信息，因为速度信息在点跟踪控制中有可能被刷新
-            VRship.SetSpeed(boat1, 0.75f);
-            VRControl_fun(boat1);//1号小船舵角控制
+            if( boat1.m_bIsClsCtrStopped == false )
+            {
+                VRship.SetSpeed(boat1, 0.75f);
+                VRControl_fun(boat1);//1号小船舵角控制
+            }
+            
 
             tarLineSp = float.Parse(line_Y2.Text);//1号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
-            VRship.SetSpeed(boat2, 0.75f);
-            VRControl_fun(boat2); ;//1号小船控制
+            if(boat2.m_bIsClsCtrStopped == false)
+            {
+                VRship.SetSpeed(boat2, 0.75f);
+                VRControl_fun(boat2); ;//1号小船控制
+            }
+            
 
             tarLineSp = float.Parse(line_Y3.Text);//1号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R3.Text);
-            VRship.SetSpeed(boat3, 0.75f);      
-            VRControl_fun(boat3); ;//1号小船控制
+            if(boat3.m_bIsClsCtrStopped == false)
+            {
+                VRship.SetSpeed(boat3, 0.75f);
+                VRControl_fun(boat3); ;//1号小船控制
+            }
         }
 
         private void VRControl_PF()
@@ -839,9 +853,9 @@ namespace HUST_1_Demo
                 name = DateTime.Now.ToString("yyyyMMddHHmmss");//保存数据txt
                 isFlagCtrl = true;
                 bRecdData = true;//开始记录数据
-                boat1.point_stop = false;//跟踪停止位清除
-                boat2.point_stop = false;
-                boat3.point_stop = false;
+                boat1.m_bIsClsCtrStopped = false;//跟踪停止位清除
+                boat2.m_bIsClsCtrStopped = false;
+                boat3.m_bIsClsCtrStopped = false;
 
                 
                 if (isRealMode)//真实场景
@@ -1008,62 +1022,67 @@ namespace HUST_1_Demo
 
         private void UpdateCtrlOutput()
         {
+            #region 1号船控制
             tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R1.Text);
             tarCircle.x = float.Parse(circle_X.Text);
             tarCircle.y = float.Parse(circle_Y.Text);
 
             //先给速度信息，再给舵角信息，因为速度信息在点跟踪控制中有可能被刷新
-            if (AutoSpeed.Checked)
-                ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
-            else
-                ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-
-            //Control_fun(ship1Control, boat1);//1号小船控制
-            follower_control(ship1Control, boat1, boat2);
+            if(boat1.m_bIsClsCtrStopped == false)
+            {
+                if (AutoSpeed.Checked)
+                    ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
+                else
+                    ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                Control_fun(ship1Control, boat1);//1号小船控制
+                //follower_control(ship1Control, boat1, boat2);
+            }
+            
 
             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
             boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
+            #endregion
 
+            #region 2号船控制
             tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R2.Text);
 
-            
-            Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-                /* if (AutoSpeed.Checked)
-                     ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
-                 else
-                     ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));*/
-            
+            if (boat2.m_bIsClsCtrStopped == false)
+            {
+                if (AutoSpeed.Checked)
+                    ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
+                else
+                    ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
-            if (boat2.point_stop == true)
-                ship2Control.command[4] = 0;
-            else
-                ship2Control.command[4] = 30;
-                       
+                Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+            }
+
             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
             boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
+            #endregion
 
+            #region 3号船控制
             tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
             tarCircle.Radius = float.Parse(circle_R3.Text);
 
-            if (AutoSpeed.Checked)
-                ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
-            else
-                ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+            if(boat3.m_bIsClsCtrStopped == false)
+            {
+                if (AutoSpeed.Checked)
+                    ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
+                else
+                    ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
-            //Control_fun(ship3Control, boat3);//3号小船控制
-            follower_control(ship3Control, boat3, boat2);
+                Control_fun(ship3Control, boat3);//3号小船控制
+                //follower_control(ship3Control, boat3, boat2);
+            }
 
             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
             boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
-
-            //      xError1.Text = boat1.XError.ToString("0.000");//领队减1号
-            //     xError2.Text = boat2.XError.ToString("0.000");//1号减2号
-            //    xError3.Text = boat3.XError.ToString("0.000");//领队减3号
+            #endregion
         }
 
         /// <summary>
@@ -1095,6 +1114,22 @@ namespace HUST_1_Demo
             {
                 VRship.FollowLine(boat, tarLineSp);
                 pathType = 1;
+            }
+            #endregion
+
+            #region 跟随一般直线
+            if (path_mode.Text == "General line")
+            {
+                VRship.FollowLine(boat, tarLineGe);
+                pathType = 3;
+            }
+            #endregion
+
+            #region 跟随多段直线
+            if (path_mode.Text == "Multi line")
+            {
+                VRship.FollowMulLine(boat);
+                pathType = 3;
             }
             #endregion
 
@@ -1135,28 +1170,8 @@ namespace HUST_1_Demo
             #region 跟随多段直线
             if (path_mode.Text == "Multi line")
             {
-                //if (followLineID > 1)
-                //{
-                    shipControl.FollowMulLine(shipData);
-                    pathType = 3;
-                //}
-                //else
-                //{
-                //    isFlagCtrl = false;//停止本地闭环
-                //    isRmtClsFlag = false;//停止远程闭环
-                //    bRecdData = false;//停止记录数据
-
-                //    ship1Control.Stop_Robot();
-                //    ship2Control.Stop_Robot();
-                //    ship3Control.Stop_Robot();
-
-                //    VRship.Stop_Robot(boat1);
-                //    VRship.Stop_Robot(boat2);
-                //    VRship.Stop_Robot(boat3);
-
-                //    clsCtrlBtn.Text = "Start following";
-                //}
-               
+                shipControl.FollowMulLine(shipData);
+                pathType = 3;
             }
             #endregion
 
@@ -1839,110 +1854,113 @@ namespace HUST_1_Demo
             {
                 case "1":
                     {
-                        if (isRealMode)
+                        if(boat1.m_bIsClsCtrStopped == false)
                         {
-                            ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));//先给速度，再给舵角，因为点跟踪速度量有可能更新为零
-                            Control_fun(ship1Control, boat1);
-                            boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
-                            boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
-                            boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
-                        }
-                        else
-                        {
-                            VRship.SetSpeed(boat1, 0.75f);
-                            VRControl_fun(boat1);//1号小船舵角控制
+                            if (isRealMode)
+                            {
+                                ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));//先给速度，再给舵角，因为点跟踪速度量有可能更新为零
+                                Control_fun(ship1Control, boat1);
+                                boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+                                boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+                                boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
+                            }
+                            else
+                            {
+                                VRship.SetSpeed(boat1, 0.75f);
+                                VRControl_fun(boat1);//1号小船舵角控制
+                            }
                         }
                         break;
                     }
                 case "2":
                     {
-                        if (isRealMode)
+                        if(boat2.m_bIsClsCtrStopped == false)
                         {
-                            ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-                            Control_fun(ship2Control, boat2);
-                            boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
-                            boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
-
-                            if (path_mode.Text == "Multi line")
+                            if (isRealMode)
                             {
-                                tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
-                                tarCircle.Radius = float.Parse(circle_R1.Text);
-                                tarCircle.x = float.Parse(circle_X.Text);
-                                tarCircle.y = float.Parse(circle_Y.Text);
-
-                                //先给速度信息，再给舵角信息，因为速度信息在点跟踪控制中有可能被刷新
-                                if (AutoSpeed.Checked)
-                                    ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
-                                else
-                                    ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-
-                                //Control_fun(ship1Control, boat1);//1号小船控制
-                                follower_control(ship1Control, boat1, boat2);
-
-                                boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
-                                boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
-                                boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
-
-                                tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
-                                tarCircle.Radius = float.Parse(circle_R2.Text);
-
-
-                                Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
-                                /* if (AutoSpeed.Checked)
-                                     ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
-                                 else
-                                     ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));*/
-
-
-                                if (boat2.point_stop == true)
-                                    ship2Control.command[4] = 0;
-                                else
-                                    ship2Control.command[4] = 30;
-
+                                ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                                Control_fun(ship2Control, boat2);
                                 boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
                                 boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
                                 boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
 
-                                tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
-                                tarCircle.Radius = float.Parse(circle_R3.Text);
+                                //if (path_mode.Text == "Multi line")
+                                //{
+                                //    tarLineSp = float.Parse(line_Y1.Text);//1号船目标线和圆
+                                //    tarCircle.Radius = float.Parse(circle_R1.Text);
+                                //    tarCircle.x = float.Parse(circle_X.Text);
+                                //    tarCircle.y = float.Parse(circle_Y.Text);
 
-                                if (AutoSpeed.Checked)
-                                    ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
-                                else
-                                    ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                                //    //先给速度信息，再给舵角信息，因为速度信息在点跟踪控制中有可能被刷新
+                                //    if (AutoSpeed.Checked)
+                                //        ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
+                                //    else
+                                //        ship1Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
 
-                                //Control_fun(ship3Control, boat3);//3号小船控制
-                                follower_control(ship3Control, boat3, boat2);
+                                //    Control_fun(ship1Control, boat1);//1号小船控制
+                                //    //follower_control(ship1Control, boat1, boat2);
 
-                                boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
-                                boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
-                                boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+                                //    boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
+                                //    boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
+                                //    boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
 
+                                //    tarLineSp = float.Parse(line_Y2.Text);//2号船目标线和圆
+                                //    tarCircle.Radius = float.Parse(circle_R2.Text);
+
+                                //    if (AutoSpeed.Checked)
+                                //         ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
+                                //     else
+                                //         ship2Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                                //    Control_fun(ship2Control, boat2);//2号小船控制，2号小船为leader，无需控制速度
+
+                                //    boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
+                                //    boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
+                                //    boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
+
+                                //    tarLineSp = float.Parse(line_Y3.Text);//3号船目标线和圆
+                                //    tarCircle.Radius = float.Parse(circle_R3.Text);
+
+                                //    if (AutoSpeed.Checked)
+                                //        ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
+                                //    else
+                                //        ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+
+                                //    //Control_fun(ship3Control, boat3);//3号小船控制
+                                //    follower_control(ship3Control, boat3, boat2);
+
+                                //    boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+                                //    boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+                                //    boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+                                //}
                             }
-                            boat2.XError = boat1.Fter_pos_X - boat3.Fter_pos_X;
+                            else
+                            {
+                                VRship.SetSpeed(boat2, 0.75f);
+                                VRControl_fun(boat2);//1号小船舵角控制
+                            }
                         }
-                        else
-                        {
-                            VRship.SetSpeed(boat2, 0.75f);
-                            VRControl_fun(boat2);//1号小船舵角控制
-                        }
+                        
                         break;
                     }
                 case "3":
                     {
-                        if (isRealMode)
+                        if(boat3.m_bIsClsCtrStopped == false)
                         {
-                            ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
-                            Control_fun(ship3Control, boat3);
-                            boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
-                            boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
-                            boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+                            if (isRealMode)
+                            {
+                                ship3Control.command[4] = (byte)(int.Parse(Manualspeedset.Text));
+                                Control_fun(ship3Control, boat3);
+                                boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
+                                boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
+                                boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
+                            }
+                            else
+                            {
+                                VRship.SetSpeed(boat3, 0.75f);
+                                VRControl_fun(boat3);//1号小船舵角控制
+                            }
                         }
-                        else
-                        {
-                            VRship.SetSpeed(boat3, 0.75f);
-                            VRControl_fun(boat3);//1号小船舵角控制
-                        }
+                        
                         break;
                     }
                 case "4"://编队，三条船一起控横向距离2米，纵向距离2米
@@ -1954,16 +1972,22 @@ namespace HUST_1_Demo
                         if(isRealMode)
                         {
                             tarLineSp = float.Parse(line_Y1.Text);
-                            Control_fun(ship1Control, boat1);
-                            ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
+                            if(boat1.m_bIsClsCtrStopped==false)
+                            {
+                                Control_fun(ship1Control, boat1);
+                                ship1Control.Closed_Control_LineSpeed(boat1, boat2, pathType, cirDir);
+                            }
                             boat1.CtrlRudOut = ship1Control.command[3];//舵角控制输出量
                             boat1.CtrlSpeedOut = ship1Control.command[4];//速度控制输出量
                             boat1.XError = boat2.Fter_pos_X - boat1.Fter_pos_X;
 
 
                             tarLineSp = float.Parse(line_Y2.Text);
-                            Control_fun(ship2Control, boat2);
-                            ship2Control.command[4] = 110;
+                            if(boat2.m_bIsClsCtrStopped==false)
+                            {
+                                Control_fun(ship2Control, boat2);
+                                ship2Control.command[4] = 110;
+                            }
                             // ship2Control.Closed_Control_LineSpeed(boat2, boat2, pathType, cirDir);
                             boat2.CtrlRudOut = ship2Control.command[3];//舵角控制输出量
                             boat2.CtrlSpeedOut = ship2Control.command[4];//速度控制输出量
@@ -1971,8 +1995,11 @@ namespace HUST_1_Demo
 
 
                             tarLineSp = float.Parse(line_Y3.Text);
-                            Control_fun(ship3Control, boat3);
-                            ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
+                            if(boat3.m_bIsClsCtrStopped == false)
+                            {
+                                Control_fun(ship3Control, boat3);
+                                ship3Control.Closed_Control_LineSpeed(boat3, boat2, pathType, cirDir);
+                            }
                             boat3.CtrlRudOut = ship3Control.command[3];//舵角控制输出量
                             boat3.CtrlSpeedOut = ship3Control.command[4];//速度控制输出量
                             boat3.XError = boat2.Fter_pos_X - boat3.Fter_pos_X;
@@ -1981,8 +2008,6 @@ namespace HUST_1_Demo
                         {
                             UpdateVRCtrlOutput();
                         }
-
-
                         break;
                     }
             }

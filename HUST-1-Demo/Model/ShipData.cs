@@ -47,7 +47,6 @@ namespace HUST_1_Demo.Model
         public double Vf { get; set; }//Rise 控制积分项
         public double F2 { get; set; }
         public double Err_phi_In { get; set; }//积分控制中的积分量
-        public bool point_stop { get; set; }//点跟踪时停船标志位
 
         //传感器值
         public int MotorSpd1 { get; set; }//左电机转速
@@ -72,6 +71,8 @@ namespace HUST_1_Demo.Model
         public float K2 { get; set; }
         public float dx_err { get; set; }
         public float dy_err { get; set; }
+        public bool m_bIsClsCtrStopped { get; set; }// 点跟踪和直线跟踪是否停止标志
+        public int m_iMulLineNum { get; set; }//跟随多段直线当前编号
 
 
         public static double a = 6378137.0;//定义地球长半轴长度  
@@ -282,7 +283,7 @@ namespace HUST_1_Demo.Model
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
                 e1.ToString(),e2.ToString(),Vf.ToString(),F2.ToString(),
                 MotorSpd1.ToString(),
-                HUST_1_Demo.Form1.followLineID.ToString(),//多段直线ID戳
+                this.m_iMulLineNum.ToString(),//多段直线ID戳
                 sTime.ToString() });
         }
 
