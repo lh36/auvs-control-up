@@ -1649,6 +1649,7 @@ namespace HUST_1_Demo
                          * 2. 设置目标轨迹参数
                          * 3. 开始跟随—开启新线程跟随
                          * *******************/
+
                         UpdtPathMode();
 
                         UpdtRmtRefTask();//更新远程闭环控制目标（直线/圆）
@@ -1658,6 +1659,9 @@ namespace HUST_1_Demo
                         isRmtClsFlag = true;
                         isFlagCtrl = true;
                         bRecdData = true;//开始记录数据
+                        boat1.m_bIsClsCtrStopped = false;//跟踪停止位清除
+                        boat2.m_bIsClsCtrStopped = false;
+                        boat3.m_bIsClsCtrStopped = false;
 
                         Thread t = new Thread(RmtClsCtrl);
                         t.IsBackground = true;
