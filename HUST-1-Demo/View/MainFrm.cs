@@ -1680,6 +1680,9 @@ namespace HUST_1_Demo
                         boat1.m_bIsClsCtrStopped = false;//跟踪停止位清除
                         boat2.m_bIsClsCtrStopped = false;
                         boat3.m_bIsClsCtrStopped = false;
+                        boat1.m_iMulLineNum = 0;//多段直线跟踪当前点清零
+                        boat2.m_iMulLineNum = 0;
+                        boat3.m_iMulLineNum = 0;
 
                         Thread t = new Thread(RmtClsCtrl);
                         t.IsBackground = true;

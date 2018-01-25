@@ -227,7 +227,7 @@ namespace HUST_1_Demo.Controller
 
                 FollowLine(boat, line);
 
-                if (Math.Sqrt((boat.X_mm - line.End.X) * (boat.X_mm - line.End.X) + (boat.Y_mm - line.End.Y) * (boat.Y_mm - line.End.Y)) < 4000)
+                if (Math.Sqrt((boat.X_mm - line.End.X) * (boat.X_mm - line.End.X) + (boat.Y_mm - line.End.Y) * (boat.Y_mm - line.End.Y)) < 3000)
                     boat.m_iMulLineNum++;
             }
         }
