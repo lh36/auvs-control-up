@@ -90,6 +90,7 @@ namespace MonitorNet
 			oThread.Start (oData);
 		}
 
+
 		private void SubmitRefLineThread(object oData)
 		{
 			CSubmitData oApiData = oData as CSubmitData;
@@ -123,6 +124,17 @@ namespace MonitorNet
 			this.m_bIsVideoIdle = true;
 		}
 
+        public void NetSubmitFeedbackMessage(string message)
+        {
+            Thread oThread = new Thread(SubmitFeedbackMessageTheread);
+            oThread.Start(message);
+        }
+
+        public void SubmitFeedbackMessageTheread(object message)
+        {
+            SubmitFBMessageApi oApi = new SubmitFBMessageApi((string)message);
+            oApi.Request();
+        }
         /// <summary>
         /// 获取控制信息
         /// </summary>

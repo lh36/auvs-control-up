@@ -109,6 +109,7 @@
     <Compile Include="MonitorNet\Api\CreateInstanceApi.cs" />
     <Compile Include="MonitorNet\Api\FinishInstanceApi.cs" />
     <Compile Include="MonitorNet\Api\GetControlApi.cs" />
+    <Compile Include="MonitorNet\Api\SubmitFBMessageApi.cs" />
     <Compile Include="MonitorNet\Api\SubmitParamApi.cs" />
     <Compile Include="MonitorNet\Api\SubmitRefLineApi.cs" />
     <Compile Include="MonitorNet\Api\SubmitVideoApi.cs" />

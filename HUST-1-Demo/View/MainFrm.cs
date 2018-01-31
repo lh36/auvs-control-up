@@ -79,8 +79,8 @@ namespace HUST_1_Demo
         public static int SetOvalPtFlag = 0;//获取椭圆点的标志，0为Pt1，1为Pt2，2为Pt3
         public static int SetOvalPathID = 0;//椭圆跟随边（两条直线/两个椭圆）切换标志
         public static bool isMulLineEnd = false;//多段直线设定结束
-        public static bool isRmtCtrl = false;//是否接受远程控制
-        public static bool isRmtClsFlag = false;//可直接循环执行当跟随目标轨迹
+        public static bool isRmtCtrlMode = false;//是否接受远程控制
+        public static bool isRmtClsOn = false;//可直接循环执行当跟随目标轨迹
         public static bool bRecdData = false;//是否保存数据
         public static bool isRealMode = true;//真实数据还是虚拟数据, true:真实，false：虚拟
         //public static bool line_stop = false;//多段直线跟踪停止位
@@ -896,7 +896,7 @@ namespace HUST_1_Demo
             {
 
                 isFlagCtrl = false;//停止本地闭环
-                isRmtClsFlag = false;//停止远程闭环
+                isRmtClsOn = false;//停止远程闭环
                 bRecdData = false;//停止记录数据
 
                 ship1Control.Stop_Robot();
@@ -1609,8 +1609,8 @@ namespace HUST_1_Demo
                 NetManager.Instance.NetFinishInstance(GetTimeStamp(), null);
                 bSerInit.Text = "Start Server";
 
-                isRmtCtrl = false;//关闭远程模式-切换到本地模式
-                isRmtClsFlag = false;//关闭闭环循环模式
+                isRmtCtrlMode = false;//关闭远程模式-切换到本地模式
+                isRmtClsOn = false;//关闭远程闭环控制循环模式
                 RmtCtrl.Text = "Local control mode";
 
                 ship1Control.Stop_Robot();
@@ -1623,6 +1623,7 @@ namespace HUST_1_Demo
         }
 
         string[] sArr;
+        string sFeedbackMessage;
         private void ControlFromServer(object oControlDara)
         {
             var sControlData = oControlDara.ToString();//这里是json格式数据，需要通过json解析
@@ -1632,9 +1633,10 @@ namespace HUST_1_Demo
                 if (MessageBox.Show("Allow remote control mode?", "Confirm Message",
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
                 {
-                    isRmtCtrl = true;
-
+                    isRmtCtrlMode = true;
                     RmtCtrl.Text = "Remote control mode";
+                    sFeedbackMessage = "remote control on";
+                    NetManager.Instance.NetSubmitFeedbackMessage(sFeedbackMessage);
                 }
             }
             else if (sControlData == "closelink")//结束远程控制请求
@@ -1642,14 +1644,16 @@ namespace HUST_1_Demo
                 if (MessageBox.Show("Remote control closed!", "Confirm Message",
                 MessageBoxButtons.OKCancel) == DialogResult.OK)
                 {
-                    isRmtCtrl = false;
-                    isRmtClsFlag = false;
+                    isRmtCtrlMode = false;
+                    isRmtClsOn = false;
                     RmtCtrl.Text = "Local control mode";
+                    sFeedbackMessage = "remote control off";
+                    NetManager.Instance.NetSubmitFeedbackMessage(sFeedbackMessage);
                 }
             }
             else
             {
-                if (isRmtCtrl == true)//远程模式在本地允许后才进行命令解析，否则不解析
+                if (isRmtCtrlMode == true)//远程模式在本地允许后才进行命令解析，否则不解析
                 {
                     sArr = sControlData.Split('&');
 
@@ -1674,7 +1678,7 @@ namespace HUST_1_Demo
 
                         UpdtRefPath();
 
-                        isRmtClsFlag = true;
+                        isRmtClsOn = true;
                         isFlagCtrl = true;
                         bRecdData = true;//开始记录数据
                         boat1.m_bIsClsCtrStopped = false;//跟踪停止位清除
@@ -1692,7 +1696,7 @@ namespace HUST_1_Demo
                     }
                     if (sArr[0] == "s")
                     {
-                        isRmtClsFlag = false;
+                        isRmtClsOn = false;
                         bRecdData = false;//停止记录数据
                         ship1Control.Stop_Robot();
                         ship2Control.Stop_Robot();
@@ -1798,7 +1802,7 @@ namespace HUST_1_Demo
                             tarLineGe.isReverse = false;
 
                         isTarLineSet = true;
-                        MessageBox.Show("闭环控制启动！");
+                       // MessageBox.Show("闭环控制启动！");
                         break;
                     }
                 case "l":
@@ -1819,7 +1823,7 @@ namespace HUST_1_Demo
                             line_Y3.Text = sArr[3];
                         }
                         tarLineSp = double.Parse(sArr[3]);
-                        MessageBox.Show("闭环控制启动！");
+                       // MessageBox.Show("闭环控制启动！");
                         break;
                     }
                 case "m":
@@ -1841,7 +1845,7 @@ namespace HUST_1_Demo
                             tarMultiLineDraw.Add(new Point(x1, y1));//绘图坐标点
                             i = i + 2;
                         }
-                        MessageBox.Show("闭环控制启动！");
+                       // MessageBox.Show("闭环控制启动！");
                         break;
                     }
                 case "r":
@@ -1867,7 +1871,7 @@ namespace HUST_1_Demo
                         tarCircle.Radius = double.Parse(sArr[3]);
                         tarCircle.x = 15;
                         tarCircle.y = 10;
-                        MessageBox.Show("闭环控制启动！");
+                       // MessageBox.Show("闭环控制启动！");
                         break;
                     }
             }
@@ -2040,7 +2044,7 @@ namespace HUST_1_Demo
 
         private void RmtClsCtrl()
         {
-            while (isRmtClsFlag)//此处应该开启新线程执行，否则会在此处一直循环，导致其他无法执行
+            while (isRmtClsOn)//此处应该开启新线程执行，否则会在此处一直循环，导致其他无法执行
             {
                 UpdateCtrlPara();         //控制参数由本地确定
                 UpdtRmtCtrlOt1();  //更新控制输出
@@ -2179,15 +2183,19 @@ namespace HUST_1_Demo
         {
             if (RmtCtrl.Text == "Local control mode")
             {
-                isRmtCtrl = true;//开启远程模式
-                isRmtClsFlag = true;//开启闭环循环模式
+                isRmtCtrlMode = true;//开启远程模式
+                isRmtClsOn = true;//开启闭环循环模式
                 RmtCtrl.Text = "Remote control mode";
+                sFeedbackMessage = "remote control on";
+                NetManager.Instance.NetSubmitFeedbackMessage(sFeedbackMessage);
             }
             else
             {
-                isRmtCtrl = false;//关闭远程模式-切换到本地模式
-                isRmtClsFlag = false;//关闭闭环循环模式
+                isRmtCtrlMode = false;//关闭远程模式-切换到本地模式
+                isRmtClsOn = false;//关闭闭环循环模式
                 RmtCtrl.Text = "Local control mode";
+                sFeedbackMessage = "remote control off";
+                NetManager.Instance.NetSubmitFeedbackMessage(sFeedbackMessage);
             }
         }
 
