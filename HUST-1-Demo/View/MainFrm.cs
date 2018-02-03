@@ -2294,6 +2294,10 @@ namespace HUST_1_Demo
 
                 Display();
 
+                boat1.StoreShipData(name, dataRec);
+                boat2.StoreShipData(name, dataRec);
+                boat3.StoreShipData(name, dataRec);
+
                 boat1.SubmitParamToServer();
                 boat2.SubmitParamToServer();
                 boat3.SubmitParamToServer();

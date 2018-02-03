@@ -276,7 +276,9 @@ namespace HUST_1_Demo.Model
                 speed.ToString("0.00"), gear.ToString(),
                 rud.ToString("0.0"), CtrlRudOut.ToString(), CtrlSpeedOut.ToString(),
                 Time.ToString());*/
-            dataRec.Rows.Add(new object[] { ShipID.ToString(), Lat.ToString("0.00000000"), Lon.ToString("0.00000000"),
+            if (HUST_1_Demo.Form1.isRealMode)
+            {
+                dataRec.Rows.Add(new object[] { ShipID.ToString(), Lat.ToString("0.00000000"), Lon.ToString("0.00000000"),
                 Fter_pos_X.ToString("0.0000"), Fter_pos_Y.ToString("0.0000"), XError.ToString("0.000"),
                 phi.ToString("0.0"), GPS_Phi.ToString("0.0"),Fter_GPS_Phi.ToString("0.0"),
                 speed.ToString("0.000"), gear.ToString(),
@@ -285,6 +287,11 @@ namespace HUST_1_Demo.Model
                 MotorSpd1.ToString(),
                 this.m_iMulLineNum.ToString(),//多段直线ID戳
                 sTime.ToString() });
+            }
+            else
+            {
+                dataRec.Rows.Add(new object[] { ShipID.ToString(), Fter_pos_X.ToString("0.0000"), Fter_pos_Y.ToString("0.0000"), this.Ctrl_Phi.ToString("0.0") });
+            }
         }
 
     }
